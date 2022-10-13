@@ -1,22 +1,24 @@
 {
-  "name": "FILL",
+  "name": "revolt-toolset",
   "version": "0.0.1",
-  "description": "FILL",
+  "description": "Tools for Revolt based apps.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && node .",
-    "build": "tsc -b tsconfig.json"
+    "pub": "tsc -b tsconfig.json && npm publish"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itzTheMeow/FILL.git"
+    "url": "git+https://github.com/itzTheMeow/revolt-toolset.git"
   },
+  "files": [
+    "dist/*"
+  ],
   "author": "Meow",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/itzTheMeow/FILL/issues"
+    "url": "https://github.com/itzTheMeow/revolt-toolset/issues"
   },
-  "homepage": "https://github.com/itzTheMeow/FILL#readme",
+  "homepage": "https://github.com/itzTheMeow/revolt-toolset#readme",
   "dependencies": {
     "@types/node": "^18.7.18",
     "typescript": "^4.8.3"
