@@ -1,8 +1,9 @@
 {
   "name": "revolt-toolset",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Tools for Revolt based apps.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "pub": "tsc -b tsconfig.json && npm publish"
   },
