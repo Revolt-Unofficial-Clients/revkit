@@ -1,0 +1,24 @@
+{
+  "name": "FILL",
+  "version": "0.0.1",
+  "description": "FILL",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "npm run build && node .",
+    "build": "tsc -b tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itzTheMeow/FILL.git"
+  },
+  "author": "Meow",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itzTheMeow/FILL/issues"
+  },
+  "homepage": "https://github.com/itzTheMeow/FILL#readme",
+  "dependencies": {
+    "@types/node": "^18.7.18",
+    "typescript": "^4.8.3"
+  }
+}
