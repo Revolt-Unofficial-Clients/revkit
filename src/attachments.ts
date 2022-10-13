@@ -18,7 +18,7 @@ export async function uploadAttachment(
   const form = new FormData();
   form.append("file", data, filename);
   const res = await axios.post(`${apiURL}/${type}`, form, {
-    headers: form.getHeaders(),
+    headers: form.getHeaders?.() || {},
     data: form,
   });
   return res.data?.id;
