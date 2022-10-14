@@ -80,10 +80,7 @@ export function parseAutocomplete(
       case AutocompleteType.EMOJI:
         results.emojis.push(
           ...[...server.client.emojis.values()].filter(
-            (e) =>
-              e.parent.type == "Server" &&
-              e.parent.id == server._id &&
-              e.name.toLowerCase().includes(matchedText)
+            (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
           )
         );
         break;
