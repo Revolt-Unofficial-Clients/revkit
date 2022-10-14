@@ -67,7 +67,12 @@ export function parseAutocomplete(
   let failed = 0;
   AutocompleteItems.forEach((i) => {
     const matchedText = textBeforeCursor
-      .match(new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"))?.[0]
+      .match(
+        new RegExp(
+          `(?<!([^\s\\${i.delimiter}]{26}))\\${i.delimiter}([^\s\\${i.delimiter}]+)?$`,
+          "i"
+        )
+      )?.[0]
       ?.substring(i.delimiter.length)
       .toLowerCase();
     if (typeof matchedText !== "string") return (failed += 1);
