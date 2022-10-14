@@ -1,11 +1,12 @@
 {
   "name": "revolt-toolset",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Tools for Revolt based apps.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "pub": "tsc -b tsconfig.json && npm publish"
+    "pub": "tsc -b tsconfig.json && npm publish",
+    "test": "tsc -b tsconfig.json && node test.mjs"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,8 @@
   "homepage": "https://github.com/itzTheMeow/revolt-toolset#readme",
   "dependencies": {
     "axios": "^1.1.2",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "revolt.js": "^6.0.18"
   },
   "devDependencies": {
     "@types/node": "^18.8.5",

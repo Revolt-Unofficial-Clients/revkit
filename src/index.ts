@@ -1,3 +1,4 @@
 import { uploadAttachment } from "./attachments";
+import { AutocompleteItems, AutocompleteType, parseAutocomplete } from "./autocomplete";
 
-export { uploadAttachment };
+export { uploadAttachment, AutocompleteType, AutocompleteItems, parseAutocomplete };
