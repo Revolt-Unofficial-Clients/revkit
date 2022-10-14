@@ -18,6 +18,7 @@ export interface AutocompleteResult {
   channels: Channel[];
   emojis: Emoji[];
   users: Member[];
+  size: number;
   tab(item: Channel | Emoji | Member): AutocompleteTabResult;
 }
 export const AutocompleteItems: AutocompleteItem[] = [
@@ -36,6 +37,7 @@ export function parseAutocomplete(
     channels: [],
     emojis: [],
     users: [],
+    size: 0,
     tab: (item) => {
       let newText = text;
       if (item instanceof Channel) {
@@ -118,5 +120,6 @@ export function parseAutocomplete(
       }
     }
   });
+  results.size = results.channels.length + results.emojis.length + results.users.length;
   return failed == AutocompleteItems.length ? null : results;
 }
