@@ -71,7 +71,7 @@ export function parseAutocomplete(
     const matchedText = textBeforeCursor
       .match(
         new RegExp(
-          `(?<!([^\s\\${i.delimiter}]{26}))\\${i.delimiter}([^\s\\${i.delimiter}]+)?$`,
+          `(?<!([^\\s\\${i.delimiter}]{26}))\\${i.delimiter}([^\\s\\${i.delimiter}]+)?$`,
           "i"
         )
       )?.[0]
