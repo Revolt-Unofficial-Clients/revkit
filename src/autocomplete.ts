@@ -89,7 +89,7 @@ export function parseAutocomplete(
           ...[...server.client.members.values()].filter(
             (m) =>
               m.server._id == server._id &&
-              (m.nickname.toLowerCase().includes(matchedText) ||
+              (m.nickname?.toLowerCase().includes(matchedText) ||
                 m.user.username.toLowerCase().includes(matchedText))
           )
         );
