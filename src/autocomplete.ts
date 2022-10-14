@@ -72,28 +72,45 @@ export function parseAutocomplete(
       .toLowerCase();
     if (typeof matchedText !== "string") return (failed += 1);
     switch (i.type) {
-      case AutocompleteType.CHANNEL:
+      case AutocompleteType.CHANNEL: {
+        const items = server.channels.filter((c) => c.name.toLowerCase().includes(matchedText));
+        results.channels.unshift(
+          ...items.filter((i) => i.name.toLowerCase().startsWith(matchedText))
+        );
         results.channels.push(
-          ...server.channels.filter((c) => c.name.toLowerCase().includes(matchedText))
+          ...items.filter((i) => !i.name.toLowerCase().startsWith(matchedText))
         );
         break;
-      case AutocompleteType.EMOJI:
-        results.emojis.push(
-          ...[...server.client.emojis.values()].filter(
-            (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
+      }
+      case AutocompleteType.EMOJI: {
+        const items = [...server.client.emojis.values()].filter(
+          (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
+        );
+        results.emojis.unshift(
+          ...items.filter((i) => i.name.toLowerCase().startsWith(matchedText))
+        );
+        results.emojis.push(...items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)));
+        break;
+      }
+      case AutocompleteType.USER: {
+        const items = [...server.client.members.values()].filter(
+          (m) =>
+            m.server._id == server._id &&
+            (m.nickname?.toLowerCase().includes(matchedText) ||
+              m.user?.username.toLowerCase().includes(matchedText))
+        );
+        results.users.unshift(
+          ...items.filter((i) =>
+            (i.nickname || i.user.username).toLowerCase().startsWith(matchedText)
           )
         );
-        break;
-      case AutocompleteType.USER:
         results.users.push(
-          ...[...server.client.members.values()].filter(
-            (m) =>
-              m.server._id == server._id &&
-              (m.nickname?.toLowerCase().includes(matchedText) ||
-                m.user.username.toLowerCase().includes(matchedText))
+          ...items.filter(
+            (i) => !(i.nickname || i.user.username).toLowerCase().startsWith(matchedText)
           )
         );
         break;
+      }
     }
   });
   return failed == AutocompleteItems.length ? null : results;
