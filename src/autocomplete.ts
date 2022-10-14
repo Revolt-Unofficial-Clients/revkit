@@ -30,7 +30,7 @@ export function parseAutocomplete(
   server: Server,
   text: string,
   cursorPos: number
-): AutocompleteResult {
+): AutocompleteResult | null {
   const textBeforeCursor = text.slice(0, cursorPos);
   const results: AutocompleteResult = {
     channels: [],
@@ -64,12 +64,13 @@ export function parseAutocomplete(
       };
     },
   };
+  let failed = 0;
   AutocompleteItems.forEach((i) => {
     const matchedText = textBeforeCursor
       .match(new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"))?.[0]
       ?.substring(i.delimiter.length)
       .toLowerCase();
-    if (typeof matchedText !== "string") return;
+    if (typeof matchedText !== "string") return (failed += 1);
     switch (i.type) {
       case AutocompleteType.CHANNEL:
         results.channels.push(
@@ -98,5 +99,5 @@ export function parseAutocomplete(
         break;
     }
   });
-  return results;
+  return failed == AutocompleteItems.length ? null : results;
 }
