@@ -69,15 +69,16 @@ export function parseAutocomplete(
   let failed = 0;
   AutocompleteItems.forEach((i) => {
     const matchedText = textBeforeCursor
-      .match(
-        new RegExp(
-          `(?<!([^\\s\\${i.delimiter}]{26}))\\${i.delimiter}([^\\s\\${i.delimiter}]+)?$`,
-          "i"
-        )
-      )?.[0]
+      .match(new RegExp(`\\${i.delimiter}([^\\s\\${i.delimiter}]+)?$`, "i"))?.[0]
       ?.substring(i.delimiter.length)
       .toLowerCase();
-    if (typeof matchedText !== "string") return (failed += 1);
+    if (
+      typeof matchedText !== "string" ||
+      textBeforeCursor
+        .slice(0, textBeforeCursor.length - (matchedText.length + i.delimiter.length))
+        .match(new RegExp(`:(([^\\s\\${i.delimiter}]{1,26}))$`))
+    )
+      return (failed += 1);
     switch (i.type) {
       case AutocompleteType.CHANNEL: {
         const items = server.channels.filter((c) => c.name.toLowerCase().includes(matchedText));
