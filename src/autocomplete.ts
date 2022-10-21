@@ -42,22 +42,25 @@ export function parseAutocomplete(
       let newText = text;
       if (item instanceof Channel) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.CHANNEL);
-        newText = textBeforeCursor.replace(
-          new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-          i.result.replace("%", item._id)
-        );
+        newText =
+          textBeforeCursor.replace(
+            new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
+            i.result.replace("%", item._id)
+          ) + " ";
       } else if (item instanceof Emoji) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.EMOJI);
-        newText = textBeforeCursor.replace(
-          new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-          i.result.replace("%", item._id)
-        );
+        newText =
+          textBeforeCursor.replace(
+            new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
+            i.result.replace("%", item._id)
+          ) + " ";
       } else if (item instanceof Member) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.USER);
-        newText = textBeforeCursor.replace(
-          new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-          i.result.replace("%", item.user._id)
-        );
+        newText =
+          textBeforeCursor.replace(
+            new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
+            i.result.replace("%", item.user._id)
+          ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
       return {
