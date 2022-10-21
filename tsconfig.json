@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "ES6",
     "rootDir": "src",
     "outDir": "dist",
     "esModuleInterop": true,
     "declaration": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "Node"
   },
   "include": ["src"]
 }
