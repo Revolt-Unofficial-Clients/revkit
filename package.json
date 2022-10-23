@@ -1,10 +1,10 @@
 {
   "name": "revolt-toolset",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Tools for Revolt based apps.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/es6/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -b tsconfig.json && tsc -b tsconfig.cjs.json",
     "pub": "npm run build && npm publish",
