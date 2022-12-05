@@ -2,6 +2,7 @@ import { uploadAttachment } from "./attachments";
 import {
   AutocompleteItems,
   AutocompleteType,
+  AutocompleteTabResult,
   AutocompleteResult,
   parseAutocomplete,
 } from "./autocomplete";
@@ -22,5 +23,6 @@ export {
   getMarkdownTimestamp,
   MarkdownTimestampTypes,
   RevoltEmojiDictionary,
+  AutocompleteTabResult,
   AutocompleteResult,
 };
