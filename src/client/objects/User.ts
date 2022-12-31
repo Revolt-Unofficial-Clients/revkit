@@ -67,21 +67,23 @@ export default class User extends BaseObject<APIUser> {
   //TODO:open dm
   /** Send this user a friend request. */
   public async addFriend() {
-    return await this.client.api.post(`/users/friend`, {
-      username: this.username,
-    });
+    this.client.users.construct(
+      await this.client.api.post(`/users/friend`, {
+        username: this.username,
+      })
+    );
   }
   /** Unfriend this user. */
   public async removeFriend() {
-    return await this.client.api.delete(`/users/${this._id}/friend`);
+    this.client.users.construct(await this.client.api.delete(`/users/${this._id}/friend`));
   }
   /** Block this user. */
   public async block() {
-    return await this.client.api.put(`/users/${this._id}/block`);
+    this.client.users.construct(await this.client.api.put(`/users/${this._id}/block`));
   }
   /** Unblock this user. */
   public async unblock() {
-    return await this.client.api.delete(`/users/${this._id}/block`);
+    this.client.users.construct(await this.client.api.delete(`/users/${this._id}/block`));
   }
 
   /** Fetch this user's profile information. */

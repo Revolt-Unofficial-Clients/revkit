@@ -21,8 +21,9 @@ export default class BaseObject<APIType extends { _id: string }> extends MiniEmi
   }
   public deleted = false;
   /** Update this object with new API data. */
-  public update(data: APIType) {
-    this.data = data;
+  public update(data: Partial<APIType>) {
+    Object.entries(data).forEach((e) => (this.data[e[0]] = e[1]));
+    this.fireUpdate();
     return this;
   }
 }

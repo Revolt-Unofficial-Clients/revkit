@@ -62,7 +62,7 @@ export default class Server extends BaseObject<APIServer> {
 
   /** Edit this server. */
   public async edit(data: DataEditServer) {
-    return await this.client.api.patch(`/servers/${this._id}`, data);
+    this.update(await this.client.api.patch(`/servers/${this._id}`, data));
   }
   /** Leave (or delete if owner) this server. */
   public async leave(silent?: boolean) {
@@ -99,8 +99,10 @@ export default class Server extends BaseObject<APIServer> {
     permissions: Override
   ): Promise<void>;
   public async setRolePermissions(id: string, permissions: number | Override): Promise<void> {
-    await this.client.api.put(`/servers/${this._id as ""}/permissions/${id as ""}`, {
-      permissions: permissions as Override,
-    });
+    this.update(
+      await this.client.api.put(`/servers/${this._id as ""}/permissions/${id as ""}`, {
+        permissions: permissions as Override,
+      })
+    );
   }
 }
