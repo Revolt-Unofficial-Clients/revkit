@@ -25,6 +25,9 @@ export default class User extends BaseObject<APIUser> {
   public get bot(): Bot | null {
     return this.source.bot ? new Bot(this) : null;
   }
+  public get avatar() {
+    return this.source.avatar;
+  }
 }
 /*
     avatar: Nullable<File>;

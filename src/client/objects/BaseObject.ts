@@ -2,6 +2,7 @@ import { decodeTime } from "ulid";
 import Client from "../Client";
 
 export default class BaseObject<APIType extends { _id: string }> {
+  /** Original API object. */
   public get source() {
     return this.data;
   }
@@ -12,6 +13,7 @@ export default class BaseObject<APIType extends { _id: string }> {
   public get createdAt() {
     return decodeTime(this.id);
   }
+  /** Update this object with new API data. */
   public update(data: APIType) {
     this.data = data;
     return this;

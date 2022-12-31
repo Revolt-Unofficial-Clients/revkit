@@ -1,3 +1,3 @@
-import { Emoji as APIEmoji, User as APIUser } from "revolt-api";
+import { Emoji as APIEmoji, File as APIAttachment, User as APIUser } from "revolt-api";
 
-export { APIEmoji, APIUser };
+export { APIAttachment, APIEmoji, APIUser };
