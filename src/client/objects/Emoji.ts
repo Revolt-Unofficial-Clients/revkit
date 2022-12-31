@@ -32,17 +32,16 @@ export class Emoji extends BaseObject<APIEmoji> {
     }`;
   }
 
-  public get parent_id() {
+  public get parentID() {
     return this.source.parent.type == "Server" ? this.source.parent.id : "";
   }
   public get parent() {
-    //TODO: fetch from server
-    return this.parent_id ? this.client : null;
+    return this.parentID ? this.client.servers.get(this.parentID) ?? null : null;
   }
-  //TODO: fetchParent
 
   /** Delete this emoji. */
   public async delete() {
-    return await this.client.api.delete(`/custom/emoji/${this._id}`);
+    await this.client.api.delete(`/custom/emoji/${this._id}`);
+    this.client.emojis.delete(this.id);
   }
 }
