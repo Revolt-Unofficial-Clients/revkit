@@ -8,7 +8,7 @@ export default class EmojiManager extends BaseManager<Emoji> {
     super();
   }
 
-  public create(data: APIEmoji) {
+  public construct(data: APIEmoji) {
     const emoji = new Emoji(this.client, data);
     this.set(emoji.id, emoji);
     return emoji;

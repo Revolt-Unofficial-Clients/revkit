@@ -8,7 +8,7 @@ export default class UserManager extends BaseManager<User> {
     super();
   }
 
-  public create(data: APIUser) {
+  public construct(data: APIUser) {
     const has = this.get(data._id);
     if (has) {
       return has.update(data);
@@ -20,6 +20,6 @@ export default class UserManager extends BaseManager<User> {
   }
   public async fetch(id: string, fetchNew = false) {
     if (this.get(id) && !fetchNew) return this.get(id);
-    return this.create(await this.client.api.get(`/users/${<"">id}`));
+    return this.construct(await this.client.api.get(`/users/${<"">id}`));
   }
 }
