@@ -27,7 +27,7 @@ export default class User extends BaseObject<APIUser> {
   public get username() {
     return this.source.username;
   }
-  public get bot(): Bot | null {
+  public get bot() {
     return this.source.bot ? new Bot(this) : null;
   }
   public get online() {
@@ -43,7 +43,7 @@ export default class User extends BaseObject<APIUser> {
     return new UserFlags(this.source.flags || 0);
   }
 
-  public get avatar(): Attachment | null {
+  public get avatar() {
     return this.source.avatar ? new Attachment(this.client, this.source.avatar) : null;
   }
   get defaultAvatarURL() {

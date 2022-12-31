@@ -1,6 +1,9 @@
 import { APIServer } from "../api";
 import Client from "../Client";
 import RoleManager from "../managers/RoleManager";
+import { PermissionFlags } from "../utils/PermissionFlags";
+import { ServerFlags } from "../utils/ServerFlags";
+import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 
 export default class Server extends BaseObject<APIServer> {
@@ -19,6 +22,9 @@ export default class Server extends BaseObject<APIServer> {
   public get nsfw() {
     return !!this.source.nsfw;
   }
+  public get flags() {
+    return new ServerFlags(this.source.flags || 0);
+  }
 
   public get ownerID() {
     return this.source.owner;
@@ -28,5 +34,22 @@ export default class Server extends BaseObject<APIServer> {
   }
   public async fetchOwner(forceNew = false) {
     return await this.client.users.fetch(this.ownerID, forceNew);
+  }
+
+  public get defaultPermissions() {
+    return new PermissionFlags(this.source.default_permissions);
+  }
+
+  public get icon() {
+    return this.source.icon ? new Attachment(this, this.source.icon) : null;
+  }
+  public generateIconURL(...args: AttachmentArgs) {
+    return this.icon ? this.icon.generateURL(...args) : null;
+  }
+  public get banner() {
+    return this.source.banner ? new Attachment(this, this.source.banner) : null;
+  }
+  public generateBannerURL(...args: AttachmentArgs) {
+    return this.banner ? this.banner.generateURL(...args) : null;
   }
 }
