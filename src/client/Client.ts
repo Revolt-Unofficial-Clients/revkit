@@ -1,4 +1,5 @@
 import EventEmitter from "eventemitter3";
+import EmojiManager from "./managers/EmoijManager";
 
 export interface ClientOptions {
   apiURL: string;
@@ -17,8 +18,12 @@ const DefaultOptions: ClientOptions = {
 };
 
 export default class Client extends EventEmitter {
-  constructor(options: Partial<ClientOptions>) {
+  public emojis: EmojiManager;
+
+  constructor(options?: Partial<ClientOptions>) {
     super();
     options = { ...DefaultOptions, ...options };
+
+    this.emojis = new EmojiManager(this);
   }
 }

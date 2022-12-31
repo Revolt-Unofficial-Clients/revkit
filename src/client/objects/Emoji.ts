@@ -1,4 +1,4 @@
-import { Emoji as APIEmoji } from "revolt-api";
+import { APIEmoji } from "../api";
 import Client from "../Client";
 import BaseObject from "./BaseObject";
 
