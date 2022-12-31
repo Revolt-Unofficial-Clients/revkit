@@ -3,6 +3,7 @@ import Client from "../Client";
 import { U32_MAX, UserPermissions } from "../utils/Permissions";
 import { UserBadges } from "../utils/UserBadges";
 import { UserFlags } from "../utils/UserFlags";
+import { UserPermissionFlags } from "../utils/UserPermissionFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 
@@ -105,7 +106,7 @@ export default class User extends BaseObject<APIUser> {
     };
   }
 
-  public get permission() {
+  public get permissionsAgainst() {
     let permissions = 0;
     switch (this.relationship) {
       case "Friend":
@@ -134,6 +135,6 @@ export default class User extends BaseObject<APIUser> {
       permissions |= UserPermissions.Access | UserPermissions.ViewProfile;
     }
 
-    return permissions;
+    return new UserPermissionFlags(permissions);
   }
 }
