@@ -1,5 +1,6 @@
 import { APIUser, RelationshipStatus } from "../api";
 import Client from "../Client";
+import { U32_MAX, UserPermissions } from "../utils/Permissions";
 import { UserBadges } from "../utils/UserBadges";
 import { UserFlags } from "../utils/UserFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
@@ -102,5 +103,37 @@ export default class User extends BaseObject<APIUser> {
       friends: mutual.users,
       servers: mutual.servers,
     };
+  }
+
+  get permission() {
+    let permissions = 0;
+    switch (this.relationship) {
+      case "Friend":
+      case "User":
+        return U32_MAX;
+      case "Blocked":
+      case "BlockedOther":
+        return UserPermissions.Access;
+      case "Incoming":
+      case "Outgoing":
+        permissions = UserPermissions.Access;
+    }
+
+    if (
+      [...this.client.channels.values()].find(
+        (channel) =>
+          (channel.channel_type === "Group" || channel.channel_type === "DirectMessage") &&
+          channel.recipient_ids?.includes(this.client.user!._id)
+      ) ||
+      [...this.client.members.values()].find((member) => member._id.user === this.client.user!._id)
+    ) {
+      if (this.client.user?.bot || this.bot) {
+        permissions |= UserPermissions.SendMessage;
+      }
+
+      permissions |= UserPermissions.Access | UserPermissions.ViewProfile;
+    }
+
+    return permissions;
   }
 }
