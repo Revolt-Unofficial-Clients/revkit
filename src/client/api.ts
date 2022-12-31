@@ -1,4 +1,9 @@
-import { Emoji as APIEmoji, File as APIAttachment, User as APIUser } from "revolt-api";
+import {
+  Emoji as APIEmoji,
+  File as APIAttachment,
+  Server as APIServer,
+  User as APIUser,
+} from "revolt-api";
 
 export enum RelationshipStatus {
   Blocked = "Blocked",
@@ -11,4 +16,4 @@ export enum RelationshipStatus {
 }
 export const DEAD_ID = "00000000000000000000000000";
 
-export { APIAttachment, APIEmoji, APIUser };
+export { APIAttachment, APIEmoji, APIServer, APIUser };
