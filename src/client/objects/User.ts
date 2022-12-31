@@ -1,4 +1,4 @@
-import { APIUser } from "../api";
+import { APIUser, RelationshipStatus } from "../api";
 import Client from "../Client";
 import { UserBadges } from "../utils/UserBadges";
 import { UserFlags } from "../utils/UserFlags";
@@ -28,6 +28,9 @@ export default class User extends BaseObject<APIUser> {
   public get bot(): Bot | null {
     return this.source.bot ? new Bot(this) : null;
   }
+  public get online() {
+    return !!this.source.online;
+  }
   public get privileged() {
     return !!this.source.privileged;
   }
@@ -49,6 +52,9 @@ export default class User extends BaseObject<APIUser> {
     return this.avatar ? this.avatar.generateURL(...args) : null;
   }
 
+  public get relationship() {
+    return <RelationshipStatus>this.source.relationship;
+  }
   public get status() {
     return this.source.status?.text ?? null;
   }
@@ -98,7 +104,3 @@ export default class User extends BaseObject<APIUser> {
     };
   }
 }
-/*
-    relationship: Nullable<RelationshipStatus>;
-    online: boolean;
-*/
