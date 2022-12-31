@@ -3,22 +3,28 @@ import Client from "../Client";
 import BaseObject from "./BaseObject";
 
 export class Emoji extends BaseObject<APIEmoji> {
-  public name: string;
-  public animated: boolean;
-  public nsfw: boolean;
-  public creatorID: string;
-
   constructor(client: Client, data: APIEmoji) {
     super(client, data);
-    this.name = data.name;
-    this.animated = !!data.animated;
-    this.nsfw = !!data.nsfw;
-    this.creatorID = data.creator_id;
     //TODO: parent
   }
 
+  public get name() {
+    return this.source.name;
+  }
+  public get animated() {
+    return !!this.source.animated;
+  }
+  public get nsfw() {
+    return !!this.source.nsfw;
+  }
+  public get creatorID() {
+    return this.source.creator_id;
+  }
   public get creator() {
-    return this.client; //TODO:
+    return this.client.users.get(this.creatorID);
+  }
+  public async fetchCreator(fetchNew = false) {
+    return await this.client.users.fetch(this.creatorID, fetchNew);
   }
   /** The image URL for this emoji. */
   public get imageURL() {
