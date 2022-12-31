@@ -1,3 +1,4 @@
+//@ts-ignore
 import { Channel, Emoji, Member, Server } from "revolt.js";
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./emojis";
 

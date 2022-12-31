@@ -1,5 +1,6 @@
 import { APIUser } from "../api";
 import Client from "../Client";
+import { UserBadges } from "../utils/Flags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 
@@ -26,6 +27,12 @@ export default class User extends BaseObject<APIUser> {
   public get bot(): Bot | null {
     return this.source.bot ? new Bot(this) : null;
   }
+  public get privileged() {
+    return !!this.source.privileged;
+  }
+  public get badges() {
+    return new UserBadges(this.source.badges || 0);
+  }
 
   public get avatar(): Attachment | null {
     return this.source.avatar ? new Attachment(this.client, this.source.avatar) : null;
@@ -37,8 +44,15 @@ export default class User extends BaseObject<APIUser> {
     if (!args[2]) args[2] = this.defaultAvatarURL;
     return this.avatar ? this.avatar.generateURL(...args) : null;
   }
-  //TODO:open dm
 
+  public get status() {
+    return this.source.status?.text ?? null;
+  }
+  public get presence() {
+    return this.source.status?.presence ?? null;
+  }
+
+  //TODO:open dm
   /** Send this user a friend request. */
   public async addFriend() {
     return await this.client.api.post(`/users/friend`, {
@@ -81,10 +95,7 @@ export default class User extends BaseObject<APIUser> {
   }
 }
 /*
-    badges: Nullable<number>;
-    status: Nullable<UserStatus>;
     relationship: Nullable<RelationshipStatus>;
     online: boolean;
-    privileged: boolean;
     flags: Nullable<number>;
 */
