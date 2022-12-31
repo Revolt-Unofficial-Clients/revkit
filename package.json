@@ -24,8 +24,9 @@
   "homepage": "https://github.com/Revolt-Unofficial-Clients/revolt-toolset#readme",
   "dependencies": {
     "axios": "^1.1.2",
+    "eventemitter3": "^5.0.0",
     "form-data": "^4.0.0",
-    "revolt.js": "^6.0.18"
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^18.8.5",
