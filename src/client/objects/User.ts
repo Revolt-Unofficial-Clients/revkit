@@ -1,5 +1,6 @@
 import { APIUser } from "../api";
 import Client from "../Client";
+import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 
 class Bot {
@@ -25,12 +26,14 @@ export default class User extends BaseObject<APIUser> {
   public get bot(): Bot | null {
     return this.source.bot ? new Bot(this) : null;
   }
-  public get avatar() {
-    return this.source.avatar;
+  public get avatar(): Attachment | null {
+    return this.source.avatar ? new Attachment(this.client, this.source.avatar) : null;
+  }
+  public generateAvatarURL(...args: AttachmentArgs) {
+    return this.avatar ? this.avatar.generateURL(...args) : null;
   }
 }
 /*
-    avatar: Nullable<File>;
     badges: Nullable<number>;
     status: Nullable<UserStatus>;
     relationship: Nullable<RelationshipStatus>;

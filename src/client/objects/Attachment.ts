@@ -62,11 +62,10 @@ export default class Attachment extends BaseObject<APIAttachment> {
         return fallback;
     }
 
-    let query =
+    const query =
       options && (!allowAnimation || this.contentType !== "image/gif")
         ? "?" + new URLSearchParams(Object.entries(options).map((e) => e.map(String))).toString()
         : "";
-
     return `${autumn.url}/${this.bucket}/${this.id}${query}`;
   }
 }
