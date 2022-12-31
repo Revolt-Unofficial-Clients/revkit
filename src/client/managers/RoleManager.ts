@@ -8,6 +8,9 @@ export default class RoleManager extends BaseManager<Role> {
   constructor(private client: Client, private server: Server) {
     super();
   }
+  public get ordered() {
+    return this.items().sort((a, b) => a.rank - b.rank);
+  }
 
   public construct(data: APIRole) {
     const role = new Role(this.client, this.server, data);
