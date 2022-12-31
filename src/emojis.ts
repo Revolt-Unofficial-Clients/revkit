@@ -1,6 +1,36 @@
 // Shamelessly copied from https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts
 // Do not include customs. (depreciated)
 
+// Originally taken from Twemoji source code,
+// re-written by bree to be more readable.
+// ~~taken for this package~~
+// scripts/build.js#344
+// grabTheRightIcon(rawText);
+// minified/combined by Meow
+export function emojiToCodePoint(rune: string) {
+  rune = rune.indexOf(String.fromCharCode(0x200d)) < 0 ? rune.replace(/\uFE0F/g, "") : rune;
+  const pairs = [];
+  let low = 0;
+  let i = 0;
+  while (i < rune.length) {
+    const charCode = rune.charCodeAt(i++);
+    if (low) {
+      pairs.push(0x10000 + ((low - 0xd800) << 10) + (charCode - 0xdc00));
+      low = 0;
+    } else if (0xd800 <= charCode && charCode <= 0xdbff) {
+      low = charCode;
+    } else {
+      pairs.push(charCode);
+    }
+  }
+  return pairs.map((val) => val.toString(16)).join("-");
+}
+
+export function unicodeEmojiURL(emoji: string, pack: EmojiPacks = "mutant") {
+  const REVISION = 3; //TODO: dunno but its hardcoded
+  return `https://static.revolt.chat/emoji/${pack}/${emojiToCodePoint(emoji)}.svg?rev=${REVISION}`;
+}
+
 export type EmojiPacks = "mutant" | "twemoji" | "noto" | "openmoji";
 
 export const RevoltEmojiDictionary: Record<string, string> = {

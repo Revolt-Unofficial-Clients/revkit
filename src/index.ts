@@ -6,24 +6,25 @@ import {
   AutocompleteType,
   parseAutocomplete,
 } from "./autocomplete";
-import { EmojiPacks, RevoltEmojiDictionary } from "./emojis";
+import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./emojis";
 import { DEFAULT_THEME, ThemeSettings } from "./theme";
 import { msToString, stringToMS } from "./timeParser";
 import getMarkdownTimestamp, { MarkdownTimestampTypes } from "./timestamp";
 
 export {
-  uploadAttachment,
-  AutocompleteType,
   AutocompleteItems,
-  parseAutocomplete,
-  stringToMS,
-  msToString,
+  AutocompleteResult,
+  AutocompleteTabResult,
+  AutocompleteType,
   DEFAULT_THEME,
-  ThemeSettings,
+  EmojiPacks,
   getMarkdownTimestamp,
   MarkdownTimestampTypes,
+  msToString,
+  parseAutocomplete,
   RevoltEmojiDictionary,
-  AutocompleteTabResult,
-  AutocompleteResult,
-  EmojiPacks,
+  stringToMS,
+  ThemeSettings,
+  unicodeEmojiURL,
+  uploadAttachment,
 };
