@@ -32,6 +32,48 @@ export default class User extends BaseObject<APIUser> {
   public generateAvatarURL(...args: AttachmentArgs) {
     return this.avatar ? this.avatar.generateURL(...args) : null;
   }
+  //TODO:open dm
+
+  /** Send this user a friend request. */
+  public async addFriend() {
+    return await this.client.api.post(`/users/friend`, {
+      username: this.username,
+    });
+  }
+  /** Unfriend this user. */
+  public async removeFriend() {
+    return await this.client.api.delete(`/users/${this._id}/friend`);
+  }
+  /** Block this user. */
+  public async block() {
+    return await this.client.api.put(`/users/${this._id}/block`);
+  }
+  /** Unblock this user. */
+  public async unblock() {
+    return await this.client.api.delete(`/users/${this._id}/block`);
+  }
+
+  /** Fetch this user's profile information. */
+  public async fetchProfile() {
+    const profile = await this.client.api.get(`/users/${this._id}/profile`);
+    return {
+      banner: profile.background ? new Attachment(this.client, profile.background) : null,
+      bio: profile.content ?? null,
+      generateBannerURL(...args: AttachmentArgs) {
+        return profile.background
+          ? new Attachment(this.client, profile.background).generateURL(...args)
+          : null;
+      },
+    };
+  }
+  /** Fetch your mutual friends/servers with this user. */
+  public async fetchMutual() {
+    const mutual = await this.client.api.get(`/users/${this._id}/mutual`);
+    return {
+      friends: mutual.users,
+      servers: mutual.servers,
+    };
+  }
 }
 /*
     badges: Nullable<number>;

@@ -6,6 +6,9 @@ export default class BaseObject<APIType extends { _id: string }> {
   public get source() {
     return this.data;
   }
+  protected get _id() {
+    return <"">this.id;
+  }
   constructor(public client: Client, private data: APIType) {}
   public get id() {
     return this.source._id;

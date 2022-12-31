@@ -35,6 +35,6 @@ export class Emoji extends BaseObject<APIEmoji> {
 
   /** Delete this emoji. */
   public async delete() {
-    return !!(await this.client.api.delete(`/custom/emoji/${this.id}`));
+    return await this.client.api.delete(`/custom/emoji/${this._id}`);
   }
 }
