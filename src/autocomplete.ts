@@ -1,4 +1,5 @@
 import { Channel, Emoji, Member, Server } from "revolt.js";
+import { RevoltEmojiDictionary } from "./emojis";
 
 export enum AutocompleteType {
   CHANNEL,
@@ -16,16 +17,23 @@ export interface AutocompleteItem {
 }
 export interface AutocompleteResult {
   channels: Channel[];
-  emojis: Emoji[];
+  emojis: (DefaultEmoji | Emoji)[];
   users: Member[];
   size: number;
-  tab(item: Channel | Emoji | Member): AutocompleteTabResult;
+  tab(item: Channel | DefaultEmoji | Emoji | Member): AutocompleteTabResult;
 }
 export const AutocompleteItems: AutocompleteItem[] = [
   { type: AutocompleteType.CHANNEL, delimiter: "#", result: "<#%>" },
   { type: AutocompleteType.EMOJI, delimiter: ":", result: ":%:" },
   { type: AutocompleteType.USER, delimiter: "@", result: "<@%>" },
 ];
+
+export class DefaultEmoji {
+  public get _id() {
+    return this.name;
+  }
+  constructor(public name: string) {}
+}
 
 export function parseAutocomplete(
   server: Server,
@@ -47,7 +55,7 @@ export function parseAutocomplete(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
             i.result.replace("%", item._id)
           ) + " ";
-      } else if (item instanceof Emoji) {
+      } else if (item instanceof Emoji || item instanceof DefaultEmoji) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.EMOJI);
         newText =
           textBeforeCursor.replace(
@@ -94,9 +102,14 @@ export function parseAutocomplete(
         break;
       }
       case AutocompleteType.EMOJI: {
-        const items = [...server.client.emojis.values()].filter(
-          (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
-        );
+        const items = [
+          ...[...server.client.emojis.values()].filter(
+            (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
+          ),
+          ...Object.keys(RevoltEmojiDictionary)
+            .filter((k) => k.toLowerCase().includes(matchedText))
+            .map((k) => new DefaultEmoji(k)),
+        ];
         results.emojis.unshift(
           ...items.filter((i) => i.name.toLowerCase().startsWith(matchedText))
         );
