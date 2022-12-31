@@ -1,4 +1,4 @@
-import { DataEditServer } from "revolt-api";
+import { DataEditServer, Override } from "revolt-api";
 import { APIServer } from "../api";
 import Client from "../Client";
 import RoleManager from "../managers/RoleManager";
@@ -56,11 +56,11 @@ export default class Server extends BaseObject<APIServer> {
   }
 
   /** Edit this server. */
-  async edit(data: DataEditServer) {
+  public async edit(data: DataEditServer) {
     return await this.client.api.patch(`/servers/${this._id}`, data);
   }
   /** Leave (or delete if owner) this server. */
-  async leave(silent?: boolean) {
+  public async leave(silent?: boolean) {
     await this.client.api.delete(`/servers/${this._id}`, {
       leave_silently: silent,
     });
@@ -68,13 +68,13 @@ export default class Server extends BaseObject<APIServer> {
   }
 
   /** Fetch invites for this server. */
-  async fetchInvites() {
+  public async fetchInvites() {
     return (await this.client.api.get(`/servers/${this._id}/invites`)).map(
       (i) => new Invite(this.client, i)
     );
   }
   /** Fetch bans for this server. */
-  async fetchBans() {
+  public async fetchBans() {
     const bans = await this.client.api.get(`/servers/${this._id}/bans`);
     return bans.bans.map((b) => {
       const user = bans.users.find((u) => u._id == b._id.user);
@@ -84,6 +84,13 @@ export default class Server extends BaseObject<APIServer> {
         userAvatar: user?.avatar ? new Attachment(this.client, user.avatar) : null,
         reason: b.reason ?? null,
       };
+    });
+  }
+
+  /** Set permissions for a role id or 'default'. */
+  public async setRolePermissions(id: string, permissions: number | Override) {
+    return await this.client.api.put(`/servers/${this._id as ""}/permissions/${id as ""}`, {
+      permissions: permissions as Override,
     });
   }
 }
