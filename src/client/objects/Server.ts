@@ -1,3 +1,4 @@
+import { DataEditServer } from "revolt-api";
 import { APIServer } from "../api";
 import Client from "../Client";
 import RoleManager from "../managers/RoleManager";
@@ -51,5 +52,17 @@ export default class Server extends BaseObject<APIServer> {
   }
   public generateBannerURL(...args: AttachmentArgs) {
     return this.banner ? this.banner.generateURL(...args) : null;
+  }
+
+  /** Edit this server. */
+  async edit(data: DataEditServer) {
+    return await this.client.api.patch(`/servers/${this._id}`, data);
+  }
+  /** Leave (or delete if owner) this server. */
+  async leave(silent?: boolean) {
+    await this.client.api.delete(`/servers/${this._id}`, {
+      leave_silently: silent,
+    });
+    this.client.servers.delete(this.id);
   }
 }

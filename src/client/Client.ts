@@ -1,6 +1,7 @@
 import EventEmitter from "eventemitter3";
 import { API, RevoltConfig } from "revolt-api";
 import EmojiManager from "./managers/EmoijManager";
+import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
 
 export interface ClientOptions {
@@ -25,6 +26,7 @@ export default class Client extends EventEmitter {
   public config: RevoltConfig;
 
   public emojis: EmojiManager;
+  public servers: ServerManager;
   public users: UserManager;
 
   constructor(options?: Partial<ClientOptions>) {
@@ -32,6 +34,7 @@ export default class Client extends EventEmitter {
     this.options = { ...DefaultOptions, ...options };
 
     this.emojis = new EmojiManager(this);
+    this.servers = new ServerManager(this);
     this.users = new UserManager(this);
 
     this.api = new API({ baseURL: this.options.apiURL });
