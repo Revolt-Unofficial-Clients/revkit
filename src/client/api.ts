@@ -1,6 +1,7 @@
 import {
   Emoji as APIEmoji,
   File as APIAttachment,
+  Invite as APIInvite,
   Role,
   Server as APIServer,
   User as APIUser,
@@ -19,5 +20,5 @@ export enum RelationshipStatus {
 }
 export const DEAD_ID = "00000000000000000000000000";
 
-export type APIRole = Role & { _id: string };
-export { APIAttachment, APIEmoji, APIServer, APIUser };
+type APIRole = Role & { _id: string };
+export { APIAttachment, APIEmoji, APIInvite, APIRole, APIServer, APIUser };

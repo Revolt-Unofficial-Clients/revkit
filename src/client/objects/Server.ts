@@ -6,6 +6,7 @@ import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
+import Invite from "./Invite";
 
 export default class Server extends BaseObject<APIServer> {
   public roles: RoleManager;
@@ -42,13 +43,13 @@ export default class Server extends BaseObject<APIServer> {
   }
 
   public get icon() {
-    return this.source.icon ? new Attachment(this, this.source.icon) : null;
+    return this.source.icon ? new Attachment(this.client, this.source.icon) : null;
   }
   public generateIconURL(...args: AttachmentArgs) {
     return this.icon ? this.icon.generateURL(...args) : null;
   }
   public get banner() {
-    return this.source.banner ? new Attachment(this, this.source.banner) : null;
+    return this.source.banner ? new Attachment(this.client, this.source.banner) : null;
   }
   public generateBannerURL(...args: AttachmentArgs) {
     return this.banner ? this.banner.generateURL(...args) : null;
@@ -64,5 +65,12 @@ export default class Server extends BaseObject<APIServer> {
       leave_silently: silent,
     });
     this.client.servers.delete(this.id);
+  }
+
+  /** Fetch invites for this server. */
+  async fetchInvites() {
+    return (await this.client.api.get(`/servers/${this._id}/invites`)).map(
+      (i) => new Invite(this.client, i)
+    );
   }
 }
