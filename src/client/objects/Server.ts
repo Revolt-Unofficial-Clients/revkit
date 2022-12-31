@@ -14,6 +14,11 @@ export default class Server extends BaseObject<APIServer> {
     super(client, data);
     this.roles = new RoleManager(this.client, this);
   }
+  public update(data: APIServer) {
+    super.update(data);
+    this.roles.update();
+    return this;
+  }
 
   public get name() {
     return this.source.name;

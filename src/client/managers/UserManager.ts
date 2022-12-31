@@ -14,9 +14,8 @@ export default class UserManager extends BaseManager<User> {
 
   public construct(data: APIUser) {
     const has = this.get(data._id);
-    if (has) {
-      return has.update(data);
-    } else {
+    if (has) return has.update(data);
+    else {
       const user = new User(this.client, data);
       this.set(user.id, user);
       return user;

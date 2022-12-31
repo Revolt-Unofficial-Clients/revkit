@@ -9,8 +9,12 @@ export default class ServerManager extends BaseManager<Server> {
   }
 
   public construct(data: APIServer) {
-    const server = new Server(this.client, data);
-    this.set(server.id, server);
-    return server;
+    const has = this.get(data._id);
+    if (has) return has.update(data);
+    else {
+      const server = new Server(this.client, data);
+      this.set(server.id, server);
+      return server;
+    }
   }
 }

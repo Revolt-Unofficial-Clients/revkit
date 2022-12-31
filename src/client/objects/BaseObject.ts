@@ -19,6 +19,7 @@ export default class BaseObject<APIType extends { _id: string }> extends MiniEmi
   public get createdAt() {
     return decodeTime(this.id);
   }
+  public deleted = false;
   /** Update this object with new API data. */
   public update(data: APIType) {
     this.data = data;
