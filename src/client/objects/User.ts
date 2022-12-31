@@ -26,10 +26,15 @@ export default class User extends BaseObject<APIUser> {
   public get bot(): Bot | null {
     return this.source.bot ? new Bot(this) : null;
   }
+
   public get avatar(): Attachment | null {
     return this.source.avatar ? new Attachment(this.client, this.source.avatar) : null;
   }
+  get defaultAvatarURL() {
+    return `${this.client.options.apiURL}/users/${this.id}/default_avatar`;
+  }
   public generateAvatarURL(...args: AttachmentArgs) {
+    if (!args[2]) args[2] = this.defaultAvatarURL;
     return this.avatar ? this.avatar.generateURL(...args) : null;
   }
   //TODO:open dm
