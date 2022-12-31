@@ -1,7 +1,8 @@
 import { decodeTime } from "ulid";
 import Client from "../Client";
+import { MiniEmitter } from "../utils/MiniEmitter";
 
-export default class BaseObject<APIType extends { _id: string }> {
+export default class BaseObject<APIType extends { _id: string }> extends MiniEmitter {
   /** Original API object. */
   public get source() {
     return this.data;
@@ -9,7 +10,9 @@ export default class BaseObject<APIType extends { _id: string }> {
   protected get _id() {
     return <"">this.id;
   }
-  constructor(public client: Client, private data: APIType) {}
+  constructor(public client: Client, private data: APIType) {
+    super();
+  }
   public get id() {
     return this.source._id;
   }

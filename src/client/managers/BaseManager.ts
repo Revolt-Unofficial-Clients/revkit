@@ -1,4 +1,6 @@
-export default class BaseManager<T = any> extends Map<string, T> {
+import { MiniMapEmitter } from "../utils/MiniEmitter";
+
+export default class BaseManager<T = any> extends MiniMapEmitter<T> {
   constructor() {
     super();
   }
