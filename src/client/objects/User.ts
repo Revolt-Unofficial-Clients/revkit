@@ -109,14 +109,14 @@ export default class User extends BaseObject<APIUser> {
   public get permissionsAgainst() {
     let permissions = 0;
     switch (this.relationship) {
-      case "Friend":
-      case "User":
+      case RelationshipStatus.Friend:
+      case RelationshipStatus.Self:
         return U32_MAX;
-      case "Blocked":
-      case "BlockedOther":
+      case RelationshipStatus.Blocked:
+      case RelationshipStatus.SelfBlocked:
         return UserPermissions.Access;
-      case "Incoming":
-      case "Outgoing":
+      case RelationshipStatus.Incoming:
+      case RelationshipStatus.Outgoing:
         permissions = UserPermissions.Access;
     }
 

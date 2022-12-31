@@ -12,7 +12,9 @@ export enum RelationshipStatus {
   Incoming = "Incoming",
   None = "None",
   Outgoing = "Outgoing",
+  /** The client user is this user. */
   Self = "User",
+  /** The client user is blocked. */
   SelfBlocked = "BlockedOther",
 }
 export const DEAD_ID = "00000000000000000000000000";
