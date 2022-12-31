@@ -20,4 +20,15 @@ export class Emoji extends BaseObject<APIEmoji> {
   public get creator() {
     return this.client; //TODO:
   }
+  /** The image URL for this emoji. */
+  public get imageURL() {
+    return `${this.client.config?.features.autumn.url}/emojis/${this.id}${
+      this.animated ? "" : "?max_side=128"
+    }`;
+  }
+
+  /** Delete this emoji. */
+  public async delete() {
+    return !!(await this.client.api.delete(`/custom/emoji/${this.id}`));
+  }
 }
