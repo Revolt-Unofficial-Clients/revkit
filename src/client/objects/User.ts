@@ -57,9 +57,9 @@ export default class User extends BaseObject<APIUser> {
   public async fetchProfile() {
     const profile = await this.client.api.get(`/users/${this._id}/profile`);
     return {
-      banner: profile.background ? new Attachment(this.client, profile.background) : null,
+      background: profile.background ? new Attachment(this.client, profile.background) : null,
       bio: profile.content ?? null,
-      generateBannerURL(...args: AttachmentArgs) {
+      generateBackgroundURL(...args: AttachmentArgs) {
         return profile.background
           ? new Attachment(this.client, profile.background).generateURL(...args)
           : null;
