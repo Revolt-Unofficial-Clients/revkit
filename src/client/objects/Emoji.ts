@@ -5,7 +5,6 @@ import BaseObject from "./BaseObject";
 export class Emoji extends BaseObject<APIEmoji> {
   constructor(client: Client, data: APIEmoji) {
     super(client, data);
-    //TODO: parent
   }
 
   public get name() {
@@ -32,6 +31,15 @@ export class Emoji extends BaseObject<APIEmoji> {
       this.animated ? "" : "?max_side=128"
     }`;
   }
+
+  public get parent_id() {
+    return this.source.parent.type == "Server" ? this.source.parent.id : "";
+  }
+  public get parent() {
+    //TODO: fetch from server
+    return this.parent_id ? this.client : null;
+  }
+  //TODO: fetchParent
 
   /** Delete this emoji. */
   public async delete() {
