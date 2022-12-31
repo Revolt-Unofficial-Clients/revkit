@@ -8,6 +8,10 @@ export default class UserManager extends BaseManager<User> {
     super();
   }
 
+  public defaultAvatarURL(id: string) {
+    return `${this.client.options.apiURL}/users/${id}/default_avatar`;
+  }
+
   public construct(data: APIUser) {
     const has = this.get(data._id);
     if (has) {

@@ -73,4 +73,17 @@ export default class Server extends BaseObject<APIServer> {
       (i) => new Invite(this.client, i)
     );
   }
+  /** Fetch bans for this server. */
+  async fetchBans() {
+    const bans = await this.client.api.get(`/servers/${this._id}/bans`);
+    return bans.bans.map((b) => {
+      const user = bans.users.find((u) => u._id == b._id.user);
+      return {
+        userID: user?._id ?? null,
+        userUsername: user?.username ?? null,
+        userAvatar: user?.avatar ? new Attachment(this.client, user.avatar) : null,
+        reason: b.reason ?? null,
+      };
+    });
+  }
 }

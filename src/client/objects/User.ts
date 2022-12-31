@@ -47,7 +47,7 @@ export default class User extends BaseObject<APIUser> {
     return this.source.avatar ? new Attachment(this.client, this.source.avatar) : null;
   }
   get defaultAvatarURL() {
-    return `${this.client.options.apiURL}/users/${this.id}/default_avatar`;
+    return this.client.users.defaultAvatarURL(this.id);
   }
   public generateAvatarURL(...args: AttachmentArgs) {
     if (!args[2]) args[2] = this.defaultAvatarURL;
