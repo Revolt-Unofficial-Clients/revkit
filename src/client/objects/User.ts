@@ -105,7 +105,7 @@ export default class User extends BaseObject<APIUser> {
     };
   }
 
-  get permission() {
+  public get permission() {
     let permissions = 0;
     switch (this.relationship) {
       case "Friend":

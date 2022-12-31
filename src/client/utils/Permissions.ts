@@ -1,12 +1,12 @@
 /* Shamelessly copied from revolt.js */
 
 /** Permissions against users. */
-export const UserPermissions = {
-  Access: 1 << 0,
-  ViewProfile: 1 << 1,
-  SendMessage: 1 << 2,
-  Invite: 1 << 3,
-};
+export enum UserPermissions {
+  Access = 1 << 0,
+  ViewProfile = 1 << 1,
+  SendMessage = 1 << 2,
+  Invite = 1 << 3,
+}
 
 /** Permissions against servers/channels. */
 export const Permission = {
