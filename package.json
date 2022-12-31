@@ -7,8 +7,7 @@
   "types": "dist/es6/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -b tsconfig.json && tsc -b tsconfig.cjs.json",
-    "pub": "npm run build && npm publish",
-    "test": "npm run build && node test.mjs"
+    "pub": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
