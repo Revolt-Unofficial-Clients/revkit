@@ -1,6 +1,6 @@
 import { APIUser } from "../api";
 import Client from "../Client";
-import { UserBadges } from "../utils/Flags";
+import { UserBadges } from "../utils/UserBadges";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 

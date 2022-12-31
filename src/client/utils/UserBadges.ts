@@ -1,3 +1,5 @@
+import { BaseFlags } from "./Flags";
+
 export enum RevoltBadges {
   Developer = 1,
   Translator = 2,
@@ -16,4 +18,16 @@ export interface CustomBadge {
   ids: string[];
   name: string;
   image: string;
+}
+
+export class UserBadges extends BaseFlags {
+  constructor(bits: number) {
+    super(RevoltBadges, bits);
+  }
+  public has(flag: RevoltBadges) {
+    return super.has(flag);
+  }
+  public all(): RevoltBadges[] {
+    return super.all();
+  }
 }
