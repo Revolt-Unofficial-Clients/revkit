@@ -1,6 +1,7 @@
 import { APIUser } from "../api";
 import Client from "../Client";
 import { UserBadges } from "../utils/UserBadges";
+import { UserFlags } from "../utils/UserFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 
@@ -32,6 +33,9 @@ export default class User extends BaseObject<APIUser> {
   }
   public get badges() {
     return new UserBadges(this.source.badges || 0);
+  }
+  public get flags() {
+    return new UserFlags(this.source.flags || 0);
   }
 
   public get avatar(): Attachment | null {
@@ -97,5 +101,4 @@ export default class User extends BaseObject<APIUser> {
 /*
     relationship: Nullable<RelationshipStatus>;
     online: boolean;
-    flags: Nullable<number>;
 */
