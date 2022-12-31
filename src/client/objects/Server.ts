@@ -88,8 +88,13 @@ export default class Server extends BaseObject<APIServer> {
   }
 
   /** Set permissions for a role id or 'default'. */
-  public async setRolePermissions(id: string, permissions: number | Override) {
-    return await this.client.api.put(`/servers/${this._id as ""}/permissions/${id as ""}`, {
+  public async setRolePermissions(id: "default", permissions: number): Promise<void>;
+  public async setRolePermissions<T extends string>(
+    id: T extends "default" ? never : T,
+    permissions: Override
+  ): Promise<void>;
+  public async setRolePermissions(id: string, permissions: number | Override): Promise<void> {
+    await this.client.api.put(`/servers/${this._id as ""}/permissions/${id as ""}`, {
       permissions: permissions as Override,
     });
   }
