@@ -1,5 +1,5 @@
 import { Channel, Emoji, Member, Server } from "revolt.js";
-import { RevoltEmojiDictionary } from "./emojis";
+import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./emojis";
 
 export enum AutocompleteType {
   CHANNEL,
@@ -32,7 +32,19 @@ export class DefaultEmoji {
   public get _id() {
     return this.name;
   }
+  public get imageURL() {
+    return unicodeEmojiURL(RevoltEmojiDictionary[this.name], this.pack);
+  }
+  public parent = {
+    type: "Detached",
+    id: "",
+  };
+  public pack: EmojiPacks = "mutant";
   constructor(public name: string) {}
+  public setPack(pack: EmojiPacks) {
+    this.pack = pack;
+    return this;
+  }
 }
 
 export function parseAutocomplete(
