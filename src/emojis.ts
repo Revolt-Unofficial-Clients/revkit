@@ -1,6 +1,8 @@
 // Shamelessly copied from https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts
 // Do not include customs. (depreciated)
 
+export type EmojiPacks = "mutant" | "twemoji" | "noto" | "openmoji";
+
 export const RevoltEmojiDictionary: Record<string, string> = {
   100: "💯",
   1234: "🔢",

@@ -1,12 +1,12 @@
 import { uploadAttachment } from "./attachments";
 import {
   AutocompleteItems,
-  AutocompleteType,
-  AutocompleteTabResult,
   AutocompleteResult,
+  AutocompleteTabResult,
+  AutocompleteType,
   parseAutocomplete,
 } from "./autocomplete";
-import { RevoltEmojiDictionary } from "./emojiDictionary";
+import { EmojiPacks, RevoltEmojiDictionary } from "./emojis";
 import { DEFAULT_THEME, ThemeSettings } from "./theme";
 import { msToString, stringToMS } from "./timeParser";
 import getMarkdownTimestamp, { MarkdownTimestampTypes } from "./timestamp";
@@ -25,4 +25,5 @@ export {
   RevoltEmojiDictionary,
   AutocompleteTabResult,
   AutocompleteResult,
+  EmojiPacks,
 };
