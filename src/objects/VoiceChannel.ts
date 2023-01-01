@@ -5,8 +5,11 @@ import ServerChannel from "./ServerChannel";
 
 export default class VoiceChannel extends OmitClass(ServerChannel, [
   "fetchLastMessage",
+  "fetchMessage",
+  "messages",
   "lastMessage",
   "lastMessageID",
+  "send",
 ]) {
   public type: ChannelType.Voice = ChannelType.Voice;
 

@@ -2,6 +2,7 @@ import { DataEditChannel, DataMessageSend } from "revolt-api";
 import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import Client from "../Client";
+import MessageManager from "../managers/MessageManager";
 import { calculatePermissions } from "../utils/Permissions";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
@@ -25,9 +26,11 @@ export default class Channel extends BaseObject<APIChannel> {
   public get type() {
     return <ChannelType>this.source.channel_type;
   }
+  public messages: MessageManager;
 
   constructor(client: Client, data: APIChannel) {
     super(client, data);
+    if (this.isTextBased()) this.messages = new MessageManager(this.client, this);
   }
 
   public isText(): this is TextChannel {
@@ -93,22 +96,22 @@ export default class Channel extends BaseObject<APIChannel> {
     return this.source.last_message_id ?? null;
   }
   public get lastMessage() {
-    //TODO:
-    return;
+    return this.lastMessageID ? this.messages.get(this.lastMessageID) ?? null : null;
   }
   public async fetchLastMessage() {
-    //TODO:
+    return this.lastMessageID ? await this.fetchMessage(this.lastMessageID) : null;
   }
 
   public async send(data: string | DataMessageSend) {
-    const message = await this.client.api.post(`/channels/${this._id}/messages`, {
-      nonce: ulid(),
-      ...(typeof data === "string" ? { content: data } : data),
-    });
-
-    //TODO:
-    //@ts-ignore
-    return this.client.messages.createObj(message, true);
+    return this.messages.construct(
+      await this.client.api.post(`/channels/${this._id}/messages`, {
+        nonce: ulid(),
+        ...(typeof data === "string" ? { content: data } : data),
+      })
+    );
+  }
+  public async fetchMessage(id: string) {
+    return await this.messages.fetch(id);
   }
 
   async edit(data: DataEditChannel) {
