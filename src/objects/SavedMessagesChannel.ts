@@ -1,9 +1,8 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
-import { ChannelType } from "./Channel";
-import TextBasedChannel from "./TextBasedChannel";
+import Channel, { ChannelType } from "./Channel";
 
-export default class SavedMessagesChannel extends TextBasedChannel {
+export default class SavedMessagesChannel extends Channel {
   public get type(): ChannelType.SavedMessages {
     return ChannelType.SavedMessages;
   }
