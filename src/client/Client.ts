@@ -1,8 +1,11 @@
+import axios from "axios";
 import EventEmitter from "eventemitter3";
+import FormData from "form-data";
 import { API, RevoltConfig } from "revolt-api";
 import EmojiManager from "./managers/EmoijManager";
 import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
+import { AttachmentBucket } from "./objects/Attachment";
 
 export interface ClientOptions {
   apiURL: string;
@@ -42,5 +45,21 @@ export default class Client extends EventEmitter {
 
   public async fetchConfiguration(force = false) {
     if (!this.config || force) this.config = await this.api.get("/");
+  }
+
+  public async uploadAttachment(
+    filename: string,
+    data: Buffer | Blob,
+    type: AttachmentBucket = "attachments"
+  ): Promise<string> {
+    await this.fetchConfiguration();
+    if (!this.config.features.autumn.enabled) throw "Autumn is not enabled!";
+    const form = new FormData();
+    form.append("file", data, filename);
+    const res = await axios.post(`${this.config.features.autumn.url}/${type}`, form, {
+      headers: form.getHeaders?.() || {},
+      data: form,
+    });
+    return res.data?.id;
   }
 }
