@@ -16,4 +16,9 @@ export default class VoiceChannel extends OmitClass(ServerChannel, [
   constructor(client: Client, data: APIChannel) {
     super(client, data);
   }
+
+  /** Request a call join token. */
+  public async joinCall() {
+    return (await this.client.api.post(`/channels/${<"">this.id}/join_call`)).token;
+  }
 }

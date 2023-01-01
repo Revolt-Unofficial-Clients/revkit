@@ -8,6 +8,7 @@ import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 import DMChannel from "./DMChannel";
 import GroupDMChannel from "./GroupDMChannel";
+import Invite from "./Invite";
 import Member from "./Member";
 import SavedMessagesChannel from "./SavedMessagesChannel";
 import ServerChannel from "./ServerChannel";
@@ -88,6 +89,9 @@ export default class Channel extends BaseObject<APIChannel> {
 
   public permissionsFor(member: Member) {
     return calculatePermissions(this, member);
+  }
+  public async createInvite() {
+    return new Invite(this.client, await this.client.api.post(`/channels/${this._id}/invites`));
   }
 
   public get lastMessageID() {

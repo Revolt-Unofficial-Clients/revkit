@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { OptionsMessageSearch } from "revolt-api";
 import { APIRoutes } from "revolt-api/dist/routes";
 import { APIMember, APIMessage, APIUser, DEAD_ID } from "../api";
@@ -26,6 +27,7 @@ export default class MessageManager extends BaseManager<BaseMessage> {
       return message;
     }
   }
+
   public async fetch(id: string) {
     return this.construct(
       await this.client.api.get(`/channels/${<"">this.channel.id}/messages/${<"">id}`)
@@ -65,5 +67,19 @@ export default class MessageManager extends BaseManager<BaseMessage> {
     } else {
       return (<APIMessage[]>messages).map((m) => this.construct(m));
     }
+  }
+
+  /** Delete multiple messages at once. (max 100, no older than 7 days) */
+  public async bulkDelete(ids: string[] | Message[]) {
+    if (!ids.length) return;
+    if (ids[0] instanceof Message) {
+      ids = (<Message[]>ids).filter(
+        (m) => DateTime.fromMillis(m.createdAt).diffNow("days").days < 7
+      );
+    }
+    await this.client.api.delete(`/channels/${<"">this.channel.id}/messages/bulk`, {
+      data: { ids },
+    });
+    (<string[]>ids).forEach((i) => this.delete(i));
   }
 }
