@@ -9,6 +9,8 @@ import Role from "./Role";
 export default class Member extends BaseObject<APIMember> {
   constructor(client: Client, data: APIMember) {
     super(client, data);
+    this.scheduleTimeoutClear();
+    this.onUpdate(() => this.scheduleTimeoutClear());
   }
 
   public get joinedAt() {
@@ -72,5 +74,20 @@ export default class Member extends BaseObject<APIMember> {
   /** If you can ban this member. */
   public get bannable() {
     return this.server.me.permissions.has(Permissions.BanMembers) && this.inferior;
+  }
+
+  private timeoutClearer: NodeJS.Timeout;
+  private scheduleTimeoutClear() {
+    if (this.timeoutClearer) clearTimeout(this.timeoutClearer);
+    if (this.timeoutEnds) {
+      const offset = +this.timeoutEnds - +new Date();
+      if (offset > 0) {
+        this.timeoutClearer = setTimeout(() => {
+          this.update({ timeout: null });
+        }, offset);
+      } else {
+        this.update({ timeout: null });
+      }
+    }
   }
 }
