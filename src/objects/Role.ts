@@ -1,3 +1,4 @@
+import { DataEditRole } from "revolt-api";
 import { APIRole } from "../api";
 import Client from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
@@ -26,5 +27,15 @@ export default class Role extends BaseObject<APIRole> {
       allow: new PermissionFlags(this.source.permissions.a),
       deny: new PermissionFlags(this.source.permissions.d),
     };
+  }
+
+  public async edit(data: DataEditRole) {
+    return this.update(
+      await this.client.api.patch(`/servers/${<"">this.server.id}/roles/${this._id}`, data)
+    );
+  }
+  public async delete() {
+    await this.client.api.delete(`/servers/${this.server.id}/roles/${this._id}`);
+    this.server.roles.delete(this.id);
   }
 }

@@ -15,15 +15,14 @@ export default class MemberManager extends BaseManager<Member> {
   }
 
   /** Ban a member from the server. */
-  async ban(member: string | Member, data?: DataBanCreate) {
+  public async ban(member: string | Member, data?: DataBanCreate) {
     await this.client.api.put(
       `/servers/${this.server.id}/bans/${typeof member == "string" ? member : member.id}`,
       data
     );
   }
-
   /** Unban a user from the server. */
-  async unban(id: string) {
+  public async unban(id: string) {
     await this.client.api.delete(`/servers/${this.server.id as ""}/bans/${id}`);
   }
 
@@ -42,5 +41,12 @@ export default class MemberManager extends BaseManager<Member> {
     return this.construct(
       await this.client.api.get(`/servers/${<"">this.server.id}/members/${<"">id}`)
     );
+  }
+  public async fetchAll(excludeOffline = false) {
+    const data = await this.client.api.get(`/servers/${<"">this.server.id}/members`, {
+      exclude_offline: excludeOffline,
+    });
+    data.users.forEach((u) => this.client.users.construct(u));
+    return data.members.map((m) => this.server.members.construct(m));
   }
 }

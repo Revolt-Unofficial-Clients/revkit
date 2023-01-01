@@ -13,6 +13,19 @@ export default class RoleManager extends BaseManager<Role> {
     return this.items().sort((a, b) => a.rank - b.rank);
   }
 
+  public async create(name: string, rank?: number) {
+    const role = await this.client.api.post(
+      `/servers/${<"">this.server.id}/roles`,
+      typeof rank == "number"
+        ? {
+            name,
+            rank,
+          }
+        : { name }
+    );
+    return this.construct({ _id: role.id, ...role.role });
+  }
+
   public construct(data: APIRole) {
     const has = this.get(data._id);
     if (has) return has.update(data);
