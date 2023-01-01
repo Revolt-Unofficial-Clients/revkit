@@ -2,6 +2,7 @@ import { APIChannel } from "../api";
 import Client from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import Channel, { ChannelType } from "./Channel";
+import User from "./User";
 
 export default class GroupDMChannel extends Channel {
   public get type(): ChannelType.GroupDM {
@@ -33,6 +34,18 @@ export default class GroupDMChannel extends Channel {
   public async fetchRecipients() {
     return (await this.client.api.get(`/channels/${this._id}/members`)).map((u) =>
       this.client.users.construct(u)
+    );
+  }
+  /** Add a user to this group. */
+  async addMember(user: User | string) {
+    await this.client.api.put(
+      `/channels/${this._id}/recipients/${(typeof user == "string" ? user : user.id) as ""}`
+    );
+  }
+  /** Remove a user from this group. */
+  async removeMember(user: User | string) {
+    await this.client.api.delete(
+      `/channels/${this._id}/recipients/${(typeof user == "string" ? user : user.id) as ""}`
     );
   }
 
