@@ -1,4 +1,4 @@
-import { DataEditChannel, DataMessageSend } from "revolt-api";
+import { DataEditChannel, DataMessageSend, Override } from "revolt-api";
 import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import Client from "../Client";
@@ -87,6 +87,11 @@ export default class Channel extends BaseObject<APIChannel> {
     return this.icon ? this.icon.generateURL(...args) : null;
   }
 
+  public async setPermissions(role_id = "default", permissions: Override) {
+    return await this.client.api.put(`/channels/${this._id as ""}/permissions/${role_id as ""}`, {
+      permissions,
+    });
+  }
   public permissionsFor(member: Member) {
     return calculatePermissions(this, member);
   }

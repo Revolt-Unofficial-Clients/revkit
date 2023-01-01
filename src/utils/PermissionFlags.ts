@@ -8,6 +8,12 @@ export class PermissionFlags extends BaseFlags {
   public has(flag: Permissions) {
     return super.has(flag);
   }
+  public add(flag: Permissions) {
+    return super.add(flag);
+  }
+  public remove(flag: Permissions) {
+    return super.remove(flag);
+  }
   public all(): Permissions[] {
     return super.all();
   }
