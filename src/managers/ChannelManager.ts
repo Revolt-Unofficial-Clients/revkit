@@ -18,4 +18,8 @@ export default class ChannelManager extends BaseManager<Channel> {
       return channel;
     }
   }
+  public async fetch(id: string, data?: APIChannel) {
+    if (this.has(id)) return this.get(id).update(data);
+    return this.construct(data ?? (await this.client.api.get(`/channels/${<"">id}`)));
+  }
 }

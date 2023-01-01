@@ -1,4 +1,4 @@
-import { APIServer } from "../api";
+import { APIChannel, APIServer } from "../api";
 import Client from "../Client";
 import Server from "../objects/Server";
 import BaseManager from "./BaseManager";
@@ -17,5 +17,22 @@ export default class ServerManager extends BaseManager<Server> {
       server.onUpdate(() => this.fireUpdate());
       return server;
     }
+  }
+  public async fetch(id: string, data?: APIServer, channels?: APIChannel[]) {
+    if (this.has(id)) return this.get(id).update(data);
+
+    const res = data ?? (await this.client.api.get(`/servers/${<"">id}`));
+    if (channels) {
+      for (const channel of channels) {
+        await this.client.channels.fetch(channel._id, channel);
+      }
+    } else {
+      for (const channel of res.channels) {
+        try {
+          await this.client.channels.fetch(channel);
+        } catch {}
+      }
+    }
+    return this.construct(res);
   }
 }
