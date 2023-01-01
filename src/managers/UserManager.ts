@@ -21,6 +21,7 @@ export default class UserManager extends BaseManager<User> {
     else {
       const user = new User(this.client, data);
       this.set(user.id, user);
+      user.onUpdate(() => this.fireUpdate());
       return user;
     }
   }

@@ -101,6 +101,6 @@ export default class Channel extends BaseObject<APIChannel> {
       leave_silently: silent,
     });
     if (this.isDM()) this.update({ active: false });
-    this.client.channels.delete(this.id);
+    else if (this.isServerBased()) this.server.channels.delete(this.id);
   }
 }

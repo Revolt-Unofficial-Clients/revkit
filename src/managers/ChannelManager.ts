@@ -1,10 +1,11 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
 import Channel from "../objects/Channel";
+import Server from "../objects/Server";
 import BaseManager from "./BaseManager";
 
 export default class ChannelManager extends BaseManager<Channel> {
-  constructor(private client: Client) {
+  constructor(private client: Client, private server: Server) {
     super();
   }
 
@@ -14,6 +15,7 @@ export default class ChannelManager extends BaseManager<Channel> {
     else {
       const channel = new Channel(this.client, data);
       this.set(channel.id, channel);
+      channel.onUpdate(() => this.fireUpdate());
       return channel;
     }
   }

@@ -1,6 +1,7 @@
 import { DataEditServer, Override } from "revolt-api";
 import { APIServer } from "../api";
 import Client from "../Client";
+import ChannelManager from "../managers/ChannelManager";
 import RoleManager from "../managers/RoleManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
@@ -9,9 +10,11 @@ import BaseObject from "./BaseObject";
 import Invite from "./Invite";
 
 export default class Server extends BaseObject<APIServer> {
+  public channels: ChannelManager;
   public roles: RoleManager;
   constructor(client: Client, data: APIServer) {
     super(client, data);
+    this.channels = new ChannelManager(this.client, this);
     this.roles = new RoleManager(this.client, this);
   }
   public update(data: APIServer) {

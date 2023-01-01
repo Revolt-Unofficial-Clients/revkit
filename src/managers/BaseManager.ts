@@ -7,7 +7,7 @@ export default class BaseManager<T extends BaseObject<any>> extends MiniMapEmitt
   }
   public delete(key: string) {
     const has = this.get(key);
-    if (has) has.deleted = true;
+    if (has) has.update({ deleted: true });
     return super.delete(key);
   }
   public items() {
