@@ -47,6 +47,7 @@ export default class Client extends EventEmitter {
     if (!this.config || force) this.config = await this.api.get("/");
   }
 
+  /** Upload an attachment to Autumn. */
   public async uploadAttachment(
     filename: string,
     data: Buffer | Blob,

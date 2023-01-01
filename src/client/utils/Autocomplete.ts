@@ -1,6 +1,6 @@
-//@ts-ignore
-import { Channel, Emoji, Member, Server } from "revolt.js";
-import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./emojis";
+import Emoji from "../objects/Emoji";
+import Server from "../objects/Server";
+import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 
 export enum AutocompleteType {
   CHANNEL,

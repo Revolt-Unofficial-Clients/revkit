@@ -1,3 +1,4 @@
 - everything unread related (ack, unreads, mentions)
 - server member moderation
 - invite url generation
+- refactor autocomplete
