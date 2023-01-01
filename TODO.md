@@ -2,3 +2,5 @@
 - invite url generation
 - refactor autocomplete
 - channel typing users
+- finish members
+- finish channels
