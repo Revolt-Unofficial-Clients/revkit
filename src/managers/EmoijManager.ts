@@ -1,6 +1,6 @@
 import { APIEmoji } from "../api";
 import Client from "../Client";
-import { Emoji } from "../objects/Emoji";
+import Emoji from "../objects/Emoji";
 import BaseManager from "./BaseManager";
 
 export default class EmojiManager extends BaseManager<Emoji> {
