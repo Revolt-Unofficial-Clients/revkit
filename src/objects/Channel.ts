@@ -8,6 +8,7 @@ import DMChannel from "./DMChannel";
 import GroupDMChannel from "./GroupDMChannel";
 import Member from "./Member";
 import SavedMessagesChannel from "./SavedMessagesChannel";
+import ServerChannel from "./ServerChannel";
 import TextChannel from "./TextChannel";
 import VoiceChannel from "./VoiceChannel";
 
@@ -50,8 +51,8 @@ export default class Channel extends BaseObject<APIChannel> {
   public isDMBased(): this is DMChannel | GroupDMChannel {
     return this.isDM() || this.isGroupDM();
   }
-  public isServerBased(): this is TextChannel | VoiceChannel {
-    return this.isText() || this.isVoice();
+  public isServerBased(): this is ServerChannel {
+    return this instanceof ServerChannel;
   }
 
   public get name() {

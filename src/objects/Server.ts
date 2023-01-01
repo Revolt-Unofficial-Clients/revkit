@@ -8,9 +8,10 @@ import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
-import Channel from "./Channel";
+import Category from "./Category";
 import Invite from "./Invite";
 import Member from "./Member";
+import ServerChannel from "./ServerChannel";
 
 export default class Server extends BaseObject<APIServer> {
   public members: MemberManager;
@@ -27,9 +28,14 @@ export default class Server extends BaseObject<APIServer> {
   }
 
   public get channels() {
-    const man = new BaseManager<Channel>();
-    this.client.channels.filter((c) => c.isServerBased()).forEach((c) => man.set(c.id, c));
+    const man = new BaseManager<ServerChannel>();
+    this.client.channels.forEach((c) => c.isServerBased() && man.set(c.id, c));
     return man;
+  }
+  public get categories() {
+    return (
+      this.source.categories?.map((c) => new Category(this.client, { _id: c.id, ...c }, this)) || []
+    );
   }
 
   public get name() {

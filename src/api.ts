@@ -1,4 +1,5 @@
 import {
+  Category,
   Channel as APIChannel,
   Emoji as APIEmoji,
   File as APIAttachment,
@@ -23,9 +24,11 @@ export enum RelationshipStatus {
 }
 export const DEAD_ID = "00000000000000000000000000";
 
+type APICategory = Category & { _id: string };
 type APIRole = Role & { _id: string };
 export {
   APIAttachment,
+  APICategory,
   APIChannel,
   APIEmoji,
   APIInvite,
