@@ -1,9 +1,8 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
-import { ChannelType } from "./Channel";
-import TextBasedChannel from "./TextBasedChannel";
+import Channel, { ChannelType } from "./Channel";
 
-export default class GroupDMChannel extends TextBasedChannel {
+export default class GroupDMChannel extends Channel {
   public get type(): ChannelType.GroupDM {
     return ChannelType.GroupDM;
   }

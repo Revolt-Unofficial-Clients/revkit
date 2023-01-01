@@ -1,11 +1,14 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
-import Channel, { ChannelType } from "./Channel";
+import { ChannelType } from "./Channel";
+import ServerChannel from "./ServerChannel";
 
-export default class VoiceChannel extends Channel {
-  public get type(): ChannelType.Voice {
-    return ChannelType.Voice;
-  }
+export default class VoiceChannel extends OmitClass(ServerChannel, [
+  "fetchLastMessage",
+  "lastMessage",
+  "lastMessageID",
+]) {
+  public type: ChannelType.Voice = ChannelType.Voice;
 
   constructor(client: Client, data: APIChannel) {
     super(client, data);

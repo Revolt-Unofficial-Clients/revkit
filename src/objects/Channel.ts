@@ -49,4 +49,17 @@ export default class Channel extends BaseObject<APIChannel> {
   public isServerBased(): this is TextChannel | VoiceChannel {
     return this.isText() || this.isVoice();
   }
+
+  public get lastMessageID() {
+    if (this.source.channel_type == "SavedMessages" || this.source.channel_type == "VoiceChannel")
+      return null;
+    return this.source.last_message_id ?? null;
+  }
+  public get lastMessage() {
+    //TODO:
+    return;
+  }
+  public async fetchLastMessage() {
+    //TODO:
+  }
 }
