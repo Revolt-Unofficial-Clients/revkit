@@ -1,5 +1,6 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
+import { PermissionFlags } from "../utils/PermissionFlags";
 import Channel, { ChannelType } from "./Channel";
 
 export default class ServerChannel extends Channel {
@@ -21,5 +22,21 @@ export default class ServerChannel extends Channel {
   }
   public get server() {
     return this.client.servers.get(this.source.server);
+  }
+
+  public get defaultPermissions() {
+    return {
+      allow: new PermissionFlags(this.source.default_permissions?.a || 0),
+      deny: new PermissionFlags(this.source.default_permissions?.d || 0),
+    };
+  }
+  public get rolePermissions() {
+    return this.source.role_permissions
+      ? Object.entries(this.source.role_permissions).map(([id, perm]) => ({
+          id,
+          allow: new PermissionFlags(perm.a || 0),
+          deny: new PermissionFlags(perm.d || 0),
+        }))
+      : [];
   }
 }

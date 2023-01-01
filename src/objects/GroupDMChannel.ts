@@ -1,5 +1,6 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
+import { PermissionFlags } from "../utils/PermissionFlags";
 import Channel, { ChannelType } from "./Channel";
 
 export default class GroupDMChannel extends Channel {
@@ -22,5 +23,9 @@ export default class GroupDMChannel extends Channel {
   }
   public async fetchOwner(fetchNew = false) {
     return await this.client.users.fetch(this.ownerID, fetchNew);
+  }
+
+  public get permissions() {
+    return new PermissionFlags(this.source.permissions || 0);
   }
 }
