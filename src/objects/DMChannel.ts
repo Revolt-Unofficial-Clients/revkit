@@ -18,4 +18,14 @@ export default class DMChannel extends Channel {
   public get active() {
     return this.source.active;
   }
+
+  public get recipientID() {
+    return this.source.recipients.find((r) => r != this.client.user.id);
+  }
+  public get recipient() {
+    return this.recipientID ? this.client.users.get(this.recipientID) : null;
+  }
+  public async fetchRecipient() {
+    return this.recipientID ? await this.client.users.fetch(this.recipientID) : null;
+  }
 }

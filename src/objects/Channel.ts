@@ -1,5 +1,6 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
+import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 import DMChannel from "./DMChannel";
 import GroupDMChannel from "./GroupDMChannel";
@@ -48,6 +49,27 @@ export default class Channel extends BaseObject<APIChannel> {
   }
   public isServerBased(): this is TextChannel | VoiceChannel {
     return this.isText() || this.isVoice();
+  }
+
+  public get name() {
+    if (this.source.channel_type == "SavedMessages") return "Saved Messages";
+    if (this.source.channel_type == "DirectMessage")
+      return this.isDM() ? this.recipient.username : "";
+    return this.source.name;
+  }
+  public get description() {
+    if (this.source.channel_type == "SavedMessages" || this.source.channel_type == "DirectMessage")
+      return null;
+    return this.source.description ?? null;
+  }
+  public get icon() {
+    if (this.source.channel_type == "SavedMessages") return null;
+    if (this.source.channel_type == "DirectMessage")
+      return this.isDM() ? this.recipient.avatar : null;
+    return this.source.icon ? new Attachment(this.client, this.source.icon) : null;
+  }
+  public generateIconURL(...args: AttachmentArgs) {
+    return this.icon ? this.icon.generateURL(...args) : null;
   }
 
   public get lastMessageID() {

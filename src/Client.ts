@@ -32,6 +32,10 @@ export default class Client extends EventEmitter {
   public servers: ServerManager;
   public users: UserManager;
 
+  public get user() {
+    return this.users.self;
+  }
+
   constructor(options?: Partial<ClientOptions>) {
     super();
     this.options = { ...DefaultOptions, ...options };

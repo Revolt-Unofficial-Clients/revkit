@@ -1,4 +1,4 @@
-import { APIUser } from "../api";
+import { APIUser, RelationshipStatus } from "../api";
 import Client from "../Client";
 import User from "../objects/User";
 import BaseManager from "./BaseManager";
@@ -8,6 +8,9 @@ export default class UserManager extends BaseManager<User> {
     super();
   }
 
+  public get self() {
+    return this.items().find((i) => i.relationship == RelationshipStatus.Self);
+  }
   public defaultAvatarURL(id: string) {
     return `${this.client.options.apiURL}/users/${id}/default_avatar`;
   }
