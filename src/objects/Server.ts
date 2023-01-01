@@ -2,6 +2,7 @@ import { DataEditServer, Override } from "revolt-api";
 import { APIServer } from "../api";
 import Client from "../Client";
 import ChannelManager from "../managers/ChannelManager";
+import MemberManager from "../managers/MemberManager";
 import RoleManager from "../managers/RoleManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
@@ -11,10 +12,12 @@ import Invite from "./Invite";
 
 export default class Server extends BaseObject<APIServer> {
   public channels: ChannelManager;
+  public members: MemberManager;
   public roles: RoleManager;
   constructor(client: Client, data: APIServer) {
     super(client, data);
     this.channels = new ChannelManager(this.client, this);
+    this.members = new MemberManager(this.client, this);
     this.roles = new RoleManager(this.client, this);
   }
   public update(data: APIServer) {
@@ -44,6 +47,12 @@ export default class Server extends BaseObject<APIServer> {
   }
   public async fetchOwner(forceNew = false) {
     return await this.client.users.fetch(this.ownerID, forceNew);
+  }
+  public get me() {
+    return this.members.get(this.client.users.self.id) ?? null;
+  }
+  public async fetchMe() {
+    return await this.members.fetch(this.client.users.self.id);
   }
 
   public get defaultPermissions() {
