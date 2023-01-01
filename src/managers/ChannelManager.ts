@@ -1,11 +1,10 @@
 import { APIChannel } from "../api";
 import Client from "../Client";
 import Channel from "../objects/Channel";
-import Server from "../objects/Server";
 import BaseManager from "./BaseManager";
 
 export default class ChannelManager extends BaseManager<Channel> {
-  constructor(private client: Client, private server: Server) {
+  constructor(private client: Client) {
     super();
   }
 

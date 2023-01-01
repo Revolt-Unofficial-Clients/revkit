@@ -1,23 +1,22 @@
 import { DataEditServer, Override } from "revolt-api";
 import { APIServer } from "../api";
 import Client from "../Client";
-import ChannelManager from "../managers/ChannelManager";
+import BaseManager from "../managers/BaseManager";
 import MemberManager from "../managers/MemberManager";
 import RoleManager from "../managers/RoleManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
+import Channel from "./Channel";
 import Invite from "./Invite";
 import Member from "./Member";
 
 export default class Server extends BaseObject<APIServer> {
-  public channels: ChannelManager;
   public members: MemberManager;
   public roles: RoleManager;
   constructor(client: Client, data: APIServer) {
     super(client, data);
-    this.channels = new ChannelManager(this.client, this);
     this.members = new MemberManager(this.client, this);
     this.roles = new RoleManager(this.client, this);
   }
@@ -25,6 +24,12 @@ export default class Server extends BaseObject<APIServer> {
     super.update(data);
     this.roles.update();
     return this;
+  }
+
+  public get channels() {
+    const man = new BaseManager<Channel>();
+    this.client.channels.filter((c) => c.isServerBased()).forEach((c) => man.set(c.id, c));
+    return man;
   }
 
   public get name() {
