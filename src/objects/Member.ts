@@ -29,6 +29,15 @@ export default class Member extends BaseObject<APIMember> {
           .sort((a, b) => b.rank - a.rank)
       : [];
   }
+  /** This member's hoisted role. (if any) */
+  public get hoistedRole() {
+    return this.roles.filter((r) => r.hoist).slice(-1)[0] ?? null;
+  }
+  /** This member's role defining its color. (if any) */
+  public get colorRole() {
+    return this.roles.filter((r) => r.color).slice(-1)[0] ?? null;
+  }
+  /** The Date this member's timeout ends. */
   public get timeoutEnds() {
     return this.source.timeout ? new Date(this.source.timeout) : null;
   }
@@ -75,6 +84,10 @@ export default class Member extends BaseObject<APIMember> {
   /** If you can ban this member. */
   public get bannable() {
     return this.server.me.permissions.has(Permissions.BanMembers) && this.inferior;
+  }
+  /** If the target's rank is higher than this member. */
+  public inferiorTo(target: Member) {
+    return target.ranking < this.ranking;
   }
 
   /** Edit this member. */
