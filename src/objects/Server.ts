@@ -9,6 +9,7 @@ import { ServerFlags } from "../utils/ServerFlags";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 import Invite from "./Invite";
+import Member from "./Member";
 
 export default class Server extends BaseObject<APIServer> {
   public channels: ChannelManager;
@@ -48,7 +49,7 @@ export default class Server extends BaseObject<APIServer> {
   public async fetchOwner(forceNew = false) {
     return await this.client.users.fetch(this.ownerID, forceNew);
   }
-  public get me() {
+  public get me(): Member | null {
     return this.members.get(this.client.users.self.id) ?? null;
   }
   public async fetchMe() {

@@ -1,10 +1,12 @@
 import { DataEditChannel } from "revolt-api";
 import { APIChannel } from "../api";
 import Client from "../Client";
+import { calculatePermissions } from "../utils/Permissions";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
 import DMChannel from "./DMChannel";
 import GroupDMChannel from "./GroupDMChannel";
+import Member from "./Member";
 import SavedMessagesChannel from "./SavedMessagesChannel";
 import TextChannel from "./TextChannel";
 import VoiceChannel from "./VoiceChannel";
@@ -77,6 +79,10 @@ export default class Channel extends BaseObject<APIChannel> {
   }
   public generateIconURL(...args: AttachmentArgs) {
     return this.icon ? this.icon.generateURL(...args) : null;
+  }
+
+  public permissionsFor(member: Member) {
+    return calculatePermissions(this, member);
   }
 
   public get lastMessageID() {

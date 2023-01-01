@@ -1,5 +1,11 @@
 /* Shamelessly copied from revolt.js */
 
+import Long from "long";
+import Channel from "../objects/Channel";
+import Member from "../objects/Member";
+import Role from "../objects/Role";
+import Server from "../objects/Server";
+
 /** Permissions against users. */
 export enum UserPermissions {
   Access = 1 << 0,
@@ -133,3 +139,80 @@ export const DEFAULT_PERMISSION_DIRECT_MESSAGE =
  */
 export const DEFAULT_PERMISSION_SERVER =
   DEFAULT_PERMISSION + Permissions.React + Permissions.ChangeNickname + Permissions.ChangeAvatar;
+
+interface SmallMember {
+  roles: Role[] | null;
+  timeoutEnds: Date | null;
+}
+/** Calculate permissions against an object. (optionally as a different member) */
+export function calculatePermissions(target: Channel | Server, as?: Member): number {
+  const user = as ? as.user : target.client.user;
+  if (user?.privileged) return Permissions.GrantAllSafe;
+
+  if (target instanceof Server) {
+    if (target.ownerID == user?.id) return Permissions.GrantAllSafe;
+    else {
+      const member: SmallMember = as ??
+        target.members.get(user.id) ?? { roles: null, timeoutEnds: null };
+      if (!member) return 0;
+
+      let perm = Long.fromNumber(target.defaultPermissions.bits);
+      if (member.roles && target.roles) {
+        const permissions = member.roles.map((r) => r.permissions);
+        for (const permission of permissions) {
+          perm = perm.or(permission.allow.bits).and(Long.fromNumber(permission.deny.bits).not());
+        }
+      }
+      if (member.timeoutEnds && member.timeoutEnds > new Date()) perm = perm.and(ALLOW_IN_TIMEOUT);
+
+      return perm.toNumber();
+    }
+  } else {
+    if (target.isSavedMessages()) return Permissions.GrantAllSafe;
+    else if (target.isDM()) {
+      if (target.recipient.permissionsAgainst.has(UserPermissions.SendMessage)) {
+        return DEFAULT_PERMISSION_DIRECT_MESSAGE;
+      } else {
+        return DEFAULT_PERMISSION_VIEW_ONLY;
+      }
+    } else if (target.isGroupDM()) {
+      if (target.ownerID == user?.id) {
+        return DEFAULT_PERMISSION_DIRECT_MESSAGE;
+      } else {
+        return target.permissions.bits ?? DEFAULT_PERMISSION_DIRECT_MESSAGE;
+      }
+    } else if (target.isServerBased()) {
+      const server = target.server;
+      if (!server) return 0;
+
+      if (server.ownerID == user?.id) {
+        return Permissions.GrantAllSafe;
+      } else {
+        const member: SmallMember = as ??
+          server.members.get(user.id) ?? { roles: null, timeoutEnds: null };
+        if (!member) return 0;
+
+        let perm = Long.fromNumber(calculatePermissions(server, as));
+
+        if (target.defaultPermissions) {
+          perm = perm
+            .or(target.defaultPermissions.allow.bits)
+            .and(Long.fromNumber(target.defaultPermissions.deny.bits).not());
+        }
+
+        if (member.roles && target.rolePermissions && server.roles) {
+          for (const id of member.roles.map((r) => r.id)) {
+            const override = target.rolePermissions.find((rp) => rp.id == id);
+            if (override)
+              perm = perm.or(override.allow.bits).and(Long.fromNumber(override.deny.bits).not());
+          }
+        }
+
+        if (member.timeoutEnds && member.timeoutEnds > new Date())
+          perm = perm.and(ALLOW_IN_TIMEOUT);
+
+        return perm.toNumber();
+      }
+    }
+  }
+}

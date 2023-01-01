@@ -1,7 +1,10 @@
 import { APIMember } from "../api";
 import Client from "../Client";
+import { PermissionFlags } from "../utils/PermissionFlags";
+import { calculatePermissions, Permissions } from "../utils/Permissions";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
+import Role from "./Role";
 
 export default class Member extends BaseObject<APIMember> {
   constructor(client: Client, data: APIMember) {
@@ -15,7 +18,7 @@ export default class Member extends BaseObject<APIMember> {
     return this.source.nickname ?? null;
   }
   /** This member's roles. Automatically sorted. */
-  public get roles() {
+  public get roles(): Role[] {
     return this.source.roles
       ? this.source.roles
           .map((r) => this.server.roles.get(r))
@@ -47,6 +50,10 @@ export default class Member extends BaseObject<APIMember> {
     return this.avatar ? this.avatar.generateURL(...args) : null;
   }
 
+  /** This member's permissions. */
+  public get permissions() {
+    return new PermissionFlags(calculatePermissions(this.server, this));
+  }
   /** Get member rank. Smaller = Higher Rank */
   public get ranking() {
     if (this.id === this.server.ownerID) return -Infinity;
@@ -57,5 +64,13 @@ export default class Member extends BaseObject<APIMember> {
   /** Whether you have a higher rank than this member. */
   public get inferior() {
     return (this.server.me?.ranking ?? Infinity) < this.ranking;
+  }
+  /** If you can kick this member. */
+  public get kickable() {
+    return this.server.me.permissions.has(Permissions.KickMembers) && this.inferior;
+  }
+  /** If you can ban this member. */
+  public get bannable() {
+    return this.server.me.permissions.has(Permissions.BanMembers) && this.inferior;
   }
 }

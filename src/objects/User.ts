@@ -113,24 +113,24 @@ export default class User extends BaseObject<APIUser> {
     switch (this.relationship) {
       case RelationshipStatus.Friend:
       case RelationshipStatus.Self:
-        return U32_MAX;
+        return new UserPermissionFlags(U32_MAX);
       case RelationshipStatus.Blocked:
       case RelationshipStatus.SelfBlocked:
-        return UserPermissions.Access;
+        return new UserPermissionFlags(UserPermissions.Access);
       case RelationshipStatus.Incoming:
       case RelationshipStatus.Outgoing:
         permissions = UserPermissions.Access;
     }
 
     if (
-      [...this.client.channels.values()].find(
+      this.client.channels.find(
         (channel) =>
-          (channel.channel_type === "Group" || channel.channel_type === "DirectMessage") &&
-          channel.recipient_ids?.includes(this.client.user!._id)
+          (channel.isDM() && channel.recipientID == this.id) ||
+          (channel.isGroupDM() && channel.recipientIDs.includes(this.id))
       ) ||
-      [...this.client.members.values()].find((member) => member._id.user === this.client.user!._id)
+      this.client.servers.find((s) => s.members.find((m) => m.id == this.client.user.id))
     ) {
-      if (this.client.user?.bot || this.bot) {
+      if (this.client.user.bot || this.bot) {
         permissions |= UserPermissions.SendMessage;
       }
 
