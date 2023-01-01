@@ -1,11 +1,13 @@
 import { APIRoutes } from "revolt-api/dist/routes";
-import { APIMember, APIMessage, APIUser } from "../api";
+import { APIMember, APIMessage, APIUser, DEAD_ID } from "../api";
 import Client from "../Client";
+import BaseMessage from "../objects/BaseMessage";
 import Channel from "../objects/Channel";
 import Message from "../objects/Message";
+import SystemMessage from "../objects/SystemMessage";
 import BaseManager from "./BaseManager";
 
-export default class MessageManager extends BaseManager<Message> {
+export default class MessageManager extends BaseManager<BaseMessage> {
   constructor(private client: Client, public channel: Channel) {
     super();
   }
@@ -14,7 +16,10 @@ export default class MessageManager extends BaseManager<Message> {
     const has = this.get(data._id);
     if (has) return has.update(data);
     else {
-      const message = new Message(this.client, data);
+      const message = new (data._id == DEAD_ID || data.system ? SystemMessage : Message)(
+        this.client,
+        data
+      );
       this.set(message.id, message);
       message.onUpdate(() => this.fireUpdate());
       return message;
