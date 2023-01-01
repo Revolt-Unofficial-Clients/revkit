@@ -1,9 +1,9 @@
 import { APIMessage } from "../api";
 import Client from "../Client";
 import Attachment from "./Attachment";
-import BaseObject from "./BaseObject";
+import BaseMessage from "./BaseMessage";
 
-export default class Message extends BaseObject<APIMessage> {
+export default class Message extends BaseMessage {
   constructor(client: Client, data: APIMessage) {
     super(client, data);
   }
@@ -26,12 +26,6 @@ export default class Message extends BaseObject<APIMessage> {
     return this.source.masquerade ?? null;
   }
 
-  public get channelID() {
-    return this.source.channel;
-  }
-  public get channel() {
-    return this.client.channels.get(this.channelID);
-  }
   public get authorID() {
     return this.source.author;
   }
@@ -42,8 +36,11 @@ export default class Message extends BaseObject<APIMessage> {
     return await this.client.users.fetch(this.authorID, fetchNew);
   }
   public get member() {
-    //TODO: and fetchmember
-    //@ts-ignore
-    return this.channel.isServerBased() ? this.channel.server.members : null;
+    return this.channel.isServerBased()
+      ? this.channel.server.members.get(this.authorID) ?? null
+      : null;
+  }
+  public async fetchMember() {
+    return this.channel.isServerBased() ? this.channel.server.members.fetch(this.authorID) : null;
   }
 }
