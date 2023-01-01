@@ -1,3 +1,4 @@
+import { OptionsMessageSearch } from "revolt-api";
 import { APIRoutes } from "revolt-api/dist/routes";
 import { APIMember, APIMessage, APIUser, DEAD_ID } from "../api";
 import Client from "../Client";
@@ -37,6 +38,21 @@ export default class MessageManager extends BaseManager<BaseMessage> {
     })["params"]
   ) {
     const messages = await this.client.api.get(`/channels/${<"">this.channel.id}/messages`, {
+      ...params,
+    });
+    if (params?.include_users) {
+      const items = <{ messages: APIMessage[]; users: APIUser[]; members?: APIMember[] }>messages;
+      items.users.forEach((u) => this.client.users.construct(u));
+      const channel = this.channel;
+      if (channel.isServerBased() && items.members)
+        items.members.forEach((m) => channel.server.members.construct(m));
+      return items.messages.map((m) => this.construct(m));
+    } else {
+      return (<APIMessage[]>messages).map((m) => this.construct(m));
+    }
+  }
+  public async search(params: OptionsMessageSearch) {
+    const messages = await this.client.api.post(`/channels/${<"">this.channel.id}/search`, {
       ...params,
     });
     if (params?.include_users) {
