@@ -2,3 +2,4 @@
 - server member moderation
 - invite url generation
 - refactor autocomplete
+- channel typing users

@@ -2,6 +2,7 @@ import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
 import { API, RevoltConfig } from "revolt-api";
+import ChannelManager from "./managers/ChannelManager";
 import EmojiManager from "./managers/EmoijManager";
 import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
@@ -28,6 +29,7 @@ export default class Client extends EventEmitter {
   public options: ClientOptions;
   public config: RevoltConfig;
 
+  public channels: ChannelManager;
   public emojis: EmojiManager;
   public servers: ServerManager;
   public users: UserManager;
@@ -40,6 +42,7 @@ export default class Client extends EventEmitter {
     super();
     this.options = { ...DefaultOptions, ...options };
 
+    this.channels = new ChannelManager(this);
     this.emojis = new EmojiManager(this);
     this.servers = new ServerManager(this);
     this.users = new UserManager(this);

@@ -1,3 +1,4 @@
+import { DataEditChannel } from "revolt-api";
 import { APIChannel } from "../api";
 import Client from "../Client";
 import Attachment, { AttachmentArgs } from "./Attachment";
@@ -62,6 +63,12 @@ export default class Channel extends BaseObject<APIChannel> {
       return null;
     return this.source.description ?? null;
   }
+  public get nsfw() {
+    if (this.source.channel_type == "DirectMessage" || this.source.channel_type == "SavedMessages")
+      return false;
+    return !!this.source.nsfw;
+  }
+
   public get icon() {
     if (this.source.channel_type == "SavedMessages") return null;
     if (this.source.channel_type == "DirectMessage")
@@ -83,5 +90,17 @@ export default class Channel extends BaseObject<APIChannel> {
   }
   public async fetchLastMessage() {
     //TODO:
+  }
+
+  async edit(data: DataEditChannel) {
+    this.update(await this.client.api.patch(`/channels/${this._id}`, data));
+  }
+  /** Delete or leave this channel. */
+  async delete(silent?: boolean) {
+    await this.client.api.delete(`/channels/${this._id}`, {
+      leave_silently: silent,
+    });
+    if (this.isDM()) this.update({ active: false });
+    this.client.channels.delete(this.id);
   }
 }
