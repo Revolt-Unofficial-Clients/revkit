@@ -37,6 +37,60 @@ export default class Server extends BaseObject<APIServer> {
       this.source.categories?.map((c) => new Category(this.client, { _id: c.id, ...c }, this)) || []
     );
   }
+  // Shamelessly copied (and modified) from revolt.js
+  /**
+   * Get an array of ordered categories with their respective channels.
+   * Uncategorized channels are returned in the `id="default"` category.
+   */
+  public get orderedChannels() {
+    const uncategorized = new Set(this.channels.items().map((i) => i.id));
+    const cats: Category[] = [];
+    let defaultCategory: Category;
+
+    if (this.categories) {
+      for (const category of this.categories) {
+        const channels = [];
+        for (const key of category.channelIDs) {
+          if (uncategorized.delete(key)) {
+            channels.push(this.channels.get(key)!);
+          }
+        }
+
+        const cat = new Category(
+          this.client,
+          {
+            _id: category.id,
+            title: category.name,
+            channels,
+          },
+          this
+        );
+        if (cat.id === "default") {
+          if (channels.length == 0) continue;
+          defaultCategory = cat;
+        }
+        cats.push(cat);
+      }
+    }
+    if (uncategorized.size > 0) {
+      if (defaultCategory) {
+        defaultCategory.update({ channels: [...defaultCategory.channelIDs, ...uncategorized] });
+      } else {
+        cats.unshift(
+          new Category(
+            this.client,
+            {
+              _id: "default",
+              title: "Default",
+              channels: [...uncategorized],
+            },
+            this
+          )
+        );
+      }
+    }
+    return cats;
+  }
 
   public get name() {
     return this.source.name;

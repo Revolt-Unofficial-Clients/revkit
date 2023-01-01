@@ -7,6 +7,10 @@ export default class Category extends BaseObject<APICategory> {
   constructor(client: Client, data: APICategory, public server: Server) {
     super(client, data);
   }
+  public get createdAt() {
+    if (this.id == "default") return 0;
+    else return super.createdAt;
+  }
   public get name() {
     return this.source.title;
   }
