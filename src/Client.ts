@@ -73,6 +73,6 @@ export default class Client extends EventEmitter {
   /** Create a new server. */
   public async createServer(data: DataCreateServer) {
     const { server, channels } = await this.api.post(`/servers/create`, data);
-    return await this.fetch(server._id, server, channels);
+    return await this.servers.fetch(server._id, server, channels);
   }
 }
