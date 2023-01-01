@@ -1,7 +1,7 @@
 import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
-import { API, DataCreateServer, RevoltConfig } from "revolt-api";
+import { API, DataCreateGroup, DataCreateServer, RevoltConfig } from "revolt-api";
 import ChannelManager from "./managers/ChannelManager";
 import EmojiManager from "./managers/EmoijManager";
 import ServerManager from "./managers/ServerManager";
@@ -74,5 +74,10 @@ export default class Client extends EventEmitter {
   public async createServer(data: DataCreateServer) {
     const { server, channels } = await this.api.post(`/servers/create`, data);
     return await this.servers.fetch(server._id, server, channels);
+  }
+  /** Create a new group. */
+  async createGroup(data: DataCreateGroup) {
+    const group = await this.api.post(`/channels/create`, data);
+    return await this.channels.fetch(group._id, group);
   }
 }
