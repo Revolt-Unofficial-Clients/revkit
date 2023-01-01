@@ -1,4 +1,5 @@
-import { DataEditChannel } from "revolt-api";
+import { DataEditChannel, DataMessageSend } from "revolt-api";
+import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import Client from "../Client";
 import { calculatePermissions } from "../utils/Permissions";
@@ -97,6 +98,17 @@ export default class Channel extends BaseObject<APIChannel> {
   }
   public async fetchLastMessage() {
     //TODO:
+  }
+
+  public async send(data: string | DataMessageSend) {
+    const message = await this.client.api.post(`/channels/${this._id}/messages`, {
+      nonce: ulid(),
+      ...(typeof data === "string" ? { content: data } : data),
+    });
+
+    //TODO:
+    //@ts-ignore
+    return this.client.messages.createObj(message, true);
   }
 
   async edit(data: DataEditChannel) {

@@ -37,13 +37,13 @@ export default class GroupDMChannel extends Channel {
     );
   }
   /** Add a user to this group. */
-  async addMember(user: User | string) {
+  async addRecipient(user: User | string) {
     await this.client.api.put(
       `/channels/${this._id}/recipients/${(typeof user == "string" ? user : user.id) as ""}`
     );
   }
   /** Remove a user from this group. */
-  async removeMember(user: User | string) {
+  async removeRecipient(user: User | string) {
     await this.client.api.delete(
       `/channels/${this._id}/recipients/${(typeof user == "string" ? user : user.id) as ""}`
     );
