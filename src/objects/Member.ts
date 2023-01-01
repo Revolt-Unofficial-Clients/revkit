@@ -1,3 +1,4 @@
+import { DataBanCreate, DataMemberEdit } from "revolt-api";
 import { APIMember } from "../api";
 import Client from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
@@ -74,6 +75,21 @@ export default class Member extends BaseObject<APIMember> {
   /** If you can ban this member. */
   public get bannable() {
     return this.server.me.permissions.has(Permissions.BanMembers) && this.inferior;
+  }
+
+  /** Edit this member. */
+  public async edit(data: DataMemberEdit) {
+    this.update(
+      await this.client.api.patch(`/servers/${<"">this.serverID}/members/${this._id}`, data)
+    );
+  }
+  /** Kick this member. */
+  public async kick() {
+    await this.client.api.delete(`/servers/${this.serverID}/members/${this.id}`);
+  }
+  /** Ban this member. */
+  public async ban(data?: DataBanCreate) {
+    await this.server.members.ban(this, data);
   }
 
   private timeoutClearer: NodeJS.Timeout;

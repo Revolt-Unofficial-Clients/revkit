@@ -1,3 +1,4 @@
+import { DataBanCreate } from "revolt-api";
 import { APIMember } from "../api";
 import Client from "../Client";
 import Member from "../objects/Member";
@@ -11,6 +12,19 @@ export default class MemberManager extends BaseManager<Member> {
 
   public get self() {
     return this.items().find((i) => i.id == this.client.users.self.id);
+  }
+
+  /** Ban a member from the server. */
+  async ban(member: string | Member, data?: DataBanCreate) {
+    await this.client.api.put(
+      `/servers/${this.server.id}/bans/${typeof member == "string" ? member : member.id}`,
+      data
+    );
+  }
+
+  /** Unban a user from the server. */
+  async unban(id: string) {
+    await this.client.api.delete(`/servers/${this.server.id as ""}/bans/${id}`);
   }
 
   public construct(data: APIMember) {
