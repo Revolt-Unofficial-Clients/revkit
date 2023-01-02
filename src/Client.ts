@@ -52,7 +52,8 @@ export type ClientEvents =
   | "serverUpdate"
   | "serverExited"
   | "serverMemberJoin"
-  | "serverMemberLeave";
+  | "serverMemberLeave"
+  | "serverMemberUpdate";
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -145,7 +146,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "serverExited", listener: (id: string, server?: Server) => any): this;
   public on(event: "serverMemberJoin", listener: (member: Member) => any): this;
   public on(event: "serverMemberLeave", listener: (server: Server, user: User) => void): this;
-
+  public on(event: "serverMemberUpdate", listener: (member: Member) => any): this;
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
@@ -155,8 +156,6 @@ export class Client extends EventEmitter<ClientEvents> {
 
   on(event: "role/update", listener: (roleId: string, role: Role, serverId: string) => void): this;
   on(event: "role/delete", listener: (id: string, serverId: string) => void): this;
-
-  on(event: "member/update", listener: (member: Member) => void): this;
 
   on(event: "user/relationship", listener: (user: User) => void): this;
 

@@ -366,23 +366,26 @@ export class WebSocketClient {
                 this.client.servers.delete(packet.id);
                 this.client.emit("serverExited", packet.id, server);
               } else {
-                const user = await this.client.users.fetch(packet.id);
                 server.members.delete(packet.id);
-                this.client.emit("serverMemberLeave", server, user);
+                this.client.emit(
+                  "serverMemberLeave",
+                  server,
+                  await this.client.users.fetch(packet.id)
+                );
+              }
+              break;
+            }
+            case "ServerMemberUpdate": {
+              const server = this.client.servers.get(packet.id.server),
+                member = server.members.get(packet.id.user);
+              if (member) {
+                packet.clear?.forEach((c) => delete member.source[c]);
+                this.client.emit("serverMemberUpdate", member.update(packet.data));
               }
               break;
             }
 
             /*//TODO:
-            case "ServerMemberUpdate": {
-              const member = this.client.members.getKey(packet.id);
-              if (member) {
-                member.update(packet.data, packet.clear);
-                this.client.emit("member/update", member);
-              }
-              break;
-            }
-
             case "ServerRoleUpdate": {
               const server = this.client.servers.get(packet.id);
               if (server) {
