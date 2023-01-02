@@ -7,9 +7,9 @@ import EmojiManager from "./managers/EmoijManager";
 import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
-import AuthSession from "./objects/AuthSession";
 import BaseMessage from "./objects/BaseMessage";
 import Channel from "./objects/Channel";
+import { WebSocketClient } from "./websocket";
 import { ClientboundNotification } from "./websocketNotifications";
 
 export interface ClientOptions {
@@ -46,7 +46,8 @@ export default class Client extends EventEmitter<ClientEvents> {
   public api: API;
   public options: ClientOptions;
   public config: RevoltConfig;
-  public session: AuthSession;
+  public session: { token: string; type: "user" | "bot" };
+  public ws: WebSocketClient;
 
   public channels: ChannelManager;
   public emojis: EmojiManager;
@@ -67,6 +68,7 @@ export default class Client extends EventEmitter<ClientEvents> {
     this.users = new UserManager(this);
 
     this.api = new API({ baseURL: this.options.apiURL });
+    this.ws = new WebSocketClient(this);
   }
 
   public async fetchConfiguration(force = false) {
@@ -95,9 +97,21 @@ export default class Client extends EventEmitter<ClientEvents> {
     return await this.servers.fetch(server._id, server, channels);
   }
   /** Create a new group. */
-  async createGroup(data: DataCreateGroup) {
+  public async createGroup(data: DataCreateGroup) {
     const group = await this.api.post(`/channels/create`, data);
     return await this.channels.fetch(group._id, group);
+  }
+
+  public async login(token: string, type: "user" | "bot") {
+    await this.fetchConfiguration();
+    this.session = { token, type };
+    this.api = new API({
+      baseURL: this.options.apiURL,
+      authentication: {
+        revolt: type == "user" ? { token } : token,
+      },
+    });
+    await this.ws.connect();
   }
 
   public on(event: "ready", listener: () => any): this;
