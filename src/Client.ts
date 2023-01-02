@@ -150,7 +150,7 @@ export class Client extends EventEmitter<ClientEvents> {
   }
 
   /** Log in using an existing session or bot token. */
-  public async login(token: string, type: "user" | "bot") {
+  public async login(token: string, type: "user" | "bot", connect = true) {
     await this.fetchConfiguration();
     this.session = { token, type };
     this.api = new API({
@@ -159,7 +159,7 @@ export class Client extends EventEmitter<ClientEvents> {
         revolt: type == "user" ? { token } : token,
       },
     });
-    await this.ws.connect();
+    if (connect) await this.ws.connect();
   }
   /**
    * Log in with a username and password.
@@ -172,6 +172,7 @@ export class Client extends EventEmitter<ClientEvents> {
       const { onboarding } = await this.api.get("/onboard/hello");
       if (onboarding) {
         const that = this;
+        this.login(data.token, "user", false);
         return async (username: string, loginAfterSuccess = true) => {
           await that.api.post("/onboard/complete", { username });
           if (loginAfterSuccess) await that.login(data.token, "user");
