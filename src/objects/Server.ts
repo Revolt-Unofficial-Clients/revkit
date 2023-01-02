@@ -4,6 +4,7 @@ import { Client } from "../Client";
 import { MemberManager } from "../managers/MemberManager";
 import { RoleManager } from "../managers/RoleManager";
 import { ServerChannelManager } from "../managers/ServerChannelManager";
+import { ServerEmojiManager } from "../managers/ServerEmojiManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
 import { Attachment, AttachmentArgs } from "./Attachment";
@@ -29,6 +30,11 @@ export class Server extends BaseObject<APIServer> {
   public get channels() {
     const man = new ServerChannelManager(this);
     this.client.channels.forEach((c) => c.isServerBased() && man.set(c.id, c));
+    return man;
+  }
+  public get emojis() {
+    const man = new ServerEmojiManager(this);
+    this.client.emojis.forEach((c) => c.parentID == this.id && man.set(c.id, c));
     return man;
   }
   public get categories() {
