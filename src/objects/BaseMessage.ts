@@ -22,4 +22,8 @@ export class BaseMessage extends BaseObject<APIMessage> {
   public get channel() {
     return this.client.channels.get(this.channelID);
   }
+  /** Gets this message's channel's server. (if any) */
+  public get server() {
+    return this.channel.isServerBased() ? this.channel.server : null;
+  }
 }
