@@ -41,4 +41,8 @@ export class ServerInvite extends BaseObject<APIInvite> {
   public get server() {
     return this.serverID ? this.client.servers.get(this.serverID) : null;
   }
+
+  public async delete() {
+    await this.client.api.delete(`/invites/${this._id}`);
+  }
 }
