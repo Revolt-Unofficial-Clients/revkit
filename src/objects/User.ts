@@ -1,11 +1,11 @@
 import { APIUser, RelationshipStatus } from "../api";
-import Client from "../Client";
+import { Client } from "../Client";
 import { U32_MAX, UserPermissions } from "../utils/Permissions";
 import { UserBadges } from "../utils/UserBadges";
 import { UserFlags } from "../utils/UserFlags";
 import { UserPermissionFlags } from "../utils/UserPermissionFlags";
-import Attachment, { AttachmentArgs } from "./Attachment";
-import BaseObject from "./BaseObject";
+import { Attachment, AttachmentArgs } from "./Attachment";
+import { BaseObject } from "./BaseObject";
 
 class Bot {
   constructor(private parent: User) {}
@@ -20,7 +20,7 @@ class Bot {
   }
 }
 
-export default class User extends BaseObject<APIUser> {
+export class User extends BaseObject<APIUser> {
   constructor(client: Client, data: APIUser) {
     super(client, data);
   }

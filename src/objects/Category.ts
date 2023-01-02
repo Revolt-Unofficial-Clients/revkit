@@ -1,9 +1,9 @@
 import { APICategory } from "../api";
-import Client from "../Client";
-import BaseObject from "./BaseObject";
-import Server from "./Server";
+import { Client } from "../Client";
+import { BaseObject } from "./BaseObject";
+import { Server } from "./Server";
 
-export default class Category extends BaseObject<APICategory> {
+export class Category extends BaseObject<APICategory> {
   constructor(client: Client, data: APICategory, public server: Server) {
     super(client, data);
   }

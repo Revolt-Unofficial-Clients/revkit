@@ -1,18 +1,18 @@
 import { DataEditServer, Override } from "revolt-api";
 import { APIServer } from "../api";
-import Client from "../Client";
-import MemberManager from "../managers/MemberManager";
-import RoleManager from "../managers/RoleManager";
-import ServerChannelManager from "../managers/ServerChannelManager";
+import { Client } from "../Client";
+import { MemberManager } from "../managers/MemberManager";
+import { RoleManager } from "../managers/RoleManager";
+import { ServerChannelManager } from "../managers/ServerChannelManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { ServerFlags } from "../utils/ServerFlags";
-import Attachment, { AttachmentArgs } from "./Attachment";
-import BaseObject from "./BaseObject";
-import Category from "./Category";
-import Invite from "./Invite";
-import Member from "./Member";
+import { Attachment, AttachmentArgs } from "./Attachment";
+import { BaseObject } from "./BaseObject";
+import { Category } from "./Category";
+import { Invite } from "./Invite";
+import { Member } from "./Member";
 
-export default class Server extends BaseObject<APIServer> {
+export class Server extends BaseObject<APIServer> {
   public members: MemberManager;
   public roles: RoleManager;
   constructor(client: Client, data: APIServer) {

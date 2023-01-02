@@ -1,11 +1,11 @@
 import { DataBanCreate } from "revolt-api";
 import { APIMember } from "../api";
-import Client from "../Client";
-import Member from "../objects/Member";
-import Server from "../objects/Server";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { Member } from "../objects/Member";
+import { Server } from "../objects/Server";
+import { BaseManager } from "./BaseManager";
 
-export default class MemberManager extends BaseManager<Member> {
+export class MemberManager extends BaseManager<Member> {
   constructor(private client: Client, private server: Server) {
     super();
   }

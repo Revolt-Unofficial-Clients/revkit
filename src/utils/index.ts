@@ -9,7 +9,7 @@ import {
 } from "./Autocomplete";
 import { EmojiPacks, emojiToCodePoint, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 import { DEFAULT_THEME, ThemeSettings } from "./Theme";
-import getMarkdownTimestamp, { MarkdownTimestampTypes } from "./Timestamp";
+import { getMarkdownTimestamp, MarkdownTimestampTypes } from "./Timestamp";
 
 export {
   AutocompleteItem,

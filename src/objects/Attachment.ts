@@ -1,6 +1,6 @@
 import { APIAttachment } from "../api";
-import Client from "../Client";
-import BaseObject from "./BaseObject";
+import { Client } from "../Client";
+import { BaseObject } from "./BaseObject";
 
 export type AttachmentArgs = [
   options?: {
@@ -20,7 +20,7 @@ export type AttachmentBucket =
   | "emojis"
   | "icons";
 
-export default class Attachment extends BaseObject<APIAttachment> {
+export class Attachment extends BaseObject<APIAttachment> {
   constructor(client: Client, data: APIAttachment) {
     super(client, data);
   }

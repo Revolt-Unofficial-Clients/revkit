@@ -1,7 +1,7 @@
-import BaseObject from "../objects/BaseObject";
+import { BaseObject } from "../objects/BaseObject";
 import { MiniMapEmitter } from "../utils/MiniEmitter";
 
-export default class BaseManager<T extends BaseObject<any>> extends MiniMapEmitter<T> {
+export class BaseManager<T extends BaseObject<any>> extends MiniMapEmitter<T> {
   constructor() {
     super();
   }

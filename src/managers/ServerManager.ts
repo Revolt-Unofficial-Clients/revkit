@@ -1,9 +1,9 @@
 import { APIChannel, APIServer } from "../api";
-import Client from "../Client";
-import Server from "../objects/Server";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { Server } from "../objects/Server";
+import { BaseManager } from "./BaseManager";
 
-export default class ServerManager extends BaseManager<Server> {
+export class ServerManager extends BaseManager<Server> {
   constructor(private client: Client) {
     super();
   }

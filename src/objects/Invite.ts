@@ -1,8 +1,8 @@
 import { APIInvite } from "../api";
-import Client from "../Client";
-import BaseObject from "./BaseObject";
+import { Client } from "../Client";
+import { BaseObject } from "./BaseObject";
 
-export default class Invite extends BaseObject<APIInvite> {
+export class Invite extends BaseObject<APIInvite> {
   /** Invites don't have a creation date. */
   public get createdAt() {
     return 0;

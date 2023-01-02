@@ -1,11 +1,11 @@
 import { DataEditMessage, DataMessageSend } from "revolt-api";
 import { APIMessage } from "../api";
-import Client from "../Client";
-import Attachment from "./Attachment";
-import BaseMessage from "./BaseMessage";
-import Emoji from "./Emoji";
+import { Client } from "../Client";
+import { Attachment } from "./Attachment";
+import { BaseMessage } from "./BaseMessage";
+import { Emoji } from "./Emoji";
 
-export default class Message extends BaseMessage {
+export class Message extends BaseMessage {
   constructor(client: Client, data: APIMessage) {
     super(client, data);
   }

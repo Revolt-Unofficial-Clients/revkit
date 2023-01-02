@@ -1,8 +1,8 @@
 import { APIChannel } from "../api";
-import Client from "../Client";
-import Channel, { ChannelType } from "./Channel";
+import { Client } from "../Client";
+import { Channel, ChannelType } from "./Channel";
 
-export default class DMChannel extends Channel {
+export class DMChannel extends Channel {
   public get type(): ChannelType.DM {
     return ChannelType.DM;
   }

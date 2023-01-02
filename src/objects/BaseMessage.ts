@@ -1,10 +1,10 @@
 import { APIMessage } from "../api";
-import Client from "../Client";
-import BaseObject from "./BaseObject";
-import Message from "./Message";
-import SystemMessage from "./SystemMessage";
+import { Client } from "../Client";
+import { BaseObject } from "./BaseObject";
+import { Message } from "./Message";
+import { SystemMessage } from "./SystemMessage";
 
-export default class BaseMessage extends BaseObject<APIMessage> {
+export class BaseMessage extends BaseObject<APIMessage> {
   constructor(client: Client, data: APIMessage) {
     super(client, data);
   }

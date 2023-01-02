@@ -1,7 +1,7 @@
-import Channel from "../objects/Channel";
-import Emoji from "../objects/Emoji";
-import Member from "../objects/Member";
-import Server from "../objects/Server";
+import { Channel } from "../objects/Channel";
+import { Emoji } from "../objects/Emoji";
+import { Member } from "../objects/Member";
+import { Server } from "../objects/Server";
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 
 export enum AutocompleteType {

@@ -1,21 +1,21 @@
 import { DataEditChannel, DataMessageSend, Override } from "revolt-api";
 import { ulid } from "ulid";
 import { APIChannel } from "../api";
-import Client from "../Client";
-import MessageManager from "../managers/MessageManager";
+import { Client } from "../Client";
+import { MessageManager } from "../managers/MessageManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
-import Attachment, { AttachmentArgs } from "./Attachment";
-import BaseObject from "./BaseObject";
-import DMChannel from "./DMChannel";
-import GroupDMChannel from "./GroupDMChannel";
-import Invite from "./Invite";
-import Member from "./Member";
-import Role from "./Role";
-import SavedMessagesChannel from "./SavedMessagesChannel";
-import ServerChannel from "./ServerChannel";
-import TextChannel from "./TextChannel";
-import VoiceChannel from "./VoiceChannel";
+import { Attachment, AttachmentArgs } from "./Attachment";
+import { BaseObject } from "./BaseObject";
+import { DMChannel } from "./DMChannel";
+import { GroupDMChannel } from "./GroupDMChannel";
+import { Invite } from "./Invite";
+import { Member } from "./Member";
+import { Role } from "./Role";
+import { SavedMessagesChannel } from "./SavedMessagesChannel";
+import { ServerChannel } from "./ServerChannel";
+import { TextChannel } from "./TextChannel";
+import { VoiceChannel } from "./VoiceChannel";
 
 export enum ChannelType {
   DM = "DirectMessage",
@@ -25,7 +25,7 @@ export enum ChannelType {
   Voice = "VoiceChannel",
 }
 
-export default class Channel extends BaseObject<APIChannel> {
+export class Channel extends BaseObject<APIChannel> {
   public get type() {
     return <ChannelType>this.source.channel_type;
   }

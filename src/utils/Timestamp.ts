@@ -14,6 +14,6 @@ export enum MarkdownTimestampTypes {
  * @param type The type of timestamp to use.
  * @returns Formatted markdown timestamp.
  */
-export default function getMarkdownTimestamp(ms: number, type: MarkdownTimestampTypes) {
+export function getMarkdownTimestamp(ms: number, type: MarkdownTimestampTypes) {
   return `<t:${Math.floor(ms / 1000)}:${type}>`;
 }

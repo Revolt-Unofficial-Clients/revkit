@@ -2,14 +2,14 @@ import { DateTime } from "luxon";
 import { OptionsMessageSearch } from "revolt-api";
 import { APIRoutes } from "revolt-api/dist/routes";
 import { APIMember, APIMessage, APIUser, DEAD_ID } from "../api";
-import Client from "../Client";
-import BaseMessage from "../objects/BaseMessage";
-import Channel from "../objects/Channel";
-import Message from "../objects/Message";
-import SystemMessage from "../objects/SystemMessage";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { BaseMessage } from "../objects/BaseMessage";
+import { Channel } from "../objects/Channel";
+import { Message } from "../objects/Message";
+import { SystemMessage } from "../objects/SystemMessage";
+import { BaseManager } from "./BaseManager";
 
-export default class MessageManager extends BaseManager<BaseMessage> {
+export class MessageManager extends BaseManager<BaseMessage> {
   constructor(private client: Client, public channel: Channel) {
     super();
   }

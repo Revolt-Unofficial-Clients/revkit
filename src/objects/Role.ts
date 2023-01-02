@@ -1,11 +1,11 @@
 import { DataEditRole } from "revolt-api";
 import { APIRole } from "../api";
-import Client from "../Client";
+import { Client } from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
-import BaseObject from "./BaseObject";
-import Server from "./Server";
+import { BaseObject } from "./BaseObject";
+import { Server } from "./Server";
 
-export default class Role extends BaseObject<APIRole> {
+export class Role extends BaseObject<APIRole> {
   constructor(client: Client, public server: Server, data: APIRole) {
     super(client, data);
   }

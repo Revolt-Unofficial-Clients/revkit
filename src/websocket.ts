@@ -3,7 +3,7 @@ import { backOff } from "@insertish/exponential-backoff";
 import WebSocket from "@insertish/isomorphic-ws";
 import type { MessageEvent } from "ws";
 import { DEAD_ID } from "./api";
-import Client from "./Client";
+import { Client } from "./Client";
 import { ClientboundNotification, ServerboundNotification } from "./websocketNotifications";
 
 // Shamelessly copied from revolt.js

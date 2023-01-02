@@ -1,11 +1,11 @@
 import { DataCreateChannel } from "revolt-api";
 import { APIChannel } from "../api";
-import Client from "../Client";
-import Channel from "../objects/Channel";
-import Server from "../objects/Server";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { Channel } from "../objects/Channel";
+import { Server } from "../objects/Server";
+import { BaseManager } from "./BaseManager";
 
-export default class ChannelManager extends BaseManager<Channel> {
+export class ChannelManager extends BaseManager<Channel> {
   constructor(private client: Client) {
     super();
   }

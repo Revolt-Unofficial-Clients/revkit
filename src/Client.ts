@@ -2,13 +2,13 @@ import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
 import { API, DataCreateGroup, DataCreateServer, RevoltConfig } from "revolt-api";
-import ChannelManager from "./managers/ChannelManager";
-import EmojiManager from "./managers/EmoijManager";
-import ServerManager from "./managers/ServerManager";
-import UserManager from "./managers/UserManager";
+import { ChannelManager } from "./managers/ChannelManager";
+import { EmojiManager } from "./managers/EmoijManager";
+import { ServerManager } from "./managers/ServerManager";
+import { UserManager } from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
-import BaseMessage from "./objects/BaseMessage";
-import Channel from "./objects/Channel";
+import { BaseMessage } from "./objects/BaseMessage";
+import { Channel } from "./objects/Channel";
 import { WebSocketClient } from "./websocket";
 import { ClientboundNotification } from "./websocketNotifications";
 
@@ -42,7 +42,7 @@ export type ClientEvents =
   | "channelUpdate"
   | "channelDelete";
 
-export default class Client extends EventEmitter<ClientEvents> {
+export class Client extends EventEmitter<ClientEvents> {
   public api: API;
   public options: ClientOptions;
   public config: RevoltConfig;

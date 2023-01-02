@@ -1,9 +1,10 @@
 import { APIChannel } from "../api";
-import Client from "../Client";
+import { Client } from "../Client";
+import { OmitClass } from "../utils/OmitClass";
 import { ChannelType } from "./Channel";
-import ServerChannel from "./ServerChannel";
+import { ServerChannel } from "./ServerChannel";
 
-export default class VoiceChannel extends OmitClass(ServerChannel, [
+export class VoiceChannel extends OmitClass(ServerChannel, [
   "fetchLastMessage",
   "fetchMessage",
   "messages",

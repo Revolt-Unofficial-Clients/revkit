@@ -1,9 +1,9 @@
 import { APIEmoji } from "../api";
-import Client from "../Client";
-import Emoji from "../objects/Emoji";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { Emoji } from "../objects/Emoji";
+import { BaseManager } from "./BaseManager";
 
-export default class EmojiManager extends BaseManager<Emoji> {
+export class EmojiManager extends BaseManager<Emoji> {
   constructor(private client: Client) {
     super();
   }

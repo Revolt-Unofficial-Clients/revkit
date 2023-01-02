@@ -1,9 +1,9 @@
 import { APIChannel } from "../api";
-import Client from "../Client";
+import { Client } from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
-import Channel, { ChannelType } from "./Channel";
+import { Channel, ChannelType } from "./Channel";
 
-export default class ServerChannel extends Channel {
+export class ServerChannel extends Channel {
   public get type(): ChannelType.Text | ChannelType.Voice {
     return <any>super.type;
   }

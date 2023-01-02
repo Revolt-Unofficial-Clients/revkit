@@ -1,9 +1,9 @@
 import { APIUser, RelationshipStatus } from "../api";
-import Client from "../Client";
-import User from "../objects/User";
-import BaseManager from "./BaseManager";
+import { Client } from "../Client";
+import { User } from "../objects/User";
+import { BaseManager } from "./BaseManager";
 
-export default class UserManager extends BaseManager<User> {
+export class UserManager extends BaseManager<User> {
   constructor(private client: Client) {
     super();
   }

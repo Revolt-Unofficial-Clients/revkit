@@ -1,8 +1,8 @@
 import { APISessionInfo } from "../api";
-import Client from "../Client";
-import BaseObject from "./BaseObject";
+import { Client } from "../Client";
+import { BaseObject } from "./BaseObject";
 
-export default class AuthSession extends BaseObject<APISessionInfo> {
+export class AuthSession extends BaseObject<APISessionInfo> {
   constructor(client: Client, data: APISessionInfo) {
     super(client, data);
   }

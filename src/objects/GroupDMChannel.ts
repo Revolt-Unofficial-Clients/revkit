@@ -1,10 +1,10 @@
 import { APIChannel } from "../api";
-import Client from "../Client";
+import { Client } from "../Client";
 import { PermissionFlags } from "../utils/PermissionFlags";
-import Channel, { ChannelType } from "./Channel";
-import User from "./User";
+import { Channel, ChannelType } from "./Channel";
+import { User } from "./User";
 
-export default class GroupDMChannel extends Channel {
+export class GroupDMChannel extends Channel {
   public get type(): ChannelType.GroupDM {
     return ChannelType.GroupDM;
   }

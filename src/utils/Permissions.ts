@@ -1,10 +1,10 @@
 /* Shamelessly copied from revolt.js */
 
 import Long from "long";
-import Channel from "../objects/Channel";
-import Member from "../objects/Member";
-import Role from "../objects/Role";
-import Server from "../objects/Server";
+import { Channel } from "../objects/Channel";
+import { Member } from "../objects/Member";
+import { Role } from "../objects/Role";
+import { Server } from "../objects/Server";
 
 /** Permissions against users. */
 export enum UserPermissions {
