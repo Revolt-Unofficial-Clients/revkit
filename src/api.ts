@@ -8,6 +8,7 @@ import {
   Message as APIMessage,
   Role,
   Server as APIServer,
+  SessionInfo,
   User as APIUser,
 } from "revolt-api";
 
@@ -39,6 +40,7 @@ export const DEAD_ID = "00000000000000000000000000";
 
 type APICategory = Omit<Category, "id"> & { _id: string };
 type APIRole = Role & { _id: string };
+type APISessionInfo = SessionInfo & { token?: string };
 export {
   APIAttachment,
   APICategory,
@@ -49,5 +51,6 @@ export {
   APIMessage,
   APIRole,
   APIServer,
+  APISessionInfo,
   APIUser,
 };

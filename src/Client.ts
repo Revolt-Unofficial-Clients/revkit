@@ -7,14 +7,17 @@ import EmojiManager from "./managers/EmoijManager";
 import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
+import AuthSession from "./objects/AuthSession";
+import { ClientboundNotification } from "./websocketNotifications";
 
 export interface ClientOptions {
   apiURL: string;
   debug: boolean;
   heartbeat: number;
-  pingTimeout?: boolean;
   reconnect: boolean;
   unreads: boolean;
+  pingTimeout?: number;
+  exitOnTimeout?: boolean;
 }
 const DefaultOptions: ClientOptions = {
   apiURL: "https://api.revolt.chat",
@@ -24,10 +27,13 @@ const DefaultOptions: ClientOptions = {
   unreads: false,
 };
 
-export default class Client extends EventEmitter {
+export type ClientEvents = "ready" | "connecting" | "connected" | "packet";
+
+export default class Client extends EventEmitter<ClientEvents> {
   public api: API;
   public options: ClientOptions;
   public config: RevoltConfig;
+  public session: AuthSession;
 
   public channels: ChannelManager;
   public emojis: EmojiManager;
@@ -80,4 +86,45 @@ export default class Client extends EventEmitter {
     const group = await this.api.post(`/channels/create`, data);
     return await this.channels.fetch(group._id, group);
   }
+
+  public on(event: "ready", listener: () => any): this;
+  public on(event: "connecting", listener: () => void): this;
+  public on(event: "connected", listener: () => void): this;
+  public on(event: "packet", listener: (packet: ClientboundNotification) => void): this;
+  public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
+    return super.on(event, listener, context);
+  }
+
+  /*
+  on(event: "dropped", listener: () => void): this;
+  on(event: "logout", listener: () => void): this;
+
+  on(event: "message", listener: (message: Message) => void): this;
+  on(event: "message/update", listener: (message: Message) => void): this;
+  on(event: "message/delete", listener: (id: string, message?: Message) => void): this;
+
+  // General purpose event
+  on(
+    event: "message/updated",
+    listener: (message: Message, packet: ClientboundNotification) => void
+  ): this;
+
+  on(event: "channel/create", listener: (channel: Channel) => void): this;
+  on(event: "channel/update", listener: (channel: Channel) => void): this;
+  on(event: "channel/delete", listener: (id: string, channel?: Channel) => void): this;
+
+  on(event: "server/update", listener: (server: Server) => void): this;
+  on(event: "server/delete", listener: (id: string, server?: Server) => void): this;
+
+  on(event: "role/update", listener: (roleId: string, role: Role, serverId: string) => void): this;
+  on(event: "role/delete", listener: (id: string, serverId: string) => void): this;
+
+  on(event: "member/join", listener: (member: Member) => void): this;
+  on(event: "member/update", listener: (member: Member) => void): this;
+  on(event: "member/leave", listener: (id: MemberCompositeKey) => void): this;
+
+  on(event: "user/relationship", listener: (user: User) => void): this;
+
+  on(event: "emoji/create", listener: (emoji: Emoji) => void): this;
+  on(event: "emoji/delete", listener: (id: string, emoji?: Emoji) => void): this;*/
 }

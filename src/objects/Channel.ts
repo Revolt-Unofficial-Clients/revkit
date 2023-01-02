@@ -3,6 +3,7 @@ import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import Client from "../Client";
 import MessageManager from "../managers/MessageManager";
+import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
 import Attachment, { AttachmentArgs } from "./Attachment";
 import BaseObject from "./BaseObject";
@@ -10,6 +11,7 @@ import DMChannel from "./DMChannel";
 import GroupDMChannel from "./GroupDMChannel";
 import Invite from "./Invite";
 import Member from "./Member";
+import Role from "./Role";
 import SavedMessagesChannel from "./SavedMessagesChannel";
 import ServerChannel from "./ServerChannel";
 import TextChannel from "./TextChannel";
@@ -87,13 +89,20 @@ export default class Channel extends BaseObject<APIChannel> {
     return this.icon ? this.icon.generateURL(...args) : null;
   }
 
-  public async setPermissions(role_id = "default", permissions: Override) {
-    return await this.client.api.put(`/channels/${this._id as ""}/permissions/${role_id as ""}`, {
-      permissions,
-    });
+  /** Set permissions for a role or 'default' for everyone. */
+  public async setPermissions(role: Role | "default", permissions: Override) {
+    await this.client.api.put(
+      `/channels/${this._id}/permissions/${typeof role == "string" ? role : role.id}`,
+      {
+        permissions,
+      }
+    );
+  }
+  public get permissions() {
+    return new PermissionFlags(calculatePermissions(this));
   }
   public permissionsFor(member: Member) {
-    return calculatePermissions(this, member);
+    return new PermissionFlags(calculatePermissions(this, member));
   }
   public async createInvite() {
     return new Invite(this.client, await this.client.api.post(`/channels/${this._id}/invites`));

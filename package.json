@@ -23,7 +23,10 @@
   },
   "homepage": "https://github.com/Revolt-Unofficial-Clients/revolt-toolset#readme",
   "dependencies": {
+    "@insertish/exponential-backoff": "^3.1.0-patch.2",
+    "@insertish/isomorphic-ws": "^4.0.1",
     "@types/luxon": "^3.2.0",
+    "@types/ws": "^8.5.4",
     "axios": "^1.1.2",
     "eventemitter3": "^5.0.0",
     "form-data": "^4.0.0",

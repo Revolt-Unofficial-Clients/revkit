@@ -26,7 +26,7 @@ export default class UserManager extends BaseManager<User> {
     }
   }
   public async fetch(id: string, fetchNew = false) {
-    if (this.get(id) && !fetchNew) return this.get(id);
+    if (this.has(id) && !fetchNew) return this.get(id);
     return this.construct(await this.client.api.get(`/users/${<"">id}`));
   }
 }

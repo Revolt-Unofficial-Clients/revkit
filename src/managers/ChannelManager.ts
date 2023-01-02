@@ -1,6 +1,8 @@
+import { DataCreateChannel } from "revolt-api";
 import { APIChannel } from "../api";
 import Client from "../Client";
 import Channel from "../objects/Channel";
+import Server from "../objects/Server";
 import BaseManager from "./BaseManager";
 
 export default class ChannelManager extends BaseManager<Channel> {
@@ -21,5 +23,9 @@ export default class ChannelManager extends BaseManager<Channel> {
   public async fetch(id: string, data?: APIChannel) {
     if (this.has(id)) return this.get(id).update(data);
     return this.construct(data ?? (await this.client.api.get(`/channels/${<"">id}`)));
+  }
+
+  public async create(server: Server, data: DataCreateChannel) {
+    return this.construct(await this.client.api.post(`/servers/${<"">server.id}/channels`, data));
   }
 }

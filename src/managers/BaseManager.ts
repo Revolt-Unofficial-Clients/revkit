@@ -15,13 +15,13 @@ export default class BaseManager<T extends BaseObject<any>> extends MiniMapEmitt
     return [...this.values()];
   }
 
-  public find(callback: Parameters<T[]["find"]>[0]) {
-    return this.items().find(callback);
+  public get find() {
+    return this.items().find;
   }
-  public filter(callback: Parameters<T[]["filter"]>[0]) {
-    return this.items().filter(callback);
+  public get filter() {
+    return this.items().filter;
   }
-  public map(callback: Parameters<T[]["map"]>[0]) {
-    return this.items().map(callback);
+  public get map() {
+    return this.items().map;
   }
 }
