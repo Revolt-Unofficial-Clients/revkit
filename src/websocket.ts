@@ -290,12 +290,20 @@ export class WebSocketClient {
               this.client.emit("channelDelete", packet.id, channel);
               break;
             }
-
-            /*//TODO:
             case "ChannelGroupJoin": {
-              this.client.channels.get(packet.id)?.updateGroupJoin(packet.user);
+              const c = this.client.channels.get(packet.id);
+              if (c?.isGroupDM()) {
+                const u = await this.client.users.fetch(packet.user);
+                if (u) {
+                  c.update({ recipients: [...c.source.recipients, packet.user] });
+                  this.client.emit("groupMemberJoin", c, u);
+                }
+              }
               break;
             }
+
+            /*//TODO:
+            
 
             case "ChannelGroupLeave": {
               const channel = this.client.channels.get(packet.id);
