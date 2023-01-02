@@ -1,6 +1,6 @@
 {
   "name": "revolt-toolset",
-  "version": "1.0.0-pre1",
+  "version": "1.0.0-pre2",
   "description": "Tools for Revolt based apps.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
