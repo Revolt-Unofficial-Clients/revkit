@@ -2,7 +2,12 @@ import { DataCreateChannel } from "revolt-api";
 import { APIChannel } from "../api";
 import { Client } from "../Client";
 import { Channel } from "../objects/Channel";
+import { DMChannel } from "../objects/DMChannel";
+import { GroupDMChannel } from "../objects/GroupDMChannel";
+import { SavedMessagesChannel } from "../objects/SavedMessagesChannel";
 import { Server } from "../objects/Server";
+import { TextChannel } from "../objects/TextChannel";
+import { VoiceChannel } from "../objects/VoiceChannel";
 import { BaseManager } from "./BaseManager";
 
 export class ChannelManager extends BaseManager<Channel> {
@@ -10,11 +15,24 @@ export class ChannelManager extends BaseManager<Channel> {
     super();
   }
 
-  public construct(data: APIChannel) {
+  public construct(data: APIChannel): Channel {
     const has = this.get(data._id);
     if (has) has.update(data);
     else {
-      const channel = new Channel(this.client, data);
+      const channel = ((): Channel => {
+        switch (data.channel_type) {
+          case "DirectMessage":
+            return new DMChannel(this.client, data);
+          case "Group":
+            return new GroupDMChannel(this.client, data);
+          case "SavedMessages":
+            return new SavedMessagesChannel(this.client, data);
+          case "TextChannel":
+            return new TextChannel(this.client, data);
+          case "VoiceChannel":
+            return <any>new VoiceChannel(this.client, data);
+        }
+      })();
       this.set(channel.id, channel);
       channel.onUpdate(() => this.fireUpdate());
       return channel;
