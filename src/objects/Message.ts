@@ -46,12 +46,42 @@ export default class Message extends BaseMessage {
     return this.channel.isServerBased() ? this.channel.server.members.fetch(this.authorID) : null;
   }
 
+  public get mentionIDs() {
+    return this.source.mentions;
+  }
+  public get mentions() {
+    return this.mentionIDs.map((id) => this.client.users.get(id)).filter((m) => m);
+  }
+  public async fetchMentions() {
+    return (await Promise.all(this.mentionIDs.map((id) => this.client.users.fetch(id)))).filter(
+      (u) => u
+    );
+  }
+  public get replyIDs() {
+    return this.source.replies;
+  }
+  public get replies() {
+    return this.source.replies.map((r) => this.channel.messages.get(r)).filter((r) => r);
+  }
+  public async fetchReplies() {
+    return (await Promise.all(this.replyIDs.map((id) => this.channel.messages.fetch(id)))).filter(
+      (m) => m
+    );
+  }
   public async reply(data: string | DataMessageSend, mention = true) {
     const obj = typeof data === "string" ? { content: data } : data;
     return await this.channel.send({
       ...obj,
       replies: [{ id: this._id, mention }],
     });
+  }
+
+  public get reactions() {
+    return Object.entries(this.source.reactions).map((r) => ({
+      emoji: r[0],
+      userIDs: r[1],
+      users: r[1].map((u) => this.client.users.get(u)).filter((u) => u),
+    }));
   }
   public async react(emoji: Emoji | string) {
     await this.client.api.put(
