@@ -9,11 +9,11 @@ import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseObject } from "./BaseObject";
 import { DMChannel } from "./DMChannel";
 import { GroupDMChannel } from "./GroupDMChannel";
-import { Invite } from "./Invite";
 import { Member } from "./Member";
 import { Role } from "./Role";
 import { SavedMessagesChannel } from "./SavedMessagesChannel";
 import { ServerChannel } from "./ServerChannel";
+import { ServerInvite } from "./ServerInvite";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 
@@ -105,7 +105,10 @@ export class Channel extends BaseObject<APIChannel> {
     return new PermissionFlags(calculatePermissions(this, member));
   }
   public async createInvite() {
-    return new Invite(this.client, await this.client.api.post(`/channels/${this._id}/invites`));
+    return new ServerInvite(
+      this.client,
+      await this.client.api.post(`/channels/${this._id}/invites`)
+    );
   }
 
   public get lastMessageID() {

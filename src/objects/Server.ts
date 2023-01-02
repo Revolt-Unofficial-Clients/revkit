@@ -9,8 +9,8 @@ import { ServerFlags } from "../utils/ServerFlags";
 import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseObject } from "./BaseObject";
 import { Category } from "./Category";
-import { Invite } from "./Invite";
 import { Member } from "./Member";
+import { ServerInvite } from "./ServerInvite";
 
 export class Server extends BaseObject<APIServer> {
   public members: MemberManager;
@@ -152,7 +152,7 @@ export class Server extends BaseObject<APIServer> {
   /** Fetch invites for this server. */
   public async fetchInvites() {
     return (await this.client.api.get(`/servers/${this._id}/invites`)).map(
-      (i) => new Invite(this.client, i)
+      (i) => new ServerInvite(this.client, i)
     );
   }
   /** Fetch bans for this server. */

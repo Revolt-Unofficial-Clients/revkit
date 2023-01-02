@@ -2,7 +2,7 @@ import { APIInvite } from "../api";
 import { Client } from "../Client";
 import { BaseObject } from "./BaseObject";
 
-export class Invite extends BaseObject<APIInvite> {
+export class ServerInvite extends BaseObject<APIInvite> {
   /** Invites don't have a creation date. */
   public get createdAt() {
     return 0;

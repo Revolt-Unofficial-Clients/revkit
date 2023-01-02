@@ -112,6 +112,7 @@ export class Client extends EventEmitter<ClientEvents> {
     });
     return res.data?.id;
   }
+
   /** Create a new server. */
   public async createServer(data: DataCreateServer) {
     const { server, channels } = await this.api.post(`/servers/create`, data);
@@ -121,6 +122,11 @@ export class Client extends EventEmitter<ClientEvents> {
   public async createGroup(data: DataCreateGroup) {
     const group = await this.api.post(`/channels/create`, data);
     return await this.channels.fetch(group._id, group);
+  }
+
+  /** Fetch an existing invite. */
+  public async fetchInvite(code: string) {
+    const invite = await this.api.get(`/invites/${<"">code}`);
   }
 
   /** Log in using an existing session or bot token. */
