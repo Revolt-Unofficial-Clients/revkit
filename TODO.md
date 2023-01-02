@@ -5,3 +5,6 @@
 - message embeds
 - embed builder
 - message reactions fix
+- proxy files
+- settings
+- account creation
