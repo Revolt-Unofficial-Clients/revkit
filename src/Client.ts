@@ -44,7 +44,8 @@ export type ClientEvents =
   | "channelUpdate"
   | "channelDelete"
   | "groupMemberJoin"
-  | "groupMemberLeave";
+  | "groupMemberLeave"
+  | "groupExited";
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -131,6 +132,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
   public on(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
   public on(event: "groupMemberLeave", listener: (group: GroupDMChannel, user: User) => any): this;
+  public on(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
 
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);

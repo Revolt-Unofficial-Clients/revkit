@@ -306,8 +306,10 @@ export class WebSocketClient {
             case "ChannelGroupLeave": {
               const channel = this.client.channels.get(packet.id);
               if (channel?.isGroupDM()) {
-                if (packet.user === this.client.user.id) this.client.channels.delete(channel.id);
-                else {
+                if (packet.user === this.client.user.id) {
+                  this.client.channels.delete(channel.id);
+                  this.client.emit("groupExited", channel);
+                } else {
                   const user = await this.client.users.fetch(packet.user);
                   if (user) {
                     const r = new Set(channel.source.recipients);
