@@ -416,12 +416,15 @@ export class WebSocketClient {
               }
               break;
             }
-            /*//TODO:
             case "UserUpdate": {
-              this.client.users.get(packet.id)?.update(packet.data, packet.clear);
+              const user = this.client.users.get(packet.id);
+              if (user) {
+                packet.clear?.forEach((c) => delete user.source[c]);
+                user.update(packet.data);
+                this.client.emit("userUpdate", user);
+              }
               break;
             }
-
             case "UserRelationship": {
               const user = this.client.users.get(packet.user._id);
               if (user) {
@@ -429,13 +432,26 @@ export class WebSocketClient {
                   ...packet.user,
                   relationship: packet.status,
                 });
+                this.client.emit("userRelationshipUpdate", user);
               } else {
-                this.client.users.createObj(packet.user);
+                this.client.emit(
+                  "userRelationshipUpdate",
+                  this.client.users.construct(packet.user)
+                );
               }
-
               break;
             }
-
+            case "EmojiCreate": {
+              this.client.emit("emojiCreate", this.client.emojis.construct(packet));
+              break;
+            }
+            case "EmojiDelete": {
+              const emoji = this.client.emojis.get(packet.id);
+              this.client.emojis.delete(packet.id);
+              this.client.emit("emojiDelete", packet.id, emoji);
+              break;
+            }
+            /*//TODO:
             case "ChannelStartTyping": {
               const channel = this.client.channels.get(packet.id);
               const user = packet.user;
@@ -451,34 +467,19 @@ export class WebSocketClient {
 
               break;
             }
-
             case "ChannelStopTyping": {
               this.client.channels.get(packet.id)?.updateStopTyping(packet.user);
               clearInterval(timeouts[packet.id + packet.user]);
               break;
             }
-
             case "ChannelAck": {
               this.client.unreads?.markRead(packet.id, packet.message_id);
               break;
-            }
-
-            case "EmojiCreate": {
-              this.client.emojis.createObj(packet, true);
-              break;
-            }
-
-            case "EmojiDelete": {
-              const emoji = this.client.emojis.get(packet.id);
-              this.client.emit("emoji/delete", packet.id, emoji);
-              break;
             }*/
-
             case "Pong": {
               this.ping = +new Date() - packet.data;
               break;
             }
-
             default:
               this.client.options.debug &&
                 console.warn(`Warning: Unhandled packet! ${packet.type}`);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
-import { API, DataCreateGroup, DataCreateServer, RevoltConfig } from "revolt-api";
+import { API, DataCreateGroup, DataCreateServer, Emoji, RevoltConfig } from "revolt-api";
 import { ChannelManager } from "./managers/ChannelManager";
 import { EmojiManager } from "./managers/EmoijManager";
 import { ServerManager } from "./managers/ServerManager";
@@ -43,6 +43,8 @@ export type ClientEvents =
   | "channelCreate"
   | "channelUpdate"
   | "channelDelete"
+  | "emojiCreate"
+  | "emojiDelete"
   | "groupMemberJoin"
   | "groupMemberLeave"
   | "groupExited"
@@ -57,7 +59,9 @@ export type ClientEvents =
   | "serverMemberUpdate"
   | "serverRoleCreate"
   | "serverRoleUpdate"
-  | "serverRoleDelete";
+  | "serverRoleDelete"
+  | "userRelationshipUpdate"
+  | "userUpdate";
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -136,15 +140,17 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "connected", listener: () => any): this;
   public on(event: "disconnected", listener: () => any): this;
   public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
-  public on(event: "message", listener: (message: BaseMessage) => any): this;
-  public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
-  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
   public on(event: "channelCreate", listener: (channel: Channel) => any): this;
   public on(event: "channelUpdate", listener: (channel: Channel) => any): this;
   public on(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
+  public on(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
+  public on(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
   public on(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
   public on(event: "groupMemberLeave", listener: (group: GroupDMChannel, user: User) => any): this;
   public on(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
+  public on(event: "message", listener: (message: BaseMessage) => any): this;
+  public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
+  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
   public on(event: "serverCreate", listener: (server: Server) => any): this;
   public on(event: "serverUpdate", listener: (server: Server) => any): this;
   public on(event: "serverExited", listener: (id: string, server?: Server) => any): this;
@@ -154,16 +160,13 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "serverRoleCreate", listener: (role: Role) => any): this;
   public on(event: "serverRoleUpdate", listener: (role: Role) => any): this;
   public on(event: "serverRoleDelete", listener: (role: Role) => any): this;
+  public on(event: "userRelationshipUpdate", listener: (user: User) => any): this;
+  public on(event: "userUpdate", listener: (user: User) => any): this;
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
 
   /*
   on(event: "logout", listener: () => void): this;
-
-
-  on(event: "user/relationship", listener: (user: User) => void): this;
-
-  on(event: "emoji/create", listener: (emoji: Emoji) => void): this;
-  on(event: "emoji/delete", listener: (id: string, emoji?: Emoji) => void): this;*/
+  */
 }
