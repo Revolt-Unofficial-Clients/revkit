@@ -1,1 +1,3 @@
-export {};
+import Client from "./Client";
+
+export { Client };
