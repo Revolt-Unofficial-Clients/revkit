@@ -22,10 +22,6 @@ export class GlobalInvite extends BaseObject<APIGlobalInvite> {
       avatar: this.source.user_avatar ? new Attachment(this.client, this.source.user_avatar) : null,
     };
   }
-
-  public get channelID() {
-    return this.source.channel_id;
-  }
   public get channel() {
     return {
       id: this.source.channel_id,
@@ -33,7 +29,6 @@ export class GlobalInvite extends BaseObject<APIGlobalInvite> {
       description: this.source.channel_description ?? null,
     };
   }
-
   public get server() {
     return this.source.type == "Server"
       ? {
@@ -48,5 +43,9 @@ export class GlobalInvite extends BaseObject<APIGlobalInvite> {
           members: this.source.member_count,
         }
       : null;
+  }
+
+  public async accept() {
+    return await this.client.acceptInvite(this);
   }
 }

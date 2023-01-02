@@ -130,6 +130,31 @@ export class Client extends EventEmitter<ClientEvents> {
     const invite = await this.api.get(`/invites/${<"">code}`);
     return new GlobalInvite(this, { _id: invite.code, ...invite });
   }
+  /** Accept an invite. (Group DMs not supported yet) */
+  public async acceptInvite(invite: string | GlobalInvite): Promise<Server | GroupDMChannel> {
+    if (typeof invite !== "string") {
+      switch (invite.type) {
+        case "Group": {
+          const group = this.channels.get(invite.channel.id);
+          if (group?.isGroupDM()) return group;
+          break;
+        }
+        case "Server": {
+          const server = this.servers.get(invite.server.id);
+          if (server) return server;
+        }
+      }
+    }
+
+    const response = await this.api.post(
+      `/invites/${typeof invite == "string" ? invite : invite.id}`
+    );
+    if (response.type === "Server") {
+      return await this.servers.fetch(response.server._id, response.server, response.channels);
+    } else {
+      return null;
+    }
+  }
 
   /** Log in using an existing session or bot token. */
   public async login(token: string, type: "user" | "bot") {
