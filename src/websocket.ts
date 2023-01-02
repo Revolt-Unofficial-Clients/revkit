@@ -173,7 +173,7 @@ export class WebSocketClient {
               }
               channel.update({ last_message_id: message._id });
 
-              this.client.emit("messageCreate");
+              this.client.emit("message", message);
 
               /*//TODO:
               if (this.client.unreads && message.mention_ids?.includes(this.client.user!._id)) {
@@ -181,17 +181,15 @@ export class WebSocketClient {
               }*/
               break;
             }
-
             case "MessageUpdate": {
-              const message = this.client.messages.get(packet.id);
+              const channel = this.client.channels.get(packet.channel),
+                message = channel?.messages.get(packet.id);
               if (message) {
                 message.update(packet.data);
-                this.client.emit("message/update", message);
-                this.client.emit("message/updated", message, packet);
+                this.client.emit("messageUpdate", message);
               }
               break;
             }
-
             case "MessageAppend": {
               const message = this.client.messages.get(packet.id);
               if (message) {

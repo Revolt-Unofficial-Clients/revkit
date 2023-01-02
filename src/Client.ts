@@ -8,6 +8,7 @@ import ServerManager from "./managers/ServerManager";
 import UserManager from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
 import AuthSession from "./objects/AuthSession";
+import BaseMessage from "./objects/BaseMessage";
 import { ClientboundNotification } from "./websocketNotifications";
 
 export interface ClientOptions {
@@ -27,7 +28,13 @@ const DefaultOptions: ClientOptions = {
   unreads: false,
 };
 
-export type ClientEvents = "ready" | "connecting" | "connected" | "packet";
+export type ClientEvents =
+  | "ready"
+  | "connecting"
+  | "connected"
+  | "packet"
+  | "message"
+  | "messageUpdate";
 
 export default class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -88,9 +95,11 @@ export default class Client extends EventEmitter<ClientEvents> {
   }
 
   public on(event: "ready", listener: () => any): this;
-  public on(event: "connecting", listener: () => void): this;
-  public on(event: "connected", listener: () => void): this;
-  public on(event: "packet", listener: (packet: ClientboundNotification) => void): this;
+  public on(event: "connecting", listener: () => any): this;
+  public on(event: "connected", listener: () => any): this;
+  public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
+  public on(event: "message", listener: (message: BaseMessage) => any): this;
+  public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
@@ -99,8 +108,6 @@ export default class Client extends EventEmitter<ClientEvents> {
   on(event: "dropped", listener: () => void): this;
   on(event: "logout", listener: () => void): this;
 
-  on(event: "message", listener: (message: Message) => void): this;
-  on(event: "message/update", listener: (message: Message) => void): this;
   on(event: "message/delete", listener: (id: string, message?: Message) => void): this;
 
   // General purpose event
