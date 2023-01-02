@@ -291,34 +291,36 @@ export class WebSocketClient {
               break;
             }
             case "ChannelGroupJoin": {
-              const c = this.client.channels.get(packet.id);
-              if (c?.isGroupDM()) {
-                const u = await this.client.users.fetch(packet.user);
-                if (u) {
-                  c.update({ recipients: [...c.source.recipients, packet.user] });
-                  this.client.emit("groupMemberJoin", c, u);
+              const channel = this.client.channels.get(packet.id);
+              if (channel?.isGroupDM()) {
+                const user = await this.client.users.fetch(packet.user);
+                if (user) {
+                  const r = new Set(channel.source.recipients);
+                  r.add(packet.user);
+                  channel.update({ recipients: [...r] });
+                  this.client.emit("groupMemberJoin", channel, user);
+                }
+              }
+              break;
+            }
+            case "ChannelGroupLeave": {
+              const channel = this.client.channels.get(packet.id);
+              if (channel?.isGroupDM()) {
+                if (packet.user === this.client.user.id) this.client.channels.delete(channel.id);
+                else {
+                  const user = await this.client.users.fetch(packet.user);
+                  if (user) {
+                    const r = new Set(channel.source.recipients);
+                    r.delete(packet.user);
+                    channel.update({ recipients: [...r] });
+                    this.client.emit("groupMemberLeave", channel, user);
+                  }
                 }
               }
               break;
             }
 
             /*//TODO:
-            
-
-            case "ChannelGroupLeave": {
-              const channel = this.client.channels.get(packet.id);
-
-              if (channel) {
-                if (packet.user === this.client.user?._id) {
-                  channel.delete(false, true);
-                } else {
-                  channel.updateGroupLeave(packet.user);
-                }
-              }
-
-              break;
-            }
-
             case "ServerCreate": {
               runInAction(async () => {
                 const channels = [];
