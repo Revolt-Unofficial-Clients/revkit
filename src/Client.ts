@@ -48,7 +48,8 @@ export type ClientEvents =
   | "messageUpdate"
   | "messageDelete"
   | "serverCreate"
-  | "serverUpdate";
+  | "serverUpdate"
+  | "serverExited";
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -138,6 +139,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
   public on(event: "serverCreate", listener: (server: Server) => any): this;
   public on(event: "serverUpdate", listener: (server: Server) => any): this;
+  public on(event: "serverExited", listener: (id: string, server?: Server) => any): this;
 
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
@@ -145,8 +147,6 @@ export class Client extends EventEmitter<ClientEvents> {
 
   /*
   on(event: "logout", listener: () => void): this;
-
-  on(event: "server/delete", listener: (id: string, server?: Server) => void): this;
 
   on(event: "role/update", listener: (roleId: string, role: Role, serverId: string) => void): this;
   on(event: "role/delete", listener: (id: string, serverId: string) => void): this;

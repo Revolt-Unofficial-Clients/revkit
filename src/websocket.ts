@@ -339,15 +339,14 @@ export class WebSocketClient {
               }
               break;
             }
-
-            /*//TODO:
             case "ServerDelete": {
               const server = this.client.servers.get(packet.id);
-              server?.delete(false, true);
-              this.client.emit("server/delete", packet.id, server);
+              this.client.servers.delete(packet.id);
+              this.client.emit("serverExited", packet.id, server);
               break;
             }
 
+            /*//TODO:
             case "ServerMemberUpdate": {
               const member = this.client.members.getKey(packet.id);
               if (member) {
