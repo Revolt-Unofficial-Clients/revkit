@@ -14,7 +14,7 @@ export default class MessageManager extends BaseManager<BaseMessage> {
     super();
   }
 
-  public construct(data: APIMessage) {
+  public construct(data: APIMessage): BaseMessage {
     const has = this.get(data._id);
     if (has) return has.update(data);
     else {
