@@ -71,6 +71,7 @@ export default class Message extends BaseMessage {
     await this.client.api.delete(`/channels/${<"">this.channel.id}/messages/${this._id}/reactions`);
   }
 
+  /** Adds an embed to this message. (used internally) */
   public appendEmbed({ embeds }: Pick<Partial<APIMessage>, "embeds">) {
     if (embeds) this.update({ embeds: [...(this.source.embeds ?? []), ...embeds] });
   }

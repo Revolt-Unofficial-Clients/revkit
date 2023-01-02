@@ -191,32 +191,32 @@ export class WebSocketClient {
               break;
             }
             case "MessageAppend": {
-              const message = this.client.messages.get(packet.id);
-              if (message) {
-                message.append(packet.append);
-                this.client.emit("message/append", message);
-                this.client.emit("message/updated", message, packet);
+              const channel = this.client.channels.get(packet.channel),
+                message = channel?.messages.get(packet.id);
+              if (message?.isUser()) {
+                message.appendEmbed(packet.append);
+                this.client.emit("messageUpdate", message);
               }
               break;
             }
-
             case "MessageDelete": {
-              const msg = this.client.messages.get(packet.id);
-              this.client.messages.delete(packet.id);
-              this.client.emit("message/delete", packet.id, msg);
+              const channel = this.client.channels.get(packet.channel);
+              if (channel) {
+                channel.messages.delete(packet.id);
+                this.client.emit("messageDelete", packet.id, channel.messages.get(packet.id));
+              }
               break;
             }
-
             case "MessageReact": {
-              const msg = this.client.messages.get(packet.id);
-              if (msg) {
+              const channel = this.client.channels.get(packet.channel_id),
+                message = channel?.messages.get(packet.id);
+              if (message) {
                 if (msg.reactions.has(packet.emoji_id)) {
                   msg.reactions.get(packet.emoji_id)!.add(packet.user_id);
                 } else {
                   msg.reactions.set(packet.emoji_id, new ObservableSet([packet.user_id]));
                 }
-
-                this.client.emit("message/updated", msg, packet);
+                this.client.emit("messageUpdate", message);
               }
               break;
             }

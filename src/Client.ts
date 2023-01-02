@@ -34,7 +34,8 @@ export type ClientEvents =
   | "connected"
   | "packet"
   | "message"
-  | "messageUpdate";
+  | "messageUpdate"
+  | "messageDelete";
 
 export default class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -100,6 +101,7 @@ export default class Client extends EventEmitter<ClientEvents> {
   public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
   public on(event: "message", listener: (message: BaseMessage) => any): this;
   public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
+  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => void): this;
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
@@ -108,7 +110,6 @@ export default class Client extends EventEmitter<ClientEvents> {
   on(event: "dropped", listener: () => void): this;
   on(event: "logout", listener: () => void): this;
 
-  on(event: "message/delete", listener: (id: string, message?: Message) => void): this;
 
   // General purpose event
   on(
