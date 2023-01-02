@@ -31,8 +31,8 @@ export default class Invite extends BaseObject<APIInvite> {
   public get channel() {
     return this.client.users.get(this.channelID);
   }
-  public async fetchChannel(fetchNew = false) {
-    return await this.client.channels.fetch(this.channelID, fetchNew);
+  public async fetchChannel() {
+    return await this.client.channels.fetch(this.channelID);
   }
 
   public get serverID() {
