@@ -9,6 +9,7 @@ import UserManager from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
 import AuthSession from "./objects/AuthSession";
 import BaseMessage from "./objects/BaseMessage";
+import Channel from "./objects/Channel";
 import { ClientboundNotification } from "./websocketNotifications";
 
 export interface ClientOptions {
@@ -32,10 +33,14 @@ export type ClientEvents =
   | "ready"
   | "connecting"
   | "connected"
+  | "disconnected"
   | "packet"
   | "message"
   | "messageUpdate"
-  | "messageDelete";
+  | "messageDelete"
+  | "channelCreate"
+  | "channelUpdate"
+  | "channelDelete";
 
 export default class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -98,28 +103,21 @@ export default class Client extends EventEmitter<ClientEvents> {
   public on(event: "ready", listener: () => any): this;
   public on(event: "connecting", listener: () => any): this;
   public on(event: "connected", listener: () => any): this;
+  public on(event: "disconnected", listener: () => any): this;
   public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
   public on(event: "message", listener: (message: BaseMessage) => any): this;
   public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
-  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => void): this;
+  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
+  public on(event: "channelCreate", listener: (channel: Channel) => any): this;
+  public on(event: "channelUpdate", listener: (channel: Channel) => any): this;
+  public on(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
+
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
 
   /*
-  on(event: "dropped", listener: () => void): this;
   on(event: "logout", listener: () => void): this;
-
-
-  // General purpose event
-  on(
-    event: "message/updated",
-    listener: (message: Message, packet: ClientboundNotification) => void
-  ): this;
-
-  on(event: "channel/create", listener: (channel: Channel) => void): this;
-  on(event: "channel/update", listener: (channel: Channel) => void): this;
-  on(event: "channel/delete", listener: (id: string, channel?: Channel) => void): this;
 
   on(event: "server/update", listener: (server: Server) => void): this;
   on(event: "server/delete", listener: (id: string, server?: Server) => void): this;

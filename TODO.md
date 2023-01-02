@@ -4,3 +4,4 @@
 - channel typing users
 - message embeds
 - embed builder
+- message reactions fix

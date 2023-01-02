@@ -20,7 +20,7 @@ export default class Server extends BaseObject<APIServer> {
     this.members = new MemberManager(this.client, this);
     this.roles = new RoleManager(this.client, this);
   }
-  public update(data: APIServer) {
+  public update(data: Partial<APIServer>) {
     super.update(data);
     this.roles.update();
     return this;

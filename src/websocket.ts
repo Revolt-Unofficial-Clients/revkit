@@ -1,7 +1,6 @@
 // The two @insertish packages add ESM support (as far as I can tell)
 import { backOff } from "@insertish/exponential-backoff";
 import WebSocket from "@insertish/isomorphic-ws";
-import { Role } from "revolt-api";
 import type { MessageEvent } from "ws";
 import { DEAD_ID } from "./api";
 import Client from "./Client";
@@ -171,7 +170,7 @@ export class WebSocketClient {
               if (channel.isDM()) {
                 channel.update({ active: true });
               }
-              channel.update({ last_message_id: message._id });
+              channel.update({ last_message_id: message.id });
 
               this.client.emit("message", message);
 
@@ -202,8 +201,9 @@ export class WebSocketClient {
             case "MessageDelete": {
               const channel = this.client.channels.get(packet.channel);
               if (channel) {
+                const message = channel.messages.get(packet.id);
                 channel.messages.delete(packet.id);
-                this.client.emit("messageDelete", packet.id, channel.messages.get(packet.id));
+                this.client.emit("messageDelete", packet.id, message);
               }
               break;
             }
@@ -211,90 +211,87 @@ export class WebSocketClient {
               const channel = this.client.channels.get(packet.channel_id),
                 message = channel?.messages.get(packet.id);
               if (message) {
-                if (msg.reactions.has(packet.emoji_id)) {
-                  msg.reactions.get(packet.emoji_id)!.add(packet.user_id);
-                } else {
-                  msg.reactions.set(packet.emoji_id, new ObservableSet([packet.user_id]));
+                message.update({
+                  reactions: {
+                    ...message.source.reactions,
+                    [packet.emoji_id]: [
+                      ...new Set([...message.source.reactions?.[packet.emoji_id], packet.user_id]),
+                    ],
+                  },
+                });
+                this.client.emit("messageUpdate", message);
+              }
+              break;
+            }
+            case "MessageUnreact": {
+              const channel = this.client.channels.get(packet.channel_id),
+                message = channel?.messages.get(packet.id);
+              if (message) {
+                const ids = message.source.reactions?.[packet.emoji_id];
+                if (ids) {
+                  const r = new Set(ids);
+                  r.delete(packet.user_id);
+                  if (!r.size) {
+                    delete message.source.reactions[packet.emoji_id];
+                    message.update({ reactions: message.source.reactions });
+                  } else {
+                    message.update({
+                      reactions: {
+                        ...message.source.reactions,
+                        [packet.emoji_id]: [...r],
+                      },
+                    });
+                  }
                 }
                 this.client.emit("messageUpdate", message);
               }
               break;
             }
-
-            case "MessageUnreact": {
-              const msg = this.client.messages.get(packet.id);
-              if (msg) {
-                const user_ids = msg.reactions.get(packet.emoji_id);
-
-                if (user_ids) {
-                  user_ids.delete(packet.user_id);
-                  if (user_ids.size === 0) {
-                    msg.reactions.delete(packet.emoji_id);
-                  }
-                }
-
-                this.client.emit("message/updated", msg, packet);
-              }
-
-              break;
-            }
-
             case "MessageRemoveReaction": {
-              const msg = this.client.messages.get(packet.id);
-
-              if (msg) {
-                msg.reactions.delete(packet.emoji_id);
-
-                this.client.emit("message/updated", msg, packet);
+              const channel = this.client.channels.get(packet.channel_id),
+                message = channel?.messages.get(packet.id);
+              if (message) {
+                delete message.source.reactions[packet.emoji_id];
+                message.update({ reactions: message.source.reactions });
+                this.client.emit("messageUpdate", message);
               }
-
               break;
             }
-
             case "BulkMessageDelete": {
-              runInAction(() => {
+              const channel = this.client.channels.get(packet.channel);
+              if (channel) {
                 for (const id of packet.ids) {
-                  const msg = this.client.messages.get(id);
-                  this.client.messages.delete(id);
-                  this.client.emit("message/delete", id, msg);
+                  const message = channel.messages.get(id);
+                  channel.messages.delete(id);
+                  this.client.emit("messageDelete", id, message);
                 }
-              });
+              }
               break;
             }
-
             case "ChannelCreate": {
-              runInAction(async () => {
-                if (packet.type !== "ChannelCreate") throw 0;
-
-                if (
-                  packet.channel_type === "TextChannel" ||
-                  packet.channel_type === "VoiceChannel"
-                ) {
-                  const server = await this.client.servers.fetch(packet.server);
-                  server.channel_ids.push(packet._id);
-                }
-
-                this.client.channels.createObj(packet, true);
-              });
+              if (packet.channel_type === "TextChannel" || packet.channel_type === "VoiceChannel") {
+                const server = await this.client.servers.fetch(packet.server);
+                server.update({ channels: [...server.source.channels, packet._id] });
+              }
+              this.client.emit("channelCreate", this.client.channels.construct(packet));
               break;
             }
-
             case "ChannelUpdate": {
               const channel = this.client.channels.get(packet.id);
               if (channel) {
-                channel.update(packet.data, packet.clear);
-                this.client.emit("channel/update", channel);
+                packet.clear?.forEach((c) => delete channel.source[c]);
+                this.client.emit("channelUpdate", channel.update(packet.data));
               }
               break;
             }
-
             case "ChannelDelete": {
               const channel = this.client.channels.get(packet.id);
-              channel?.delete(false, true);
-              this.client.emit("channel/delete", packet.id, channel);
+              this.client.channels.delete(packet.id);
+              this.client.emit("channelDelete", packet.id, channel);
               break;
             }
 
+            /*//TODO:
             case "ChannelGroupJoin": {
               this.client.channels.get(packet.id)?.updateGroupJoin(packet.user);
               break;
@@ -478,7 +475,7 @@ export class WebSocketClient {
               const emoji = this.client.emojis.get(packet.id);
               this.client.emit("emoji/delete", packet.id, emoji);
               break;
-            }
+            }*/
 
             case "Pong": {
               this.ping = +new Date() - packet.data;
@@ -486,7 +483,8 @@ export class WebSocketClient {
             }
 
             default:
-              this.client.debug && console.warn(`Warning: Unhandled packet! ${packet.type}`);
+              this.client.options.debug &&
+                console.warn(`Warning: Unhandled packet! ${packet.type}`);
           }
         } catch (e) {
           console.error(e);
@@ -497,15 +495,14 @@ export class WebSocketClient {
       const handle = async (msg: WebSocket.MessageEvent) => {
         const data = msg.data;
         if (typeof data !== "string") return;
-
-        if (this.client.debug) console.debug("[>] PACKET", data);
+        if (this.client.options.debug) console.debug("[>>] Incoming Packet", data);
         const packet = JSON.parse(data) as ClientboundNotification;
         await process(packet);
       };
 
       let processing = false;
       const queue: WebSocket.MessageEvent[] = [];
-      ws.onmessage = async (data: MessageEvent) => {
+      this.ws.onmessage = async (data: MessageEvent) => {
         queue.push(data);
 
         if (!processing) {
@@ -517,12 +514,10 @@ export class WebSocketClient {
         }
       };
 
-      ws.onerror = (err: any) => {
-        reject(err);
-      };
+      this.ws.onerror = (err: any) => reject(err);
 
-      ws.onclose = () => {
-        this.client.emit("dropped");
+      this.ws.onclose = () => {
+        this.client.emit("disconnected");
         this.connected = false;
         this.ready = false;
 
@@ -530,12 +525,10 @@ export class WebSocketClient {
           .map((k) => timeouts[k])
           .forEach(clearTimeout);
 
-        runInAction(() => {
-          [...this.client.users.values()].forEach((user) => (user.online = false));
-          [...this.client.channels.values()].forEach((channel) => channel.typing_ids.clear());
-        });
+        this.client.users.forEach((user) => user.update({ online: false }));
+        //TODO: [...this.client.channels.values()].forEach((channel) => channel.typing_ids.clear());
 
-        if (!disallowReconnect && this.client.autoReconnect) {
+        if (!disallowReconnect && this.client.options.reconnect) {
           backOff(() => this.connect(true)).catch(reject);
         }
       };
