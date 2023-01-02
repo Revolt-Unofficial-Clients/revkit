@@ -345,6 +345,34 @@ export class WebSocketClient {
               this.client.emit("serverExited", packet.id, server);
               break;
             }
+            case "ServerMemberJoin": {
+              const server = await this.client.servers.fetch(packet.id);
+              await this.client.users.fetch(packet.user);
+              this.client.emit(
+                "serverMemberJoin",
+                server.members.construct({
+                  _id: {
+                    server: packet.id,
+                    user: packet.user,
+                  },
+                  joined_at: new Date().toISOString(),
+                })
+              );
+              break;
+            }
+            case "ServerMemberLeave": {
+              const server = this.client.servers.get(packet.id);
+              if (packet.user == this.client.user.id) {
+                this.client.servers.delete(packet.id);
+                this.client.emit("serverExited", packet.id, server);
+              } else {
+                const user = await this.client.users.fetch(packet.id);
+                const member = server.members.get(packet.user);
+                server.members.delete(packet.id);
+                this.client.emit("serverMemberLeave", server, user, member);
+              }
+              break;
+            }
 
             /*//TODO:
             case "ServerMemberUpdate": {
@@ -353,51 +381,6 @@ export class WebSocketClient {
                 member.update(packet.data, packet.clear);
                 this.client.emit("member/update", member);
               }
-              break;
-            }
-
-            case "ServerMemberJoin": {
-              runInAction(async () => {
-                await this.client.servers.fetch(packet.id);
-                await this.client.users.fetch(packet.user);
-
-                this.client.members.createObj(
-                  {
-                    _id: {
-                      server: packet.id,
-                      user: packet.user,
-                    },
-                    joined_at: new Date().toISOString(),
-                  },
-                  true
-                );
-              });
-
-              break;
-            }
-
-            case "ServerMemberLeave": {
-              if (packet.user === this.client.user!._id) {
-                const server_id = packet.id;
-                runInAction(() => {
-                  this.client.servers.get(server_id)?.delete(false, true);
-                  [...this.client.members.keys()].forEach((key) => {
-                    if (JSON.parse(key).server === server_id) {
-                      this.client.members.delete(key);
-                    }
-                  });
-                });
-              } else {
-                this.client.members.deleteKey({
-                  server: packet.id,
-                  user: packet.user,
-                });
-                this.client.emit("member/leave", {
-                  server: packet.id,
-                  user: packet.user,
-                });
-              }
-
               break;
             }
 
