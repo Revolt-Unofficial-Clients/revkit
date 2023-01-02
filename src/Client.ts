@@ -1,7 +1,7 @@
 import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
-import { API, DataCreateGroup, DataCreateServer, Emoji, RevoltConfig } from "revolt-api";
+import { API, DataCreateGroup, DataCreateServer, DataLogin, Emoji, RevoltConfig } from "revolt-api";
 import { ChannelManager } from "./managers/ChannelManager";
 import { EmojiManager } from "./managers/EmoijManager";
 import { ServerManager } from "./managers/ServerManager";
@@ -123,6 +123,7 @@ export class Client extends EventEmitter<ClientEvents> {
     return await this.channels.fetch(group._id, group);
   }
 
+  /** Log in using an existing session or bot token. */
   public async login(token: string, type: "user" | "bot") {
     await this.fetchConfiguration();
     this.session = { token, type };
@@ -133,6 +134,28 @@ export class Client extends EventEmitter<ClientEvents> {
       },
     });
     await this.ws.connect();
+  }
+  /**
+   * Log in with a username and password.
+   * @returns Nothing on success, an onboarding function, or 2FA when implemented.
+   */
+  public async authenticate(details: DataLogin) {
+    await this.fetchConfiguration();
+    const data = await this.api.post("/auth/session/login", details);
+    if (data.result === "Success") {
+      const { onboarding } = await this.api.get("/onboard/hello");
+      if (onboarding) {
+        const that = this;
+        return async (username: string, loginAfterSuccess = true) => {
+          await that.api.post("/onboard/complete", { username });
+          if (loginAfterSuccess) await that.login(data.token, "user");
+        };
+      }
+      this.login(data.token, "user");
+      return;
+    } else {
+      throw "MFA not implemented!";
+    }
   }
 
   public on(event: "ready", listener: () => any): this;
