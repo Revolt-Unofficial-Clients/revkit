@@ -332,7 +332,7 @@ export class WebSocketClient {
               break;
             }
             case "ServerUpdate": {
-              const server = this.client.servers.get(packet.id);
+              const server = await this.client.servers.fetch(packet.id);
               if (server) {
                 packet.clear?.forEach((c) => delete server.source[c]);
                 this.client.emit("serverUpdate", server.update(packet.data));
@@ -376,7 +376,7 @@ export class WebSocketClient {
               break;
             }
             case "ServerMemberUpdate": {
-              const server = this.client.servers.get(packet.id.server),
+              const server = await this.client.servers.fetch(packet.id.server),
                 member = server.members.get(packet.id.user);
               if (member) {
                 packet.clear?.forEach((c) => delete member.source[c]);
@@ -384,34 +384,39 @@ export class WebSocketClient {
               }
               break;
             }
-
-            /*//TODO:
             case "ServerRoleUpdate": {
-              const server = this.client.servers.get(packet.id);
+              const server = await this.client.servers.fetch(packet.id);
               if (server) {
-                const role = {
-                  ...server.roles?.[packet.role_id],
-                  ...packet.data,
-                } as Role;
-                server.roles = {
-                  ...server.roles,
-                  [packet.role_id]: role,
-                };
-                this.client.emit("role/update", packet.role_id, role, packet.id);
+                const isNew = !server.roles.get(packet.role_id);
+                server.update({
+                  roles: {
+                    ...server.source.roles,
+                    [packet.role_id]: {
+                      ...server.source.roles?.[packet.role_id],
+                      ...packet.data,
+                    },
+                  },
+                });
+                this.client.emit(
+                  isNew ? "serverRoleCreate" : "serverRoleUpdate",
+                  server.roles.get(packet.role_id)
+                );
               }
               break;
             }
-
             case "ServerRoleDelete": {
-              const server = this.client.servers.get(packet.id);
+              const server = await this.client.servers.fetch(packet.id);
               if (server) {
-                const { [packet.role_id]: _, ...roles } = server.roles ?? {};
-                server.roles = roles;
-                this.client.emit("role/delete", packet.role_id, packet.id);
+                const role = server.roles.get(packet.role_id);
+                if (role) {
+                  delete server.source.roles?.[packet.role_id];
+                  server.update({ roles: server.source.roles });
+                  this.client.emit("serverRoleDelete", role);
+                }
               }
               break;
             }
-
+            /*//TODO:
             case "UserUpdate": {
               this.client.users.get(packet.id)?.update(packet.data, packet.clear);
               break;
