@@ -8,3 +8,4 @@
 - proxy files
 - settings
 - account creation
+- 2fa support
