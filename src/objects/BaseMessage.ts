@@ -10,10 +10,10 @@ export class BaseMessage extends BaseObject<APIMessage> {
   }
 
   public isSystem(): this is SystemMessage {
-    return this instanceof SystemMessage;
+    return !!this.source.system;
   }
   public isUser(): this is Message {
-    return this instanceof Message;
+    return !this.isSystem();
   }
 
   public get channelID() {

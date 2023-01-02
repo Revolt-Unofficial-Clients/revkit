@@ -21,7 +21,7 @@ export class BaseObject<APIType extends { _id: string | { user: string } }> exte
   }
   public deleted = false;
   /** Update this object with new API data. */
-  public update(data: Partial<APIType>) {
+  public update(data: Partial<APIType> = {}) {
     Object.entries(data).forEach((e) => (this.data[e[0]] = e[1]));
     this.fireUpdate();
     return this;

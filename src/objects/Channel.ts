@@ -37,19 +37,19 @@ export class Channel extends BaseObject<APIChannel> {
   }
 
   public isText(): this is TextChannel {
-    return this instanceof TextChannel;
+    return this.type == ChannelType.Text;
   }
   public isVoice(): this is VoiceChannel {
-    return this instanceof VoiceChannel;
+    return this.type == ChannelType.Voice;
   }
   public isDM(): this is DMChannel {
-    return this instanceof DMChannel;
+    return this.type == ChannelType.DM;
   }
   public isGroupDM(): this is GroupDMChannel {
-    return this instanceof GroupDMChannel;
+    return this.type == ChannelType.GroupDM;
   }
   public isSavedMessages(): this is SavedMessagesChannel {
-    return this instanceof SavedMessagesChannel;
+    return this.type == ChannelType.SavedMessages;
   }
 
   public isTextBased(): this is TextChannel | DMChannel | GroupDMChannel | SavedMessagesChannel {
@@ -59,7 +59,7 @@ export class Channel extends BaseObject<APIChannel> {
     return this.isDM() || this.isGroupDM();
   }
   public isServerBased(): this is ServerChannel {
-    return this instanceof ServerChannel;
+    return this.isText() || this.isVoice();
   }
 
   public get name() {
