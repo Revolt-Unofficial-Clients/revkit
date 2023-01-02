@@ -83,6 +83,10 @@ export class Message extends BaseMessage {
       users: r[1].map((u) => this.client.users.get(u)).filter((u) => u),
     }));
   }
+  /** If the message author allows reactions on their messages. */
+  public get restrictReactions() {
+    return !!this.source.interactions?.restrict_reactions;
+  }
   public async react(emoji: Emoji | string) {
     await this.client.api.put(
       `/channels/${<"">this.channel.id}/messages/${this._id}/reactions/${<"">(
