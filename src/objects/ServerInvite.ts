@@ -29,7 +29,7 @@ export class ServerInvite extends BaseObject<APIInvite> {
     return this.source.creator;
   }
   public get channel() {
-    return this.client.users.get(this.channelID);
+    return this.client.channels.get(this.channelID);
   }
   public async fetchChannel() {
     return await this.client.channels.fetch(this.channelID);

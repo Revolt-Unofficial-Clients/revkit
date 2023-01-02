@@ -9,6 +9,7 @@ import { UserManager } from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
 import { BaseMessage } from "./objects/BaseMessage";
 import { Channel } from "./objects/Channel";
+import { GlobalInvite } from "./objects/GlobalInvite";
 import { GroupDMChannel } from "./objects/GroupDMChannel";
 import { Member } from "./objects/Member";
 import { Role } from "./objects/Role";
@@ -127,6 +128,7 @@ export class Client extends EventEmitter<ClientEvents> {
   /** Fetch an existing invite. */
   public async fetchInvite(code: string) {
     const invite = await this.api.get(`/invites/${<"">code}`);
+    return new GlobalInvite(this, { _id: invite.code, ...invite });
   }
 
   /** Log in using an existing session or bot token. */

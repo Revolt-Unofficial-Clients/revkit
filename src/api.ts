@@ -4,6 +4,7 @@ import {
   Emoji as APIEmoji,
   File as APIAttachment,
   Invite as APIInvite,
+  InviteResponse,
   Member as APIMember,
   Message as APIMessage,
   Role,
@@ -41,11 +42,13 @@ export const DEAD_ID = "00000000000000000000000000";
 type APICategory = Omit<Category, "id"> & { _id: string };
 type APIRole = Role & { _id: string };
 type APISessionInfo = SessionInfo & { token?: string };
+type APIGlobalInvite = InviteResponse & { _id: string };
 export {
   APIAttachment,
   APICategory,
   APIChannel,
   APIEmoji,
+  APIGlobalInvite,
   APIInvite,
   APIMember,
   APIMessage,
