@@ -1,4 +1,6 @@
+import Channel from "../objects/Channel";
 import Emoji from "../objects/Emoji";
+import Member from "../objects/Member";
 import Server from "../objects/Server";
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 
@@ -30,7 +32,7 @@ export const AutocompleteItems: AutocompleteItem[] = [
 ];
 
 export class DefaultEmoji {
-  public get _id() {
+  public get id() {
     return this.name;
   }
   public get imageURL() {
@@ -66,21 +68,21 @@ export function parseAutocomplete(
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item._id)
+            i.result.replace("%", item.id)
           ) + " ";
       } else if (item instanceof Emoji || item instanceof DefaultEmoji) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.EMOJI);
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item._id)
+            i.result.replace("%", item.id)
           ) + " ";
       } else if (item instanceof Member) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.USER);
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item.user._id)
+            i.result.replace("%", item.user.id)
           ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
@@ -117,6 +119,7 @@ export function parseAutocomplete(
       case AutocompleteType.EMOJI: {
         const items = [
           ...[...server.client.emojis.values()].filter(
+            //@ts-ignore
             (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
           ),
           ...Object.keys(RevoltEmojiDictionary)
@@ -130,9 +133,10 @@ export function parseAutocomplete(
         break;
       }
       case AutocompleteType.USER: {
+        //@ts-ignore
         const items = [...server.client.members.values()].filter(
           (m) =>
-            m.server._id == server._id &&
+            m.server._id == server.id &&
             (m.nickname?.toLowerCase().includes(matchedText) ||
               m.user?.username.toLowerCase().includes(matchedText))
         );
