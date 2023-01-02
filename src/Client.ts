@@ -40,6 +40,7 @@ export type ClientEvents =
   | "connecting"
   | "connected"
   | "disconnected"
+  | "destroyed"
   | "packet"
   | "channelCreate"
   | "channelUpdate"
@@ -83,18 +84,10 @@ export class Client extends EventEmitter<ClientEvents> {
   constructor(options?: Partial<ClientOptions>) {
     super();
     this.options = { ...DefaultOptions, ...options };
-
-    this.channels = new ChannelManager(this);
-    this.emojis = new EmojiManager(this);
-    this.servers = new ServerManager(this);
-    this.users = new UserManager(this);
+    this.setup();
 
     this.api = new API({ baseURL: this.options.apiURL });
     this.ws = new WebSocketClient(this);
-  }
-
-  public async fetchConfiguration(force = false) {
-    if (!this.config || force) this.config = await this.api.get("/");
   }
 
   /** Upload an attachment to Autumn. */
@@ -191,10 +184,28 @@ export class Client extends EventEmitter<ClientEvents> {
     }
   }
 
+  public async fetchConfiguration(force = false) {
+    if (!this.config || force) this.config = await this.api.get("/");
+  }
+  public setup() {
+    this.channels = new ChannelManager(this);
+    this.emojis = new EmojiManager(this);
+    this.servers = new ServerManager(this);
+    this.users = new UserManager(this);
+  }
+  public async destroy(destroySession = false) {
+    this.emit("destroyed");
+    if (destroySession) await this.api.post("/auth/session/logout");
+    this.ws.disconnect();
+    delete this.session;
+    this.setup();
+  }
+
   public on(event: "ready", listener: () => any): this;
   public on(event: "connecting", listener: () => any): this;
   public on(event: "connected", listener: () => any): this;
   public on(event: "disconnected", listener: () => any): this;
+  public on(event: "destroyed", listener: () => any): this;
   public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
   public on(event: "channelCreate", listener: (channel: Channel) => any): this;
   public on(event: "channelUpdate", listener: (channel: Channel) => any): this;
@@ -221,8 +232,4 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
   }
-
-  /*
-  on(event: "logout", listener: () => void): this;
-  */
 }
