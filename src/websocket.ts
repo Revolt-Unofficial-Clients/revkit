@@ -367,9 +367,8 @@ export class WebSocketClient {
                 this.client.emit("serverExited", packet.id, server);
               } else {
                 const user = await this.client.users.fetch(packet.id);
-                const member = server.members.get(packet.user);
                 server.members.delete(packet.id);
-                this.client.emit("serverMemberLeave", server, user, member);
+                this.client.emit("serverMemberLeave", server, user);
               }
               break;
             }

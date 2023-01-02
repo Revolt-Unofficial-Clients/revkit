@@ -144,10 +144,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "serverUpdate", listener: (server: Server) => any): this;
   public on(event: "serverExited", listener: (id: string, server?: Server) => any): this;
   public on(event: "serverMemberJoin", listener: (member: Member) => any): this;
-  public on(
-    event: "serverMemberLeave",
-    listener: (server: Server, user: User, member?: Member) => void
-  ): this;
+  public on(event: "serverMemberLeave", listener: (server: Server, user: User) => void): this;
 
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
