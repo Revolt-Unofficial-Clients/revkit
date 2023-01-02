@@ -321,30 +321,26 @@ export class WebSocketClient {
               }
               break;
             }
-
-            /*//TODO:
             case "ServerCreate": {
-              runInAction(async () => {
-                const channels = [];
-                for (const channel of packet.channels) {
-                  channels.push(await this.client.channels.fetch(channel._id, channel));
-                }
-
-                await this.client.servers.fetch(packet.id, packet.server);
-              });
-
+              for (const channel of packet.channels) {
+                await this.client.channels.fetch(channel._id, channel);
+              }
+              this.client.emit(
+                "serverCreate",
+                await this.client.servers.fetch(packet.id, packet.server)
+              );
               break;
             }
-
             case "ServerUpdate": {
               const server = this.client.servers.get(packet.id);
               if (server) {
-                server.update(packet.data, packet.clear);
-                this.client.emit("server/update", server);
+                packet.clear?.forEach((c) => delete server.source[c]);
+                this.client.emit("serverUpdate", server.update(packet.data));
               }
               break;
             }
 
+            /*//TODO:
             case "ServerDelete": {
               const server = this.client.servers.get(packet.id);
               server?.delete(false, true);

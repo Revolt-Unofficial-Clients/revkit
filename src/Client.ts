@@ -10,6 +10,7 @@ import { AttachmentBucket } from "./objects/Attachment";
 import { BaseMessage } from "./objects/BaseMessage";
 import { Channel } from "./objects/Channel";
 import { GroupDMChannel } from "./objects/GroupDMChannel";
+import { Server } from "./objects/Server";
 import { User } from "./objects/User";
 import { WebSocketClient } from "./websocket";
 import { ClientboundNotification } from "./websocketNotifications";
@@ -37,15 +38,17 @@ export type ClientEvents =
   | "connected"
   | "disconnected"
   | "packet"
-  | "message"
-  | "messageUpdate"
-  | "messageDelete"
   | "channelCreate"
   | "channelUpdate"
   | "channelDelete"
   | "groupMemberJoin"
   | "groupMemberLeave"
-  | "groupExited";
+  | "groupExited"
+  | "message"
+  | "messageUpdate"
+  | "messageDelete"
+  | "serverCreate"
+  | "serverUpdate";
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -133,6 +136,8 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
   public on(event: "groupMemberLeave", listener: (group: GroupDMChannel, user: User) => any): this;
   public on(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
+  public on(event: "serverCreate", listener: (server: Server) => any): this;
+  public on(event: "serverUpdate", listener: (server: Server) => any): this;
 
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
@@ -141,7 +146,6 @@ export class Client extends EventEmitter<ClientEvents> {
   /*
   on(event: "logout", listener: () => void): this;
 
-  on(event: "server/update", listener: (server: Server) => void): this;
   on(event: "server/delete", listener: (id: string, server?: Server) => void): this;
 
   on(event: "role/update", listener: (roleId: string, role: Role, serverId: string) => void): this;
