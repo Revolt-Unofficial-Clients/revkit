@@ -23,6 +23,7 @@ export class Server extends BaseObject<APIServer> {
     super(client, data);
     this.members = new MemberManager(this.client, this);
     this.roles = new RoleManager(this.client, this);
+    this.members.onUpdate(() => this.fireUpdate());
   }
   public update(data: Partial<APIServer>) {
     super.update(data);

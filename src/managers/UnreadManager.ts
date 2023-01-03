@@ -24,8 +24,9 @@ export class UnreadManager extends MiniMapEmitter<APIUnread> {
   public async markRead(channel: Channel, message_id?: string, emit = true) {
     const last_id = message_id ?? ulid();
     this.set(channel.id, { last_id });
-
+    this.fireUpdate();
     if (emit) await channel.ack(last_id);
+    this.fireUpdate();
   }
   /** Mark a channel unread with a custom last_id. */
   public markUnread(channel: Channel, last_id: string) {
@@ -33,6 +34,7 @@ export class UnreadManager extends MiniMapEmitter<APIUnread> {
       ...this.get(channel.id),
       last_id,
     });
+    this.fireUpdate();
   }
   /** Add a mention to a message. */
   public markMention(message: Message) {
@@ -42,5 +44,6 @@ export class UnreadManager extends MiniMapEmitter<APIUnread> {
       ...unread,
       mentions: [...(unread?.mentions ?? []), message.id],
     });
+    this.fireUpdate();
   }
 }
