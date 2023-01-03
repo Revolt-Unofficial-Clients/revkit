@@ -6,6 +6,11 @@ export class BaseManager<T extends BaseObject<any>> extends MiniMapEmitter<T> {
     super();
   }
 
+  public set(key: string, value: T) {
+    super.set(key, value);
+    this.fireUpdate();
+    return this;
+  }
   public delete(key: string) {
     const has = this.get(key);
     if (has) has.update({ deleted: true });

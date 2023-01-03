@@ -33,7 +33,9 @@ export class Server extends BaseObject<APIServer> {
 
   public get channels() {
     const man = new ServerChannelManager(this);
-    this.client.channels.forEach((c) => c.isServerBased() && man.set(c.id, c));
+    this.client.channels.forEach(
+      (c) => c.isServerBased() && c.serverID == this.id && man.set(c.id, c)
+    );
     return man;
   }
   public get emojis() {
