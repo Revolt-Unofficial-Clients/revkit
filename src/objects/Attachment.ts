@@ -68,4 +68,8 @@ export class Attachment extends BaseObject<APIAttachment> {
         : "";
     return `${autumn.url}/${this.bucket}/${this.id}${query}`;
   }
+  /** Generate a link to download this attachment. */
+  public generateDownloadURL() {
+    return this.generateURL()?.replace("attachments", "attachments/download");
+  }
 }
