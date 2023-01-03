@@ -32,7 +32,6 @@ export interface ClientOptions {
   debug: boolean;
   heartbeat: number;
   reconnect: boolean;
-  unreads: boolean;
   pingTimeout?: number;
   exitOnTimeout?: boolean;
 }
@@ -41,7 +40,6 @@ const DefaultOptions: ClientOptions = {
   debug: false,
   heartbeat: 30,
   reconnect: true,
-  unreads: false,
 };
 
 export type ClientEvents =
@@ -341,5 +339,41 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "userUpdate", listener: (user: User) => any): this;
   public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
     return super.on(event, listener, context);
+  }
+
+  //TODO: find a better way
+  public once(event: "ready", listener: () => any): this;
+  public once(event: "connecting", listener: () => any): this;
+  public once(event: "connected", listener: () => any): this;
+  public once(event: "disconnected", listener: () => any): this;
+  public once(event: "destroyed", listener: () => any): this;
+  public once(event: "packet", listener: (packet: ClientboundNotification) => any): this;
+  public once(event: "channelCreate", listener: (channel: Channel) => any): this;
+  public once(event: "channelUpdate", listener: (channel: Channel) => any): this;
+  public once(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
+  public once(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
+  public once(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
+  public once(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
+  public once(
+    event: "groupMemberLeave",
+    listener: (group: GroupDMChannel, user: User) => any
+  ): this;
+  public once(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
+  public once(event: "message", listener: (message: BaseMessage) => any): this;
+  public once(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
+  public once(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
+  public once(event: "serverCreate", listener: (server: Server) => any): this;
+  public once(event: "serverUpdate", listener: (server: Server) => any): this;
+  public once(event: "serverExited", listener: (id: string, server?: Server) => any): this;
+  public once(event: "serverMemberJoin", listener: (member: Member) => any): this;
+  public once(event: "serverMemberLeave", listener: (server: Server, user: User) => any): this;
+  public once(event: "serverMemberUpdate", listener: (member: Member) => any): this;
+  public once(event: "serverRoleCreate", listener: (role: Role) => any): this;
+  public once(event: "serverRoleUpdate", listener: (role: Role) => any): this;
+  public once(event: "serverRoleDelete", listener: (role: Role) => any): this;
+  public once(event: "userRelationshipUpdate", listener: (user: User) => any): this;
+  public once(event: "userUpdate", listener: (user: User) => any): this;
+  public once(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
+    return super.once(event, listener, context);
   }
 }
