@@ -133,7 +133,7 @@ export class Channel extends BaseObject<APIChannel> {
   public get unread() {
     if (!this.lastMessageID || !this.isTextBased() || this.isSavedMessages()) return false;
     return (
-      (this.client.unreads.get(this.id)?.last_id ?? "0").localeCompare(this.lastMessageID) === -1
+      (this.client.unreads.get(this.id)?.last_id ?? ulid()).localeCompare(this.lastMessageID) === -1
     );
   }
   public getMentions(valid: ChannelUnreadChecker) {
