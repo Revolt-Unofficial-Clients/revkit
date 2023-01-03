@@ -117,10 +117,7 @@ export function parseAutocomplete(
       }
       case AutocompleteType.EMOJI: {
         const items = [
-          ...[...server.client.emojis.values()].filter(
-            //@ts-ignore
-            (e) => e.parent.type == "Server" && e.name.toLowerCase().includes(matchedText)
-          ),
+          ...server.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
           ...Object.keys(RevoltEmojiDictionary)
             .filter((k) => k.toLowerCase().includes(matchedText))
             .map((k) => new DefaultEmoji(k)),
@@ -132,12 +129,10 @@ export function parseAutocomplete(
         break;
       }
       case AutocompleteType.USER: {
-        //@ts-ignore
-        const items = [...server.client.members.values()].filter(
+        const items = server.members.filter(
           (m) =>
-            m.server._id == server.id &&
-            (m.nickname?.toLowerCase().includes(matchedText) ||
-              m.user?.username.toLowerCase().includes(matchedText))
+            m.nickname?.toLowerCase().includes(matchedText) ||
+            m.user?.username.toLowerCase().includes(matchedText)
         );
         results.users.unshift(
           ...items.filter((i) =>
