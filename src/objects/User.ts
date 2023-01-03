@@ -19,6 +19,15 @@ class Bot {
     return await this.parent.client.users.fetch(this.ownerID, fetchNew);
   }
 }
+export interface UserMutuals {
+  friends: string[];
+  servers: string[];
+}
+export interface UserProfile {
+  background: Attachment | null;
+  bio: string | null;
+  generateBackgroundURL(...args: AttachmentArgs): string | null;
+}
 
 export class User extends BaseObject<APIUser> {
   constructor(client: Client, data: APIUser) {
@@ -95,12 +104,12 @@ export class User extends BaseObject<APIUser> {
   }
 
   /** Fetch this user's profile information. */
-  public async fetchProfile() {
+  public async fetchProfile(): Promise<UserProfile> {
     const profile = await this.client.api.get(`/users/${this._id}/profile`);
     return {
       background: profile.background ? new Attachment(this.client, profile.background) : null,
       bio: profile.content ?? null,
-      generateBackgroundURL(...args: AttachmentArgs) {
+      generateBackgroundURL(...args) {
         return profile.background
           ? new Attachment(this.client, profile.background).generateURL(...args)
           : null;
@@ -108,7 +117,7 @@ export class User extends BaseObject<APIUser> {
     };
   }
   /** Fetch your mutual friends/servers with this user. */
-  public async fetchMutual() {
+  public async fetchMutual(): Promise<UserMutuals> {
     const mutual = await this.client.api.get(`/users/${this._id}/mutual`);
     return {
       friends: mutual.users,

@@ -1,7 +1,7 @@
 import { DataEditRole } from "revolt-api";
 import { APIRole } from "../api";
 import { Client } from "../Client";
-import { PermissionFlags } from "../utils/PermissionFlags";
+import { PermissionFlags, PermissionOverride } from "../utils/PermissionFlags";
 import { BaseObject } from "./BaseObject";
 import { Server } from "./Server";
 
@@ -22,7 +22,7 @@ export class Role extends BaseObject<APIRole> {
   public get hoist() {
     return !!this.source.hoist;
   }
-  public get permissions() {
+  public get permissions(): PermissionOverride {
     return {
       allow: new PermissionFlags(this.source.permissions.a),
       deny: new PermissionFlags(this.source.permissions.d),

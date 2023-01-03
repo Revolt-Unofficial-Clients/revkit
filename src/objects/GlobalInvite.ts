@@ -3,6 +3,14 @@ import { Client } from "../Client";
 import { Attachment } from "./Attachment";
 import { BaseObject } from "./BaseObject";
 
+export interface GlobalInviteServer {
+  id: string;
+  name: string;
+  icon: Attachment | null;
+  banner: Attachment | null;
+  members: number;
+}
+
 export class GlobalInvite extends BaseObject<APIGlobalInvite> {
   /** Invites don't have a creation date. */
   public get createdAt() {
@@ -29,7 +37,7 @@ export class GlobalInvite extends BaseObject<APIGlobalInvite> {
       description: this.source.channel_description ?? null,
     };
   }
-  public get server() {
+  public get server(): GlobalInviteServer {
     return this.source.type == "Server"
       ? {
           id: this.source.server_id,

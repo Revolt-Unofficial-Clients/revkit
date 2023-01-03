@@ -18,3 +18,8 @@ export class PermissionFlags extends BaseFlags {
     return super.all();
   }
 }
+
+export interface PermissionOverride {
+  allow: PermissionFlags;
+  deny: PermissionFlags;
+}

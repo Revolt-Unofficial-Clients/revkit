@@ -1,6 +1,6 @@
 import { APIChannel } from "../api";
 import { Client } from "../Client";
-import { PermissionFlags } from "../utils/PermissionFlags";
+import { PermissionFlags, PermissionOverride } from "../utils/PermissionFlags";
 import { Channel, ChannelType } from "./Channel";
 
 export class ServerChannel extends Channel {
@@ -24,7 +24,7 @@ export class ServerChannel extends Channel {
     return this.client.servers.get(this.source.server);
   }
 
-  public get defaultPermissions() {
+  public get defaultPermissions(): PermissionOverride {
     return {
       allow: new PermissionFlags(this.source.default_permissions?.a || 0),
       deny: new PermissionFlags(this.source.default_permissions?.d || 0),
