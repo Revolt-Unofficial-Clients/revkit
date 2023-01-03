@@ -27,6 +27,10 @@ export class Message extends BaseMessage {
   public get masquerade() {
     return this.source.masquerade ?? null;
   }
+  public generateMasqAvatarURL() {
+    const avatar = this.masquerade?.avatar;
+    return avatar ? this.client.proxyFile(avatar) : null;
+  }
 
   public get authorID() {
     return this.source.author;
