@@ -72,7 +72,7 @@ export class Server extends BaseObject<APIServer> {
           {
             _id: category.id,
             title: category.name,
-            channels,
+            channels: channels.map((c) => c.id),
           },
           this
         );

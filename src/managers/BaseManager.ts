@@ -20,13 +20,13 @@ export class BaseManager<T extends BaseObject<any>> extends MiniMapEmitter<T> {
     return [...this.values()];
   }
 
-  public get find() {
-    return this.items().find;
+  public find(...d: Parameters<ReturnType<typeof this.items>["find"]>) {
+    return this.items().find(...d);
   }
-  public get filter() {
-    return this.items().filter;
+  public filter(...d: Parameters<ReturnType<typeof this.items>["filter"]>) {
+    return this.items().filter(...d);
   }
-  public get map() {
-    return this.items().map;
+  public map(...d: Parameters<ReturnType<typeof this.items>["map"]>) {
+    return this.items().map(...d);
   }
 }
