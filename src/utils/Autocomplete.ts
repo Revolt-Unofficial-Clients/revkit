@@ -38,7 +38,7 @@ export class DefaultEmoji {
   public get imageURL() {
     return unicodeEmojiURL(RevoltEmojiDictionary[this.name], this.pack);
   }
-  public get server() {
+  public get parent() {
     return null;
   }
   public pack: EmojiPacks = "mutant";
