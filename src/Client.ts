@@ -171,25 +171,39 @@ export class Client extends EventEmitter<ClientEvents> {
   }
   /**
    * Log in with a username and password.
-   * @returns Nothing on success, an onboarding function, or 2FA when implemented.
+   * @returns Returns a response being one of `none`, `onboard`, or `mfa`. Onboarding and MFA both require a response.
    */
   public async authenticate(details: DataLogin) {
     await this.fetchConfiguration();
+    const client = this;
     const data = await this.api.post("/auth/session/login", details);
     if (data.result === "Success") {
       const { onboarding } = await this.api.get("/onboard/hello");
       if (onboarding) {
-        const that = this;
         this.login(data.token, "user", false);
-        return async (username: string, loginAfterSuccess = true) => {
-          await that.api.post("/onboard/complete", { username });
-          if (loginAfterSuccess) await that.login(data.token, "user");
+        return {
+          type: <"onboard">"onboard",
+          async respond(username: string, loginAfterSuccess = true) {
+            await client.api.post("/onboard/complete", { username });
+            if (loginAfterSuccess) await client.login(data.token, "user");
+          },
         };
       }
       this.login(data.token, "user");
-      return;
-    } else {
-      throw "MFA not implemented!";
+      return { type: <"none">"none" };
+    } else if (data.result == "MFA") {
+      return {
+        type: <"mfa">"mfa",
+        ticket: data.ticket,
+        methods: data.allowed_methods,
+        async respond(totp_code: string) {
+          return await client.authenticate({
+            mfa_ticket: data.ticket,
+            mfa_response: { totp_code },
+            friendly_name: details.friendly_name,
+          });
+        },
+      };
     }
   }
 
