@@ -105,13 +105,14 @@ export class User extends BaseObject<APIUser> {
 
   /** Fetch this user's profile information. */
   public async fetchProfile(): Promise<UserProfile> {
-    const profile = await this.client.api.get(`/users/${this._id}/profile`);
+    const profile = await this.client.api.get(`/users/${this._id}/profile`),
+      client = this.client;
     return {
       background: profile.background ? new Attachment(this.client, profile.background) : null,
       bio: profile.content ?? null,
       generateBackgroundURL(...args) {
         return profile.background
-          ? new Attachment(this.client, profile.background).generateURL(...args)
+          ? new Attachment(client, profile.background).generateURL(...args)
           : null;
       },
     };
