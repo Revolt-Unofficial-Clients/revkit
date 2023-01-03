@@ -3,6 +3,7 @@ import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import { Client } from "../Client";
 import { MessageManager } from "../managers/MessageManager";
+import { UnreadManager } from "../managers/UnreadManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
 import { Attachment, AttachmentArgs } from "./Attachment";
@@ -24,6 +25,7 @@ export enum ChannelType {
   Text = "TextChannel",
   Voice = "VoiceChannel",
 }
+export type ChannelUnreadChecker = (target: Channel) => boolean;
 
 export class Channel extends BaseObject<APIChannel> {
   public get type() {
@@ -121,6 +123,48 @@ export class Channel extends BaseObject<APIChannel> {
   }
   public async fetchLastMessage() {
     return this.lastMessageID ? await this.fetchMessage(this.lastMessageID) : null;
+  }
+
+  public checkUnread(valid: ChannelUnreadChecker) {
+    if (valid(this)) return false;
+    return this.unread;
+  }
+  public get unread() {
+    if (!this.lastMessageID || !this.isTextBased() || this.isSavedMessages()) return false;
+    return (
+      (this.client.unreads.get(this.id)?.last_id ?? "0").localeCompare(this.lastMessageID) === -1
+    );
+  }
+  public getMentions(valid: ChannelUnreadChecker) {
+    if (valid(this)) return [];
+    return this.mentions;
+  }
+  public get mentions() {
+    if (!this.isTextBased() || this.isSavedMessages()) return [];
+    return this.client.unreads.get(this._id)?.mentions ?? [];
+  }
+  /** Mark a specific message as read/unread. */
+  public async ack(message?: Message | string) {
+    const id =
+      (typeof message === "string" ? message : message?.id) ?? this.lastMessageID ?? ulid();
+    await this.client.api.put(`/channels/${this._id}/ack/${<"">id}`);
+  }
+  /**
+   * Syncs unreads from server and marks channel as read if unread.
+   * @param useSeparate If true, will create a new unread object to avoid 'unread flashing'.
+   */
+  public async markRead(useSeparate = false) {
+    if (!this.lastMessageID) return;
+    if (useSeparate) {
+      this.client.unreads?.markRead(this.id, this.lastMessageID);
+      const unreads = new UnreadManager(this.client);
+      await unreads.sync();
+      if ((unreads.get(this.id)?.last_id ?? "0").localeCompare(this.lastMessageID) === -1)
+        this.ack();
+    } else {
+      await this.client.unreads.sync();
+      if (this.unread) await this.ack();
+    }
   }
 
   public async send(data: string | DataMessageSend) {

@@ -13,6 +13,7 @@ import {
 import { ChannelManager } from "./managers/ChannelManager";
 import { EmojiManager } from "./managers/EmoijManager";
 import { ServerManager } from "./managers/ServerManager";
+import { UnreadManager } from "./managers/UnreadManager";
 import { UserManager } from "./managers/UserManager";
 import { AttachmentBucket } from "./objects/Attachment";
 import { BaseMessage } from "./objects/BaseMessage";
@@ -83,6 +84,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public channels: ChannelManager;
   public emojis: EmojiManager;
   public servers: ServerManager;
+  public unreads: UnreadManager;
   public users: UserManager;
 
   public get user() {
@@ -292,6 +294,7 @@ export class Client extends EventEmitter<ClientEvents> {
     this.channels = new ChannelManager(this);
     this.emojis = new EmojiManager(this);
     this.servers = new ServerManager(this);
+    this.unreads = new UnreadManager(this);
     this.users = new UserManager(this);
   }
   public async destroy(destroySession = false) {

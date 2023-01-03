@@ -1,6 +1,7 @@
 import {
   Category,
   Channel as APIChannel,
+  ChannelUnread,
   Emoji as APIEmoji,
   File as APIAttachment,
   Invite as APIInvite,
@@ -40,9 +41,10 @@ export enum SystemMessageType {
 export const DEAD_ID = "00000000000000000000000000";
 
 type APICategory = Omit<Category, "id"> & { _id: string };
+type APIGlobalInvite = InviteResponse & { _id: string };
 type APIRole = Role & { _id: string };
 type APISessionInfo = SessionInfo & { token?: string };
-type APIGlobalInvite = InviteResponse & { _id: string };
+type APIUnread = Omit<ChannelUnread, "_id">;
 export {
   APIAttachment,
   APICategory,
@@ -55,5 +57,6 @@ export {
   APIRole,
   APIServer,
   APISessionInfo,
+  APIUnread,
   APIUser,
 };
