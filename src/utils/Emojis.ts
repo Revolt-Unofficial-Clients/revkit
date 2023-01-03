@@ -27,7 +27,7 @@ export function emojiToCodePoint(rune: string) {
 }
 
 export function unicodeEmojiURL(emoji: string, pack: EmojiPacks = "mutant") {
-  const REVISION = 3; //TODO: dunno but its hardcoded
+  const REVISION = 3;
   return `https://static.revolt.chat/emoji/${pack}/${emojiToCodePoint(emoji)}.svg?rev=${REVISION}`;
 }
 
