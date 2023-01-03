@@ -1,7 +1,15 @@
 import axios from "axios";
 import EventEmitter from "eventemitter3";
 import FormData from "form-data";
-import { API, DataCreateGroup, DataCreateServer, DataLogin, Emoji, RevoltConfig } from "revolt-api";
+import {
+  API,
+  DataCreateGroup,
+  DataCreateServer,
+  DataLogin,
+  Emoji,
+  MFAResponse,
+  RevoltConfig,
+} from "revolt-api";
 import { ChannelManager } from "./managers/ChannelManager";
 import { EmojiManager } from "./managers/EmoijManager";
 import { ServerManager } from "./managers/ServerManager";
@@ -183,6 +191,67 @@ export class Client extends EventEmitter<ClientEvents> {
     } else {
       throw "MFA not implemented!";
     }
+  }
+
+  public get mfa() {
+    const client = this;
+    function ticketHeaders(token: string) {
+      return {
+        headers: {
+          "X-MFA-Ticket": token,
+        },
+      };
+    }
+    const man = {
+      /** MFA status. */
+      async status() {
+        const status = await client.api.get("/auth/mfa/");
+        return {
+          hasRecovery: status.recovery_active,
+        };
+      },
+      /** Allowed ticket methods for account. */
+      async allowedMethods() {
+        return await client.api.get("/auth/mfa/methods");
+      },
+      /** Generate an MFA ticket for later use. */
+      async generateTicket(code: MFAResponse) {
+        const ticket = await client.api.put("/auth/mfa/ticket", code);
+        return {
+          id: ticket._id,
+          accountID: ticket.account_id,
+          token: ticket.token,
+          validated: ticket.validated,
+          authorized: !!ticket.authorised,
+          lastTOTPCode: ticket.last_totp_code ?? null,
+        };
+      },
+      /** Generate the TOTP secret for MFA app. */
+      async generateTOTPSecret(ticketToken: string) {
+        return (await client.api.post("/auth/mfa/totp", undefined, ticketHeaders(ticketToken)))
+          .secret;
+      },
+      /** Enable TOTP with the code from MFA app. */
+      async enableTOTP(ticketToken: string, totp_code: string) {
+        return await client.api.put("/auth/mfa/totp", { totp_code }, ticketHeaders(ticketToken));
+      },
+      /** Disable TOTP. */
+      async disableTOTP(ticketToken: string) {
+        await client.api.delete("/auth/mfa/totp", {}, ticketHeaders(ticketToken));
+      },
+      /** Fetch recovery codes. (or generate/enable them if not enabled) */
+      async fetchRecoveryCodes(ticketToken: string) {
+        const status = await man.status();
+        if (status.hasRecovery)
+          return await client.api.post("/auth/mfa/recovery", undefined, ticketHeaders(ticketToken));
+        else return await man.generateRecoveryCodes(ticketToken);
+      },
+      /** Generate new recovery codes. */
+      async generateRecoveryCodes(ticketToken: string) {
+        return await client.api.patch("/auth/mfa/recovery", undefined, ticketHeaders(ticketToken));
+      },
+    };
+    return man;
   }
 
   public async fetchConfiguration(force = false) {
