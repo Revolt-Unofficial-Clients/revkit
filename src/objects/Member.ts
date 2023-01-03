@@ -96,6 +96,27 @@ export class Member extends BaseObject<APIMember> {
       await this.client.api.patch(`/servers/${<"">this.serverID}/members/${this._id}`, data)
     );
   }
+  /** Add a role to this member. */
+  public async addRole(role: Role) {
+    const list = new Set(this.roles.map((r) => r.id));
+    list.add(role.id);
+    return await this.edit({ roles: [...list] });
+  }
+  /** Remove a role from this member. */
+  public async removeRole(role: Role) {
+    const list = new Set(this.roles.map((r) => r.id));
+    list.delete(role.id);
+    return await this.edit(list.size ? { roles: [...list] } : { remove: ["Roles"] });
+  }
+  /**
+   * Set or remove the timeout for this member.
+   * @param ends Epoch time for timeout to end or `null` to remove.
+   */
+  public async timeout(ends: number | null) {
+    return await this.edit(
+      ends ? { timeout: new Date(ends).toISOString() } : { remove: ["Timeout"] }
+    );
+  }
   /** Kick this member. */
   public async kick() {
     await this.client.api.delete(`/servers/${this.serverID}/members/${this.id}`);
