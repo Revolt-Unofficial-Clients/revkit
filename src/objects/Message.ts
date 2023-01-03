@@ -1,4 +1,4 @@
-import { DataEditMessage, DataMessageSend } from "revolt-api";
+import { DataEditMessage } from "revolt-api";
 import { APIMessage } from "../api";
 import { Client } from "../Client";
 import { Attachment } from "./Attachment";
@@ -72,13 +72,6 @@ export class Message extends BaseMessage {
       (m) => m
     );
   }
-  public async reply(data: string | DataMessageSend, mention = true) {
-    const obj = typeof data === "string" ? { content: data } : data;
-    return await this.channel.send({
-      ...obj,
-      replies: [{ id: this._id, mention }],
-    });
-  }
 
   public get reactions() {
     return Object.entries(this.source.reactions).map((r) => ({
@@ -117,9 +110,5 @@ export class Message extends BaseMessage {
     return this.update(
       await this.client.api.patch(`/channels/${<"">this.channel.id}/messages/${this._id}`, data)
     );
-  }
-  public async delete() {
-    await this.client.api.delete(`/channels/${<"">this.channel.id}/messages/${this._id}`);
-    this.channel.messages.delete(this.id);
   }
 }

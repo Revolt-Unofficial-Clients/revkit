@@ -6,3 +6,4 @@
 - message reactions fix
 - settings
 - account creation
+- regex

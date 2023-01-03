@@ -1,3 +1,4 @@
+import { DataMessageSend } from "revolt-api";
 import { APIMessage } from "../api";
 import { Client } from "../Client";
 import { BaseObject } from "./BaseObject";
@@ -29,5 +30,18 @@ export class BaseMessage extends BaseObject<APIMessage> {
 
   public async ack() {
     await this.channel?.ack(this);
+  }
+
+  public async reply(data: string | DataMessageSend, mention = true) {
+    const obj = typeof data === "string" ? { content: data } : data;
+    return await this.channel.send({
+      ...obj,
+      replies: [{ id: this._id, mention }],
+    });
+  }
+
+  public async delete() {
+    await this.client.api.delete(`/channels/${<"">this.channel.id}/messages/${this._id}`);
+    this.channel.messages.delete(this.id);
   }
 }
