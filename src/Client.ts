@@ -184,7 +184,7 @@ export class Client extends EventEmitter<ClientEvents> {
     const client = this;
     const data = await this.api.post("/auth/session/login", details);
     if (data.result === "Success") {
-      this.login(data.token, "user", false);
+      await this.login(data.token, "user", false);
       const { onboarding } = await this.api.get("/onboard/hello");
       if (onboarding) {
         return {
@@ -195,7 +195,7 @@ export class Client extends EventEmitter<ClientEvents> {
           },
         };
       }
-      this.login(data.token, "user");
+      await this.login(data.token, "user");
       return { type: <"none">"none" };
     } else if (data.result == "MFA") {
       return {
