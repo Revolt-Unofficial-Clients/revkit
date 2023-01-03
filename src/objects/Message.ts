@@ -47,7 +47,7 @@ export class Message extends BaseMessage {
   }
 
   public get mentionIDs() {
-    return this.source.mentions;
+    return this.source.mentions || [];
   }
   public get mentions() {
     return this.mentionIDs.map((id) => this.client.users.get(id)).filter((m) => m);

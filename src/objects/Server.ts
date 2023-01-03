@@ -10,8 +10,11 @@ import { ServerFlags } from "../utils/ServerFlags";
 import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseObject } from "./BaseObject";
 import { Category } from "./Category";
+import { Channel } from "./Channel";
 import { Member } from "./Member";
 import { ServerInvite } from "./ServerInvite";
+
+export type ServerUnreadChecker = (target: Channel | Server) => boolean;
 
 export class Server extends BaseObject<APIServer> {
   public members: MemberManager;
@@ -173,6 +176,22 @@ export class Server extends BaseObject<APIServer> {
         reason: b.reason ?? null,
       };
     });
+  }
+
+  /** Test if this server is unread. */
+  public isUnread(valid: ServerUnreadChecker) {
+    if (valid(this)) return false;
+    return !!this.channels.find((channel) => !valid(channel) && channel.unread);
+  }
+  /** Gets an array of mentioned message IDs. */
+  public getMentions(valid: ServerUnreadChecker) {
+    if (valid(this)) return [];
+    const arr: string[][] = this.channels.filter((c) => !valid(c)).map((c) => c.mentions);
+    return arr.flat(1);
+  }
+  /** Mark this server as read. */
+  public async ack() {
+    await this.client.api.put(`/servers/${this._id}/ack`);
   }
 
   /** Set permissions for a role id or 'default'. */

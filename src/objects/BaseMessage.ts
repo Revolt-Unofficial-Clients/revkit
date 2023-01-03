@@ -26,4 +26,8 @@ export class BaseMessage extends BaseObject<APIMessage> {
   public get server() {
     return this.channel.isServerBased() ? this.channel.server : null;
   }
+
+  public async ack() {
+    await this.channel?.ack(this);
+  }
 }

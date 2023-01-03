@@ -101,8 +101,7 @@ export class WebSocketClient {
               this.ready = true;
               resolve();
 
-              //TODO: Sync unreads.
-              //this.client.unreads?.sync();
+              this.client.unreads.sync();
 
               if (this.client.options.heartbeat > 0) {
                 this.send({ type: "Ping", data: +new Date() });
@@ -174,10 +173,8 @@ export class WebSocketClient {
 
               this.client.emit("message", message);
 
-              /*//TODO:
-              if (this.client.unreads && message.mention_ids?.includes(this.client.user!._id)) {
-                this.client.unreads.markMention(message.channel_id, message._id);
-              }*/
+              if (message.isUser() && message.mentionIDs.includes(this.client.user.id))
+                this.client.unreads.markMention(message);
               break;
             }
             case "MessageUpdate": {
@@ -451,6 +448,11 @@ export class WebSocketClient {
               this.client.emit("emojiDelete", packet.id, emoji);
               break;
             }
+            case "ChannelAck": {
+              const channel = this.client.channels.get(packet.id);
+              if (channel) this.client.unreads.markRead(channel, packet.message_id, false);
+              break;
+            }
             /*//TODO:
             case "ChannelStartTyping": {
               const channel = this.client.channels.get(packet.id);
@@ -472,10 +474,7 @@ export class WebSocketClient {
               clearInterval(timeouts[packet.id + packet.user]);
               break;
             }
-            case "ChannelAck": {
-              this.client.unreads?.markRead(packet.id, packet.message_id);
-              break;
-            }*/
+            */
             case "Pong": {
               this.ping = +new Date() - packet.data;
               break;
