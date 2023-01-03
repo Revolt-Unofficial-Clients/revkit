@@ -51,7 +51,7 @@ export class User extends BaseObject<APIUser> {
   }
   public generateAvatarURL(...args: AttachmentArgs) {
     if (!args[2]) args[2] = this.defaultAvatarURL;
-    return this.avatar ? this.avatar.generateURL(...args) : null;
+    return this.avatar ? this.avatar.generateURL(...args) : this.defaultAvatarURL;
   }
 
   public get relationship() {
