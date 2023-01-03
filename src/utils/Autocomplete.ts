@@ -38,10 +38,9 @@ export class DefaultEmoji {
   public get imageURL() {
     return unicodeEmojiURL(RevoltEmojiDictionary[this.name], this.pack);
   }
-  public parent = {
-    type: "Detached",
-    id: "",
-  };
+  public get server() {
+    return null;
+  }
   public pack: EmojiPacks = "mutant";
   constructor(public name: string) {}
   public setPack(pack: EmojiPacks) {
