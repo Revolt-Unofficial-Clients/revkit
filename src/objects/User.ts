@@ -64,7 +64,6 @@ export class User extends BaseObject<APIUser> {
     return this.source.status?.presence ?? null;
   }
 
-  //TODO:open dm
   /** Send this user a friend request. */
   public async addFriend() {
     this.client.users.construct(
@@ -84,6 +83,15 @@ export class User extends BaseObject<APIUser> {
   /** Unblock this user. */
   public async unblock() {
     this.client.users.construct(await this.client.api.delete(`/users/${this._id}/block`));
+  }
+  /** Open a DM with this user. */
+  public async openDM() {
+    let dm = this.client.channels.find((c) => c.isDM() && c.recipientID == this.id);
+    if (!dm) {
+      const data = await this.client.api.get(`/users/${this._id}/dm`);
+      dm = await this.client.channels.fetch(data._id, data);
+    }
+    return dm.update({ active: true });
   }
 
   /** Fetch this user's profile information. */
