@@ -7,6 +7,7 @@ import { UnreadManager } from "../managers/UnreadManager";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
 import { Attachment, AttachmentArgs } from "./Attachment";
+import { BaseMessage } from "./BaseMessage";
 import { BaseObject } from "./BaseObject";
 import { DMChannel } from "./DMChannel";
 import { GroupDMChannel } from "./GroupDMChannel";
@@ -141,10 +142,10 @@ export class Channel extends BaseObject<APIChannel> {
   }
   public get mentions() {
     if (!this.isTextBased() || this.isSavedMessages()) return [];
-    return this.client.unreads.get(this._id)?.mentions ?? [];
+    return this.client.unreads.get(this.id)?.mentions ?? [];
   }
   /** Mark a specific message as read/unread. */
-  public async ack(message?: Message | string) {
+  public async ack(message?: BaseMessage | string) {
     const id =
       (typeof message === "string" ? message : message?.id) ?? this.lastMessageID ?? ulid();
     await this.client.api.put(`/channels/${this._id}/ack/${<"">id}`);
@@ -156,7 +157,7 @@ export class Channel extends BaseObject<APIChannel> {
   public async markRead(useSeparate = false) {
     if (!this.lastMessageID) return;
     if (useSeparate) {
-      this.client.unreads?.markRead(this.id, this.lastMessageID);
+      this.client.unreads?.markRead(this, this.lastMessageID);
       const unreads = new UnreadManager(this.client);
       await unreads.sync();
       if ((unreads.get(this.id)?.last_id ?? "0").localeCompare(this.lastMessageID) === -1)
