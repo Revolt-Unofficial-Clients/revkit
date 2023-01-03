@@ -116,6 +116,12 @@ export class Client extends EventEmitter<ClientEvents> {
     });
     return res.data?.id;
   }
+  /** Proxies a file URL through january. (if enabled) */
+  public proxyFile(url: string): string | null {
+    if (this.config?.features.january.enabled) {
+      return `${this.config.features.january.url}/proxy?url=${encodeURIComponent(url)}`;
+    } else return null;
+  }
 
   /** Create a new server. */
   public async createServer(data: DataCreateServer) {
