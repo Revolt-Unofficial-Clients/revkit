@@ -11,7 +11,7 @@ import {
   RevoltConfig,
 } from "revolt-api";
 import { ChannelManager } from "./managers/ChannelManager";
-import { EmojiManager } from "./managers/EmoijManager";
+import { EmojiManager } from "./managers/EmojiManager";
 import { ServerManager } from "./managers/ServerManager";
 import { UnreadManager } from "./managers/UnreadManager";
 import { UserManager } from "./managers/UserManager";
