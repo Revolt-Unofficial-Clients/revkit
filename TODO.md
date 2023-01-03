@@ -1,4 +1,3 @@
-- everything unread related (ack, unreads, mentions)
 - invite url generation
 - refactor autocomplete
 - channel typing users
@@ -8,4 +7,3 @@
 - proxy files
 - settings
 - account creation
-- 2fa support
