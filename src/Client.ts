@@ -268,6 +268,23 @@ export class Client extends EventEmitter<ClientEvents> {
     return man;
   }
 
+  /** Compatibility layer. Do not use in prod. */
+  async syncFetchSettings(keys: string[]) {
+    return await this.api.post("/sync/settings/fetch", { keys });
+  }
+  /** Compatibility layer. Do not use in prod. */
+  async syncSetSettings(data: { [key: string]: object | string }, timestamp?: number) {
+    const requestData: { [key: string]: string } = {};
+    for (const key of Object.keys(data)) {
+      const value = data[key];
+      requestData[key] = typeof value === "string" ? value : JSON.stringify(value);
+    }
+    await this.api.post(`/sync/settings/set`, {
+      ...requestData,
+      timestamp,
+    });
+  }
+
   public async fetchConfiguration(force = false) {
     if (!this.config || force) this.config = await this.api.get("/");
   }
