@@ -66,7 +66,7 @@ export class Channel extends BaseObject<APIChannel> {
   }
 
   public get name() {
-    if (this.source.channel_type == "SavedMessages") return "Saved Messages";
+    if (this.source.channel_type == "SavedMessages") return "Saved Notes";
     if (this.source.channel_type == "DirectMessage")
       return this.isDM() ? this.recipient.username : "";
     return this.source.name;
