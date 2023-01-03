@@ -5,12 +5,19 @@ import { ChannelType } from "./Channel";
 import { ServerChannel } from "./ServerChannel";
 
 export class VoiceChannel extends OmitClass(ServerChannel, [
+  "ack",
+  "checkUnread",
+  "createInvite",
   "fetchLastMessage",
   "fetchMessage",
-  "messages",
+  "getMentions",
   "lastMessage",
   "lastMessageID",
+  "markRead",
+  "mentions",
+  "messages",
   "send",
+  "unread",
 ]) {
   public type: ChannelType.Voice = ChannelType.Voice;
 
