@@ -93,9 +93,10 @@ export class WebSocketClient {
               for (const member of packet.members) {
                 this.client.servers.get(member._id.server)?.members.construct(member);
               }
-              for (const emoji of packet.emojis!) {
-                this.client.emojis.construct(emoji);
-              }
+              if (packet.emojis)
+                for (const emoji of packet.emojis!) {
+                  this.client.emojis.construct(emoji);
+                }
 
               this.client.emit("ready");
               this.ready = true;
