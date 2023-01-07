@@ -1,5 +1,4 @@
 - invite url generation
-- refactor autocomplete
 - channel typing users
 - message embeds
 - embed builder
