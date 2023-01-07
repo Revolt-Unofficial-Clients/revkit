@@ -17,6 +17,7 @@ export enum RevoltBadges {
 export interface CustomBadge {
   ids: string[];
   name: string;
+  description: string;
   image: string;
 }
 
