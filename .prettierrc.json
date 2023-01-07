@@ -1,0 +1,13 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "printWidth": 100,
+  "overrides": [
+    {
+      "files": ["src/Badges.ts"],
+      "options": {
+        "printWidth": 9999
+      }
+    }
+  ]
+}
