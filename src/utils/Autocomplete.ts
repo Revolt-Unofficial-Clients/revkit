@@ -117,21 +117,24 @@ export function parseAutocomplete(
     switch (i.type) {
       case AutocompleteType.CHANNEL: {
         if (channel.isServerBased()) {
-          const items = channel.server.channels.filter((c) =>
-            c.name.toLowerCase().includes(matchedText)
-          );
-          results.channels.unshift(
-            ...sortlen(
-              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-              "name"
-            )
-          );
-          results.channels.push(
-            ...sortlen(
-              items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-              "name"
-            )
-          );
+          if (matchedText) {
+            const items = channel.server.channels.filter((c) =>
+              c.name.toLowerCase().includes(matchedText)
+            );
+            results.channels.unshift(
+              ...sortlen(
+                items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+                "name"
+              )
+            );
+            results.channels.push(
+              ...sortlen(
+                items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+                "name"
+              )
+            );
+          } else
+            results.channels.push(...channel.server.orderedChannels.map((c) => c.channels).flat(1));
         }
         break;
       }
@@ -160,23 +163,39 @@ export function parseAutocomplete(
       }
       case AutocompleteType.USER: {
         const items = channel.isServerBased()
-          ? channel.server.members
-              .filter(
-                (m) =>
-                  m.nickname?.toLowerCase().includes(matchedText) ||
-                  m.user?.username.toLowerCase().includes(matchedText)
-              )
-              .map((i) => ({ name: i.nickname || i.user?.username || "", user: i.user }))
+          ? (matchedText
+              ? channel.server.members.filter(
+                  (m) =>
+                    m.nickname?.toLowerCase().includes(matchedText) ||
+                    m.user?.username.toLowerCase().includes(matchedText)
+                )
+              : [
+                  ...new Set(
+                    channel.messages
+                      .items()
+                      .sort((m1, m2) => m2.createdAt - m1.createdAt)
+                      .map((m) => (m.isUser() ? m.author?.id : null))
+                      .filter((a) => a)
+                  ),
+                ].map((i) => {
+                  const user = channel.client.users.get(i);
+                  return { name: user.username, user };
+                })
+            ).map((i) => ({ name: i.nickname || i.user?.username || "", user: i.user }))
           : channel.isGroupDM()
-          ? [channel.client.user, ...channel.recipients].map((user) => ({
-              name: user.username,
-              user,
-            }))
+          ? [channel.client.user, ...channel.recipients]
+              .filter((u) => u.username.toLowerCase().includes(matchedText))
+              .map((user) => ({
+                name: user.username,
+                user,
+              }))
           : channel.isDM()
-          ? [channel.client.user, channel.recipient].map((user) => ({
-              name: user.username,
-              user,
-            }))
+          ? [channel.client.user, channel.recipient]
+              .filter((u) => u.username.toLowerCase().includes(matchedText))
+              .map((user) => ({
+                name: user.username,
+                user,
+              }))
           : [];
         results.users.unshift(
           ...sortlen(
