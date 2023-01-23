@@ -23,6 +23,11 @@ export interface AutocompleteResult {
   emojis: (DefaultEmoji | Emoji)[];
   users: Member[];
   size: number;
+  all: (
+    | AutocompleteResult["channels"][0]
+    | AutocompleteResult["emojis"][0]
+    | AutocompleteResult["users"][0]
+  )[];
   tab(item: Channel | DefaultEmoji | Emoji | Member): AutocompleteTabResult;
 }
 export const AutocompleteItems: AutocompleteItem[] = [
@@ -60,6 +65,7 @@ export function parseAutocomplete(
     emojis: [],
     users: [],
     size: 0,
+    all: [],
     tab: (item) => {
       let newText = text;
       if (item instanceof Channel) {
@@ -149,5 +155,6 @@ export function parseAutocomplete(
     }
   });
   results.size = results.channels.length + results.emojis.length + results.users.length;
+  results.all = [...results.channels, ...results.emojis, ...results.users];
   return failed == AutocompleteItems.length ? null : results;
 }
