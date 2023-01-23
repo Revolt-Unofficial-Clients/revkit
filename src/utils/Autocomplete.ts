@@ -196,15 +196,13 @@ export function parseAutocomplete(
                 user,
               }))
           : [];
-        results.users.unshift(
-          ...(matchedText
-            ? sortlen(
-                items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-                "name"
-              )
-            : items
-          ).map((i) => i.user)
-        );
+        if (matchedText)
+          results.users.unshift(
+            ...sortlen(
+              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+              "name"
+            ).map((i) => i.user)
+          );
         results.users.push(
           ...(matchedText
             ? sortlen(
