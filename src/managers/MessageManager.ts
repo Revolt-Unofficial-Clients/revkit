@@ -28,6 +28,11 @@ export class MessageManager extends BaseManager<BaseMessage> {
     }
   }
 
+  /** Ordered messages in this channel, oldest first. */
+  public get ordered() {
+    return this.items().sort((m1, m2) => m1.createdAt - m2.createdAt);
+  }
+
   public async fetch(id: string) {
     return this.construct(
       await this.client.api.get(`/channels/${<"">this.channel.id}/messages/${<"">id}`)

@@ -12,11 +12,13 @@ import { BaseObject } from "./BaseObject";
 import { DMChannel } from "./DMChannel";
 import { GroupDMChannel } from "./GroupDMChannel";
 import { Member } from "./Member";
+import { Message } from "./Message";
 import { Role } from "./Role";
 import { SavedMessagesChannel } from "./SavedMessagesChannel";
 import { ServerChannel } from "./ServerChannel";
 import { ServerInvite } from "./ServerInvite";
 import { TextChannel } from "./TextChannel";
+import { User } from "./User";
 import { VoiceChannel } from "./VoiceChannel";
 
 export enum ChannelType {
@@ -65,7 +67,7 @@ export class Channel extends BaseObject<APIChannel> {
     return this.isText() || this.isVoice();
   }
 
-  public get name() {
+  public get name(): string {
     if (this.source.channel_type == "SavedMessages") return "Saved Notes";
     if (this.source.channel_type == "DirectMessage")
       return this.isDM() ? this.recipient.username : "";
@@ -124,6 +126,13 @@ export class Channel extends BaseObject<APIChannel> {
   }
   public async fetchLastMessage() {
     return this.lastMessageID ? await this.fetchMessage(this.lastMessageID) : null;
+  }
+
+  public lastMessageBy(user: User): Message | null {
+    return (
+      <Message>this.messages.ordered.reverse().find((m) => m.isUser() && m.authorID == user.id) ??
+      null
+    );
   }
 
   /** Can include your own user ID. */

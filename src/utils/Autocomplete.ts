@@ -171,16 +171,15 @@ export function parseAutocomplete(
                 )
               : [
                   ...new Set(
-                    channel.messages
-                      .items()
-                      .sort((m1, m2) => m2.createdAt - m1.createdAt)
-                      .map((m) => (m.isUser() ? m.author?.id : null))
-                      .filter((a) => a)
+                    channel.messages.map((m) => (m.isUser() ? m.author?.id : null)).filter((a) => a)
                   ),
-                ].map((i) => {
-                  const user = channel.client.users.get(i);
-                  return { name: user.username, user };
-                })
+                ]
+                  .map((i) => channel.client.users.get(i))
+                  .sort(
+                    (u1, u2) =>
+                      channel.lastMessageBy(u2)?.createdAt - channel.lastMessageBy(u1)?.createdAt
+                  )
+                  .map((user) => ({ name: user.username, user }))
             ).map((i) => ({ name: i.nickname || i.user?.username || "", user: i.user }))
           : channel.isGroupDM()
           ? [channel.client.user, ...channel.recipients]
