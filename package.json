@@ -7,7 +7,7 @@
   "types": "dist/es6/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -b tsconfig.json && tsc -b tsconfig.cjs.json",
-    "pub": "npm run build && npm publish"
+    "pub": "pnpm run build && pnpm publish"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "long": "^5.2.1",
     "luxon": "^3.2.0",
     "revolt-api": "^0.5.5-5",
+    "revolt-toolset": "^1.0.27",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
