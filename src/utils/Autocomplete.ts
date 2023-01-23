@@ -1,7 +1,7 @@
+import { User } from "../objects";
 import { Channel } from "../objects/Channel";
 import { Emoji } from "../objects/Emoji";
 import { Member } from "../objects/Member";
-import { Server } from "../objects/Server";
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 
 export enum AutocompleteType {
@@ -18,17 +18,17 @@ export interface AutocompleteItem {
   delimiter: string;
   result: string;
 }
+type AllType =
+  | AutocompleteResult["channels"][0]
+  | AutocompleteResult["emojis"][0]
+  | AutocompleteResult["users"][0];
 export interface AutocompleteResult {
   channels: Channel[];
   emojis: (DefaultEmoji | Emoji)[];
-  users: Member[];
+  users: User[];
   size: number;
-  all: (
-    | AutocompleteResult["channels"][0]
-    | AutocompleteResult["emojis"][0]
-    | AutocompleteResult["users"][0]
-  )[];
-  tab(item: Channel | DefaultEmoji | Emoji | Member): AutocompleteTabResult;
+  all: AllType[];
+  tab(item: AllType): AutocompleteTabResult;
 }
 export const AutocompleteItems: AutocompleteItem[] = [
   { type: AutocompleteType.CHANNEL, delimiter: "#", result: "<#%>" },
@@ -59,7 +59,7 @@ function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj)
 }
 
 export function parseAutocomplete(
-  server: Server,
+  channel: Channel,
   text: string,
   cursorPos: number
 ): AutocompleteResult | null {
@@ -116,25 +116,29 @@ export function parseAutocomplete(
       return (failed += 1);
     switch (i.type) {
       case AutocompleteType.CHANNEL: {
-        const items = server.channels.filter((c) => c.name.toLowerCase().includes(matchedText));
-        results.channels.unshift(
-          ...sortlen(
-            items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-            "name"
-          )
-        );
-        results.channels.push(
-          ...sortlen(
-            items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-            "name"
-          )
-        );
+        if (channel.isServerBased()) {
+          const items = channel.server.channels.filter((c) =>
+            c.name.toLowerCase().includes(matchedText)
+          );
+          results.channels.unshift(
+            ...sortlen(
+              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+              "name"
+            )
+          );
+          results.channels.push(
+            ...sortlen(
+              items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+              "name"
+            )
+          );
+        }
         break;
       }
       case AutocompleteType.EMOJI: {
         if (matchedText) {
           const items = [
-            ...server.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
+            ...channel.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
             ...Object.keys(RevoltEmojiDictionary)
               .filter((k) => k.toLowerCase().includes(matchedText))
               .map((k) => new DefaultEmoji(k)),
@@ -155,13 +159,25 @@ export function parseAutocomplete(
         break;
       }
       case AutocompleteType.USER: {
-        const items = server.members
-          .filter(
-            (m) =>
-              m.nickname?.toLowerCase().includes(matchedText) ||
-              m.user?.username.toLowerCase().includes(matchedText)
-          )
-          .map((i) => ({ name: i.nickname || i.user?.username || "", user: i }));
+        const items = channel.isServerBased()
+          ? channel.server.members
+              .filter(
+                (m) =>
+                  m.nickname?.toLowerCase().includes(matchedText) ||
+                  m.user?.username.toLowerCase().includes(matchedText)
+              )
+              .map((i) => ({ name: i.nickname || i.user?.username || "", user: i.user }))
+          : channel.isGroupDM()
+          ? [channel.client.user, ...channel.recipients].map((user) => ({
+              name: user.username,
+              user,
+            }))
+          : channel.isDM()
+          ? [channel.client.user, channel.recipient].map((user) => ({
+              name: user.username,
+              user,
+            }))
+          : [];
         results.users.unshift(
           ...sortlen(
             items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),

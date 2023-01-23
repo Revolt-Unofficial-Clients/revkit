@@ -25,16 +25,19 @@ export class GroupDMChannel extends Channel {
   public async fetchOwner(fetchNew = false) {
     return await this.client.users.fetch(this.ownerID, fetchNew);
   }
+  /** Does not include yourself. */
   public get recipientIDs() {
-    return this.source.recipients.filter((r) => r != this.client.user.id);
+    return this.source.recipients.filter((r) => r !== this.client.user.id);
   }
+  /** Does not include yourself. */
   public get recipients() {
     return this.recipientIDs.map((id) => this.client.users.get(id)).filter((r) => r);
   }
+  /** Does not include yourself. */
   public async fetchRecipients() {
-    return (await this.client.api.get(`/channels/${this._id}/members`)).map((u) =>
-      this.client.users.construct(u)
-    );
+    return (await this.client.api.get(`/channels/${this._id}/members`))
+      .map((u) => this.client.users.construct(u))
+      .filter((u) => u.id !== this.client.user.id);
   }
   /** Add a user to this group. */
   async addRecipient(user: User | string) {
