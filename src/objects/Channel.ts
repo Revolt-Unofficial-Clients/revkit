@@ -135,6 +135,12 @@ export class Channel extends BaseObject<APIChannel> {
       .map((t) => this.client.users.get(t))
       .filter((u) => u);
   }
+  public startTyping() {
+    this.client.ws.send({ type: "BeginTyping", channel: this.id });
+  }
+  public stopTyping() {
+    this.client.ws.send({ type: "EndTyping", channel: this.id });
+  }
 
   public checkUnread(valid: ChannelUnreadChecker) {
     if (valid(this)) return false;
