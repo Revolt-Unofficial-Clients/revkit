@@ -2,7 +2,7 @@ import { User } from "../objects";
 import { Channel } from "../objects/Channel";
 import { DefaultEmoji } from "../objects/DefaultEmoji";
 import { Emoji } from "../objects/Emoji";
-import { getRevoltEmojis } from "./Emojis";
+import { RevoltEmojiLib } from "./Emojis";
 
 export enum AutocompleteType {
   CHANNEL,
@@ -138,7 +138,7 @@ export function parseAutocomplete(
           const prop = unique?.emojis ? "uniqueName" : "name";
           const items = [
             ...channel.client.emojis.filter((e) => e[prop].toLowerCase().includes(matchedText)),
-            ...getRevoltEmojis().filter((k) => k[prop].toLowerCase().includes(matchedText)),
+            ...RevoltEmojiLib.filter((k) => k[prop].toLowerCase().includes(matchedText)),
           ];
           results.emojis.unshift(
             ...sortlen(

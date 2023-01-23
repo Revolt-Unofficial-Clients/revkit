@@ -1,7 +1,6 @@
 // Shamelessly copied from https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts
-// Do not include customs. (depreciated)
 
-import { DefaultEmoji } from "../objects/DefaultEmoji";
+import { DefaultEmoji } from "../objects";
 
 // Originally taken from Twemoji source code,
 // re-written by bree to be more readable.
@@ -34,10 +33,6 @@ export function unicodeEmojiURL(emoji: string, pack: EmojiPacks = "mutant") {
 }
 
 export type EmojiPacks = "mutant" | "twemoji" | "noto" | "openmoji";
-
-export function getRevoltEmojis() {
-  return Object.keys(RevoltEmojiDictionary).map((k) => new DefaultEmoji(String(k)));
-}
 
 export const RevoltEmojiDictionary: Record<string, string> = {
   100: "💯",
@@ -1890,3 +1885,7 @@ export const RevoltEmojiDictionary: Record<string, string> = {
   scotland: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
   wales: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
 };
+
+export const RevoltEmojiLib = Object.keys(RevoltEmojiDictionary).map(
+  (k) => new DefaultEmoji(String(k))
+);
