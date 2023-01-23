@@ -43,7 +43,8 @@ function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj)
 export function parseAutocomplete(
   channel: Channel,
   text: string,
-  cursorPos: number
+  cursorPos: number,
+  useUnique = false
 ): AutocompleteResult | null {
   const textBeforeCursor = text.slice(0, cursorPos);
   const results: AutocompleteResult = {
@@ -66,7 +67,7 @@ export function parseAutocomplete(
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item.id)
+            i.result.replace("%", useUnique ? item.uniqueName : item.id)
           ) + " ";
       } else if (item instanceof User) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.USER);
@@ -122,20 +123,21 @@ export function parseAutocomplete(
       }
       case AutocompleteType.EMOJI: {
         if (matchedText) {
+          const prop = useUnique ? "uniqueName" : "name";
           const items = [
-            ...channel.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
-            ...getRevoltEmojis().filter((k) => k.name.toLowerCase().includes(matchedText)),
+            ...channel.client.emojis.filter((e) => e[prop].toLowerCase().includes(matchedText)),
+            ...getRevoltEmojis().filter((k) => k[prop].toLowerCase().includes(matchedText)),
           ];
           results.emojis.unshift(
             ...sortlen(
-              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-              "name"
+              items.filter((i) => i[prop].toLowerCase().startsWith(matchedText)),
+              prop
             )
           );
           results.emojis.push(
             ...sortlen(
-              items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-              "name"
+              items.filter((i) => !i[prop].toLowerCase().startsWith(matchedText)),
+              prop
             )
           );
         } else failed = AutocompleteItems.length;

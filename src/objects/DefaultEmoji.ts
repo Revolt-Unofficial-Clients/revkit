@@ -10,7 +10,7 @@ export class DefaultEmoji {
   public get parent() {
     return null;
   }
-  public uniqueName() {
+  public get uniqueName() {
     return this.name;
   }
   public pack: EmojiPacks = "mutant";

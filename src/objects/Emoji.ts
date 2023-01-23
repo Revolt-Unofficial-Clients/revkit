@@ -1,6 +1,8 @@
 import { APIEmoji } from "../api";
 import { Client } from "../Client";
+import { getRevoltEmojis } from "../utils";
 import { BaseObject } from "./BaseObject";
+import { DefaultEmoji } from "./DefaultEmoji";
 
 export class Emoji extends BaseObject<APIEmoji> {
   constructor(client: Client, data: APIEmoji) {
@@ -37,6 +39,16 @@ export class Emoji extends BaseObject<APIEmoji> {
   }
   public get parent() {
     return this.parentID ? this.client.servers.get(this.parentID) ?? null : null;
+  }
+
+  public get uniqueName() {
+    const emojis: (Emoji | DefaultEmoji)[] = [
+        ...getRevoltEmojis(),
+        ...this.client.emojis.sort((e1, e2) => e1.createdAt - e2.createdAt),
+      ],
+      size = emojis.filter((e) => e.name == this.name).findIndex((e) => e.id == this.id);
+    if (size == -1) return this.name;
+    else return `${this.name}~${size + 1}`;
   }
 
   /** Delete this emoji. */

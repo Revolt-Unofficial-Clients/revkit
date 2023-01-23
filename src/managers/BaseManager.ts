@@ -29,4 +29,7 @@ export class BaseManager<T extends BaseObject<any>> extends MiniMapEmitter<T> {
   public map<U>(callbackfn: (value: T, index: number, array: T[]) => U): U[] {
     return this.items().map(callbackfn);
   }
+  public sort(...d: Parameters<ReturnType<typeof this.items>["sort"]>) {
+    return this.items().sort(...d);
+  }
 }
