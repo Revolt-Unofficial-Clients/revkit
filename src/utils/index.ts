@@ -8,7 +8,4 @@ export * from "./TimeParser";
 export * from "./Timestamp";
 export * from "./UserBadges";
 export * from "./UserPermissionFlags";
-
-export function escapeRegex(str: String) {
-  return str.replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
-}
+export * from "./utils";
