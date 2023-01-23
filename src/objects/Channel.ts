@@ -4,6 +4,7 @@ import { APIChannel } from "../api";
 import { Client } from "../Client";
 import { MessageManager } from "../managers/MessageManager";
 import { UnreadManager } from "../managers/UnreadManager";
+import { escapeRegex } from "../utils";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
 import { Attachment, AttachmentArgs } from "./Attachment";
@@ -193,11 +194,36 @@ export class Channel extends BaseObject<APIChannel> {
     }
   }
 
-  public async send(data: string | DataMessageSend) {
+  /**
+   * Set `expandMentions` to automatically turn plaintext user mentions into 'real' ones.
+   * Set `expandEmojis` to do the same for emojis (using uniqueName).
+   */
+  public async send(
+    data: string | (DataMessageSend & { expandMentions?: boolean; expandEmojis?: boolean })
+  ) {
+    let content = typeof data == "string" ? data : data.content;
+    if (typeof data !== "string" && data.expandMentions && this.isServerBased()) {
+      this.server.members
+        .filter((m) => m.user)
+        .forEach(
+          (m) =>
+            (content = content.replace(
+              new RegExp(escapeRegex(`@${m.user.username}`)),
+              `<@${m.id}>`
+            ))
+        );
+    }
+    if (typeof data !== "string" && data.expandEmojis) {
+      this.client.emojis.forEach(
+        (e) =>
+          (content = content.replace(new RegExp(escapeRegex(`:${e.uniqueName}:`)), `:${e.id}:`))
+      );
+    }
     return this.messages.construct(
       await this.client.api.post(`/channels/${this._id}/messages`, {
         nonce: ulid(),
-        ...(typeof data === "string" ? { content: data } : data),
+        ...(typeof data === "string" ? {} : data),
+        content,
       })
     );
   }
