@@ -41,14 +41,13 @@ export class Emoji extends BaseObject<APIEmoji> {
     return this.parentID ? this.client.servers.get(this.parentID) ?? null : null;
   }
 
+  public cachedName: [string, string] = ["", ""];
   public get uniqueName() {
-    const emojis: (Emoji | DefaultEmoji)[] = [
-        ...RevoltEmojiLib,
-        ...this.client.emojis.sort((e1, e2) => e1.createdAt - e2.createdAt),
-      ],
+    if (this.cachedName[0] == this.name) return this.cachedName[1];
+    const emojis: (Emoji | DefaultEmoji)[] = [...RevoltEmojiLib, ...this.client.emojis.ordered],
       size = emojis.filter((e) => e.name == this.name).findIndex((e) => e.id == this.id);
-    if (size == -1) return this.name;
-    else return `${this.name}~${size + 1}`;
+    if (size == -1) return (this.cachedName = [this.name, this.name])[1];
+    else return (this.cachedName = [this.name, `${this.name}~${size + 1}`])[1];
   }
 
   /** Delete this emoji. */
