@@ -54,6 +54,10 @@ export class DefaultEmoji {
   }
 }
 
+function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj) {
+  return items.sort((i1, i2) => i1[prop].length - i2[prop].length);
+}
+
 export function parseAutocomplete(
   server: Server,
   text: string,
@@ -114,41 +118,61 @@ export function parseAutocomplete(
       case AutocompleteType.CHANNEL: {
         const items = server.channels.filter((c) => c.name.toLowerCase().includes(matchedText));
         results.channels.unshift(
-          ...items.filter((i) => i.name.toLowerCase().startsWith(matchedText))
+          ...sortlen(
+            items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+            "name"
+          )
         );
         results.channels.push(
-          ...items.filter((i) => !i.name.toLowerCase().startsWith(matchedText))
+          ...sortlen(
+            items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+            "name"
+          )
         );
         break;
       }
       case AutocompleteType.EMOJI: {
-        const items = [
-          ...server.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
-          ...Object.keys(RevoltEmojiDictionary)
-            .filter((k) => k.toLowerCase().includes(matchedText))
-            .map((k) => new DefaultEmoji(k)),
-        ];
-        results.emojis.unshift(
-          ...items.filter((i) => i.name.toLowerCase().startsWith(matchedText))
-        );
-        results.emojis.push(...items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)));
+        if (matchedText) {
+          const items = [
+            ...server.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
+            ...Object.keys(RevoltEmojiDictionary)
+              .filter((k) => k.toLowerCase().includes(matchedText))
+              .map((k) => new DefaultEmoji(k)),
+          ];
+          results.emojis.unshift(
+            ...sortlen(
+              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+              "name"
+            )
+          );
+          results.emojis.push(
+            ...sortlen(
+              items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+              "name"
+            )
+          );
+        } else failed = AutocompleteItems.length;
         break;
       }
       case AutocompleteType.USER: {
-        const items = server.members.filter(
-          (m) =>
-            m.nickname?.toLowerCase().includes(matchedText) ||
-            m.user?.username.toLowerCase().includes(matchedText)
-        );
-        results.users.unshift(
-          ...items.filter((i) =>
-            (i.nickname || i.user.username).toLowerCase().startsWith(matchedText)
+        const items = server.members
+          .filter(
+            (m) =>
+              m.nickname?.toLowerCase().includes(matchedText) ||
+              m.user?.username.toLowerCase().includes(matchedText)
           )
+          .map((i) => ({ name: i.nickname || i.user?.username || "", user: i }));
+        results.users.unshift(
+          ...sortlen(
+            items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+            "name"
+          ).map((i) => i.user)
         );
         results.users.push(
-          ...items.filter(
-            (i) => !(i.nickname || i.user.username).toLowerCase().startsWith(matchedText)
-          )
+          ...sortlen(
+            items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+            "name"
+          ).map((i) => i.user)
         );
         break;
       }
