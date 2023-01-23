@@ -135,20 +135,21 @@ export function parseAutocomplete(
       }
       case AutocompleteType.EMOJI: {
         if (matchedText) {
+          const prop = unique?.emojis ? "uniqueName" : "name";
           const items = [
-            ...channel.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
-            ...RevoltEmojiLib.filter((k) => k.name.toLowerCase().includes(matchedText)),
+            ...channel.client.emojis.filter((e) => e[prop].toLowerCase().includes(matchedText)),
+            ...RevoltEmojiLib.filter((k) => k[prop].toLowerCase().includes(matchedText)),
           ];
           results.emojis.unshift(
             ...sortlen(
-              items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-              "name"
+              items.filter((i) => i[prop].toLowerCase().startsWith(matchedText)),
+              prop
             )
           );
           results.emojis.push(
             ...sortlen(
-              items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-              "name"
+              items.filter((i) => !i[prop].toLowerCase().startsWith(matchedText)),
+              prop
             )
           );
         } else failed = AutocompleteItems.length;
