@@ -46,7 +46,7 @@ export class Emoji extends BaseObject<APIEmoji> {
     if (this.cachedName[0] == this.name) return this.cachedName[1];
     const emojis: (Emoji | DefaultEmoji)[] = [...RevoltEmojiLib, ...this.client.emojis.ordered],
       size = emojis.filter((e) => e.name == this.name).findIndex((e) => e.id == this.id);
-    if (size == -1) return (this.cachedName = [this.name, this.name])[1];
+    if (size <= 0) return (this.cachedName = [this.name, this.name])[1];
     else return (this.cachedName = [this.name, `${this.name}~${size + 1}`])[1];
   }
 
