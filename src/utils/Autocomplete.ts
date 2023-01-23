@@ -142,13 +142,13 @@ export function parseAutocomplete(
           results.emojis.unshift(
             ...sortlen(
               items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-              "uniqueName"
+              "name"
             )
           );
           results.emojis.push(
             ...sortlen(
               items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-              "uniqueName"
+              "name"
             )
           );
         } else failed = AutocompleteItems.length;
