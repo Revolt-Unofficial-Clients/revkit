@@ -1,7 +1,6 @@
 import { User } from "../objects";
 import { Channel } from "../objects/Channel";
 import { Emoji } from "../objects/Emoji";
-import { Member } from "../objects/Member";
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
 
 export enum AutocompleteType {
@@ -86,12 +85,12 @@ export function parseAutocomplete(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
             i.result.replace("%", item.id)
           ) + " ";
-      } else if (item instanceof Member) {
+      } else if (item instanceof User) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.USER);
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item.user.id)
+            i.result.replace("%", item.id)
           ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
