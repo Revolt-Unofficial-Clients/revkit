@@ -8,11 +8,14 @@ import { BaseManager } from "./BaseManager";
 export class EmojiManager extends BaseManager<Emoji> {
   constructor(private client: Client) {
     super();
-    this.onUpdate(() => this.items().forEach((e) => (e.cachedName = ["", ""])));
+    this.onUpdate(() => (this.orderCache = []));
   }
 
+  private orderCache: Emoji[] = [];
   public get ordered() {
-    return this.items().sort((e1, e2) => e1.createdAt - e2.createdAt);
+    return this.orderCache.length
+      ? this.orderCache
+      : (this.orderCache = this.items().sort((e1, e2) => e1.createdAt - e2.createdAt));
   }
 
   public construct(data: APIEmoji) {
