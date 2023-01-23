@@ -454,28 +454,29 @@ export class WebSocketClient {
               if (channel) this.client.unreads.markRead(channel, packet.message_id, false);
               break;
             }
-            /*//TODO:
             case "ChannelStartTyping": {
-              const channel = this.client.channels.get(packet.id);
-              const user = packet.user;
-
-              if (channel) {
-                channel.updateStartTyping(user);
-
-                clearInterval(timeouts[packet.id + user]);
-                timeouts[packet.id + user] = setTimeout(() => {
-                  channel!.updateStopTyping(user);
-                }, 3000) as unknown as number;
+              const channel = this.client.channels.get(packet.id),
+                user = await this.client.users.fetch(packet.user);
+              if (channel && user) {
+                channel.typingIDs.add(user.id);
+                clearTimeout(timeouts[channel.id + user.id]);
+                timeouts[channel.id + user.id] = setTimeout(() => {
+                  channel.typingIDs.delete(user.id);
+                }, 3000);
+                this.client.emit("channelStartTyping", channel, user);
               }
-
               break;
             }
             case "ChannelStopTyping": {
-              this.client.channels.get(packet.id)?.updateStopTyping(packet.user);
-              clearInterval(timeouts[packet.id + packet.user]);
+              const channel = this.client.channels.get(packet.id),
+                user = await this.client.users.fetch(packet.user);
+              if (channel && user) {
+                channel.typingIDs.delete(user.id);
+                clearTimeout(timeouts[channel.id + user.id]);
+                this.client.emit("channelStopTyping", channel, user);
+              }
               break;
             }
-            */
             case "Pong": {
               this.ping = +new Date() - packet.data;
               break;
@@ -489,7 +490,7 @@ export class WebSocketClient {
         }
       };
 
-      const timeouts: Record<string, number> = {};
+      const timeouts: Record<string, NodeJS.Timeout> = {};
       const handle = async (msg: WebSocket.MessageEvent) => {
         const data = msg.data;
         if (typeof data !== "string") return;

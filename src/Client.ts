@@ -52,6 +52,8 @@ export type ClientEvents =
   | "channelCreate"
   | "channelUpdate"
   | "channelDelete"
+  | "channelStartTyping"
+  | "channelStopTyping"
   | "emojiCreate"
   | "emojiDelete"
   | "groupMemberJoin"
@@ -318,6 +320,8 @@ export class Client extends EventEmitter<ClientEvents> {
   public on(event: "channelCreate", listener: (channel: Channel) => any): this;
   public on(event: "channelUpdate", listener: (channel: Channel) => any): this;
   public on(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
+  public on(event: "channelStartTyping", listener: (user: User, channel: Channel) => any): this;
+  public on(event: "channelStopTyping", listener: (user: User, channel: Channel) => any): this;
   public on(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
   public on(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
   public on(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
@@ -351,6 +355,8 @@ export class Client extends EventEmitter<ClientEvents> {
   public once(event: "channelCreate", listener: (channel: Channel) => any): this;
   public once(event: "channelUpdate", listener: (channel: Channel) => any): this;
   public once(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
+  public once(event: "channelStartTyping", listener: (user: User, channel: Channel) => any): this;
+  public once(event: "channelStopTyping", listener: (user: User, channel: Channel) => any): this;
   public once(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
   public once(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
   public once(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;

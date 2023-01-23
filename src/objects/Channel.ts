@@ -126,6 +126,16 @@ export class Channel extends BaseObject<APIChannel> {
     return this.lastMessageID ? await this.fetchMessage(this.lastMessageID) : null;
   }
 
+  /** Can include your own user ID. */
+  public typingIDs = new Set<string>();
+  /** Will not include your user. */
+  public get typing() {
+    return [...this.typingIDs.values()]
+      .filter((t) => t !== this.client.user.id)
+      .map((t) => this.client.users.get(t))
+      .filter((u) => u);
+  }
+
   public checkUnread(valid: ChannelUnreadChecker) {
     if (valid(this)) return false;
     return this.unread;
