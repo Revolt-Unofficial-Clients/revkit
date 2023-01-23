@@ -197,15 +197,21 @@ export function parseAutocomplete(
               }))
           : [];
         results.users.unshift(
-          ...sortlen(
-            items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
-            "name"
+          ...(matchedText
+            ? sortlen(
+                items.filter((i) => i.name.toLowerCase().startsWith(matchedText)),
+                "name"
+              )
+            : items
           ).map((i) => i.user)
         );
         results.users.push(
-          ...sortlen(
-            items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
-            "name"
+          ...(matchedText
+            ? sortlen(
+                items.filter((i) => !i.name.toLowerCase().startsWith(matchedText)),
+                "name"
+              )
+            : items
           ).map((i) => i.user)
         );
         break;
