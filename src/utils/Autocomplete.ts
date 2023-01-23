@@ -1,7 +1,8 @@
 import { User } from "../objects";
 import { Channel } from "../objects/Channel";
+import { DefaultEmoji } from "../objects/DefaultEmoji";
 import { Emoji } from "../objects/Emoji";
-import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "./Emojis";
+import { getRevoltEmojis } from "./Emojis";
 
 export enum AutocompleteType {
   CHANNEL,
@@ -34,24 +35,6 @@ export const AutocompleteItems: AutocompleteItem[] = [
   { type: AutocompleteType.EMOJI, delimiter: ":", result: ":%:" },
   { type: AutocompleteType.USER, delimiter: "@", result: "<@%>" },
 ];
-
-export class DefaultEmoji {
-  public get id() {
-    return this.name;
-  }
-  public get imageURL() {
-    return unicodeEmojiURL(RevoltEmojiDictionary[this.name], this.pack);
-  }
-  public get parent() {
-    return null;
-  }
-  public pack: EmojiPacks = "mutant";
-  constructor(public name: string) {}
-  public setPack(pack: EmojiPacks) {
-    this.pack = pack;
-    return this;
-  }
-}
 
 function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj) {
   return items.sort((i1, i2) => i1[prop].length - i2[prop].length);
@@ -141,9 +124,7 @@ export function parseAutocomplete(
         if (matchedText) {
           const items = [
             ...channel.client.emojis.filter((e) => e.name.toLowerCase().includes(matchedText)),
-            ...Object.keys(RevoltEmojiDictionary)
-              .filter((k) => k.toLowerCase().includes(matchedText))
-              .map((k) => new DefaultEmoji(k)),
+            ...getRevoltEmojis().filter((k) => k.name.toLowerCase().includes(matchedText)),
           ];
           results.emojis.unshift(
             ...sortlen(

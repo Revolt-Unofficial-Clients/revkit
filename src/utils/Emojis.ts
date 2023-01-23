@@ -1,6 +1,8 @@
 // Shamelessly copied from https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts
 // Do not include customs. (depreciated)
 
+import { DefaultEmoji } from "../objects/DefaultEmoji";
+
 // Originally taken from Twemoji source code,
 // re-written by bree to be more readable.
 // ~~taken for this package~~
@@ -32,6 +34,10 @@ export function unicodeEmojiURL(emoji: string, pack: EmojiPacks = "mutant") {
 }
 
 export type EmojiPacks = "mutant" | "twemoji" | "noto" | "openmoji";
+
+export function getRevoltEmojis() {
+  return Object.keys(RevoltEmojiDictionary).map((k) => new DefaultEmoji(String(k)));
+}
 
 export const RevoltEmojiDictionary: Record<string, string> = {
   100: "💯",

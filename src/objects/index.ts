@@ -3,6 +3,7 @@ export * from "./AuthSession";
 export * from "./BaseMessage";
 export * from "./Category";
 export * from "./Channel";
+export * from "./DefaultEmoji";
 export * from "./DMChannel";
 export * from "./Emoji";
 export * from "./GlobalInvite";
