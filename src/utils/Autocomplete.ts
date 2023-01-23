@@ -86,7 +86,7 @@ export function parseAutocomplete(
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", unique?.users ? item.username : item.id)
+            (unique?.users ? "@%" : i.result).replace("%", unique?.users ? item.username : item.id)
           ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
