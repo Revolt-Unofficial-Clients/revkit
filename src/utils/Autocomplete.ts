@@ -40,11 +40,23 @@ function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj)
   return items.sort((i1, i2) => i1[prop].length - i2[prop].length);
 }
 
+/**
+ * Calculates autocomplete for the given input text in the given channel.
+ *
+ * @param channel The channel to use for calculation of channel/user mentions.
+ * @param text The text to calculate against.
+ * @param cursorPos The position of the cursor in the text.
+ * @param unique If `emojis` is set, uses emoji's `uniqueName` instead of ID for autocomplete. If `users` is set, uses user's username for autocomplete. (pairs nicely with Channel.send expandMentions/expandEmojis)
+ * @returns An AutocompleteResult with matched items.
+ */
 export function parseAutocomplete(
   channel: Channel,
   text: string,
   cursorPos: number,
-  useUnique = false
+  unique?: {
+    emojis?: boolean;
+    users?: boolean;
+  }
 ): AutocompleteResult | null {
   const textBeforeCursor = text.slice(0, cursorPos);
   const results: AutocompleteResult = {
@@ -67,14 +79,14 @@ export function parseAutocomplete(
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", useUnique ? item.uniqueName : item.id)
+            i.result.replace("%", unique?.emojis ? item.uniqueName : item.id)
           ) + " ";
       } else if (item instanceof User) {
         const i = AutocompleteItems.find((i) => i.type == AutocompleteType.USER);
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            i.result.replace("%", item.id)
+            i.result.replace("%", unique?.users ? item.username : item.id)
           ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
@@ -123,7 +135,7 @@ export function parseAutocomplete(
       }
       case AutocompleteType.EMOJI: {
         if (matchedText) {
-          const prop = useUnique ? "uniqueName" : "name";
+          const prop = unique?.emojis ? "uniqueName" : "name";
           const items = [
             ...channel.client.emojis.filter((e) => e[prop].toLowerCase().includes(matchedText)),
             ...getRevoltEmojis().filter((k) => k[prop].toLowerCase().includes(matchedText)),
