@@ -62,10 +62,10 @@ export class Message extends BaseMessage {
     );
   }
   public get replyIDs() {
-    return this.source.replies;
+    return this.source.replies || [];
   }
   public get replies() {
-    return this.source.replies.map((r) => this.channel.messages.get(r)).filter((r) => r);
+    return this.replyIDs.map((r) => this.channel.messages.get(r)).filter((r) => r);
   }
   public async fetchReplies() {
     return (await Promise.all(this.replyIDs.map((id) => this.channel.messages.fetch(id)))).filter(
