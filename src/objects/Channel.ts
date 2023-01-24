@@ -1,4 +1,4 @@
-import { DataEditChannel, DataMessageSend, Override } from "revolt-api";
+import { DataEditChannel, DataMessageSend, Override, SendableEmbed } from "revolt-api";
 import { ulid } from "ulid";
 import { APIChannel } from "../api";
 import { Client } from "../Client";
@@ -11,6 +11,7 @@ import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseMessage } from "./BaseMessage";
 import { BaseObject } from "./BaseObject";
 import { DMChannel } from "./DMChannel";
+import Embed from "./Embed";
 import { GroupDMChannel } from "./GroupDMChannel";
 import { Member } from "./Member";
 import { Message } from "./Message";
@@ -199,32 +200,59 @@ export class Channel extends BaseObject<APIChannel> {
    * Set `expandEmojis` to do the same for emojis (using uniqueName).
    */
   public async send(
-    data: string | (DataMessageSend & { expandMentions?: boolean; expandEmojis?: boolean })
+    data:
+      | string
+      | Embed
+      | (Omit<DataMessageSend, "embeds"> & {
+          expandMentions?: boolean;
+          expandEmojis?: boolean;
+          embed?: Embed | SendableEmbed;
+          embeds?: (Embed | SendableEmbed)[];
+        })
   ) {
-    let content = typeof data == "string" ? data : data.content;
-    if (content && typeof data !== "string" && data.expandMentions && this.isServerBased()) {
-      this.server.members
-        .filter((m) => m.user)
-        .forEach(
-          (m) =>
-            (content = content.replace(
-              new RegExp(escapeRegex(`@${m.user.username}`)),
-              `<@${m.id}>`
+    let opts: DataMessageSend = {
+      nonce: ulid(),
+    };
+
+    if (data instanceof Embed) {
+      opts.embeds = [data.toJSON()];
+    } else {
+      if (typeof data !== "string") {
+        if (data.embed) data.embeds = [data.embed, ...data.embeds];
+        if (data.embeds)
+          data.embeds = data.embeds.map((e) => (e instanceof Embed ? e.toJSON() : e));
+        opts = { ...opts, ...(<Omit<typeof data, "embeds">>data) };
+      }
+      opts.content = typeof data == "string" ? data : data.content;
+      if (opts.content && typeof data !== "string" && data.expandMentions && this.isServerBased()) {
+        this.server.members
+          .filter((m) => m.user)
+          .forEach(
+            (m) =>
+              (opts.content = opts.content.replace(
+                new RegExp(escapeRegex(`@${m.user.username}`)),
+                `<@${m.id}>`
+              ))
+          );
+      }
+      if (
+        opts.content &&
+        typeof data !== "string" &&
+        !(data instanceof Embed) &&
+        data.expandEmojis
+      ) {
+        this.client.emojis.forEach(
+          (e) =>
+            (opts.content = opts.content.replace(
+              new RegExp(escapeRegex(`:${e.uniqueName}:`)),
+              `:${e.id}:`
             ))
         );
+      }
     }
-    if (content && typeof data !== "string" && data.expandEmojis) {
-      this.client.emojis.forEach(
-        (e) =>
-          (content = content.replace(new RegExp(escapeRegex(`:${e.uniqueName}:`)), `:${e.id}:`))
-      );
-    }
+
     return this.messages.construct(
-      await this.client.api.post(`/channels/${this._id}/messages`, {
-        nonce: ulid(),
-        ...(typeof data === "string" ? {} : data),
-        content,
-      })
+      await this.client.api.post(`/channels/${this._id}/messages`, opts)
     );
   }
   public async fetchMessage(id: string) {

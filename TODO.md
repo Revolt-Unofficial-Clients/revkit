@@ -1,7 +1,5 @@
 - invite url generation
-- message embeds
-- embed builder
-- message reactions fix
+- message reactions fix (restricted reactions)
 - settings
 - account creation
 - regex

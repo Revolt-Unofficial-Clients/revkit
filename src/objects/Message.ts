@@ -3,6 +3,9 @@ import { APIMessage } from "../api";
 import { Client } from "../Client";
 import { Attachment } from "./Attachment";
 import { BaseMessage } from "./BaseMessage";
+import Embed from "./Embed";
+import EmbedMedia from "./EmbedMedia";
+import EmbedWeb from "./EmbedWeb";
 import { Emoji } from "./Emoji";
 
 export class Message extends BaseMessage {
@@ -70,6 +73,25 @@ export class Message extends BaseMessage {
   public async fetchReplies() {
     return (await Promise.all(this.replyIDs.map((id) => this.channel.messages.fetch(id)))).filter(
       (m) => m
+    );
+  }
+
+  /** Returns an array of embed objects for this message. */
+  public get embeds() {
+    return (
+      this.source.embeds
+        ?.map((e) => {
+          switch (e.type) {
+            case "Text":
+              return new Embed(this.client, e);
+            case "Website":
+              return new EmbedWeb(this.client, e);
+            case "Image":
+            case "Video":
+              return new EmbedMedia(this.client, e);
+          }
+        })
+        .filter((e) => e) || []
     );
   }
 
