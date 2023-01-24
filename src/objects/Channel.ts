@@ -202,7 +202,7 @@ export class Channel extends BaseObject<APIChannel> {
     data: string | (DataMessageSend & { expandMentions?: boolean; expandEmojis?: boolean })
   ) {
     let content = typeof data == "string" ? data : data.content;
-    if (typeof data !== "string" && data.expandMentions && this.isServerBased()) {
+    if (content && typeof data !== "string" && data.expandMentions && this.isServerBased()) {
       this.server.members
         .filter((m) => m.user)
         .forEach(
@@ -213,7 +213,7 @@ export class Channel extends BaseObject<APIChannel> {
             ))
         );
     }
-    if (typeof data !== "string" && data.expandEmojis) {
+    if (content && typeof data !== "string" && data.expandEmojis) {
       this.client.emojis.forEach(
         (e) =>
           (content = content.replace(new RegExp(escapeRegex(`:${e.uniqueName}:`)), `:${e.id}:`))
