@@ -11,7 +11,7 @@ import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseMessage } from "./BaseMessage";
 import { BaseObject } from "./BaseObject";
 import { DMChannel } from "./DMChannel";
-import Embed from "./Embed";
+import { Embed } from "./Embed";
 import { GroupDMChannel } from "./GroupDMChannel";
 import { Member } from "./Member";
 import { Message } from "./Message";
