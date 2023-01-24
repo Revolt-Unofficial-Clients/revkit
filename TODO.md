@@ -1,5 +1,4 @@
 - invite url generation
-- channel typing users
 - message embeds
 - embed builder
 - message reactions fix
