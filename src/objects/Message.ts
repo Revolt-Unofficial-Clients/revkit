@@ -3,9 +3,9 @@ import { APIMessage } from "../api";
 import { Client } from "../Client";
 import { Attachment } from "./Attachment";
 import { BaseMessage } from "./BaseMessage";
-import Embed from "./Embed";
-import EmbedMedia from "./EmbedMedia";
-import EmbedWeb from "./EmbedWeb";
+import { Embed } from "./Embed";
+import { EmbedMedia } from "./EmbedMedia";
+import { EmbedWeb } from "./EmbedWeb";
 import { Emoji } from "./Emoji";
 
 export class Message extends BaseMessage {
