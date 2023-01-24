@@ -28,6 +28,10 @@ export class EmojiManager extends BaseManager<Emoji> {
       return emoji;
     }
   }
+  public async fetch(id: string, fetchNew = false) {
+    if (this.get(id) && !fetchNew) return this.get(id);
+    return this.construct(await this.client.api.get(`/custom/emoji/${<"">id}`));
+  }
 
   /** Create an emoji. Attachment bucket must be `emojis`. */
   public async create(server: Server, attachment: Attachment, name: string) {
