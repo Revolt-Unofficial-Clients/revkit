@@ -5,9 +5,9 @@ import { BaseEmbed } from "./BaseEmbed";
 export class EmbedWeb extends BaseEmbed {
   public readonly color?: string;
   public readonly description?: string;
-  public readonly icon_url?: string;
-  public readonly original_url?: string;
-  public readonly site_name?: string;
+  public readonly iconURL?: string;
+  public readonly originalURL?: string;
+  public readonly siteName?: string;
   public readonly special?: (APIEmbed & { type: "Website" })["special"];
   public readonly title?: string;
   public readonly url?: string;
@@ -23,13 +23,17 @@ export class EmbedWeb extends BaseEmbed {
     super("Web");
     this.color = source.colour;
     this.description = source.description;
-    this.icon_url = source.icon_url;
-    this.original_url = source.original_url;
-    this.site_name = source.site_name;
+    this.iconURL = source.icon_url;
+    this.originalURL = source.original_url;
+    this.siteName = source.site_name;
     this.special = source.special;
     this.title = source.title;
     this.url = source.url;
     this._media = source.video || source.image;
+  }
+
+  public get proxyIconURL() {
+    return this.client.proxyFile(this.iconURL);
   }
 
   public get media(): {
