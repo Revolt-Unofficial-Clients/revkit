@@ -52,13 +52,15 @@ export class Embed extends BaseEmbed {
   }
 
   public toJSON(): SendableEmbed {
-    return {
+    const json: SendableEmbed = {
       colour: this.color,
       description: this.description,
       icon_url: this.iconURL,
-      media: <any>this.media.source,
+      media: this.media ? <any>this.media.source : undefined,
       title: this.title,
       url: this.url,
     };
+    Object.keys(json).forEach((k) => json[k] ?? delete json[k]);
+    return json;
   }
 }
