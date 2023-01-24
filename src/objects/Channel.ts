@@ -218,7 +218,7 @@ export class Channel extends BaseObject<APIChannel> {
       opts.embeds = [data.toJSON()];
     } else {
       if (typeof data !== "string") {
-        if (data.embed) data.embeds = [data.embed, ...data.embeds];
+        if (data.embed) data.embeds = [data.embed, ...(data.embeds || [])];
         if (data.embeds)
           data.embeds = data.embeds.map((e) => (e instanceof Embed ? e.toJSON() : e));
         opts = { ...opts, ...(<Omit<typeof data, "embeds">>data) };
