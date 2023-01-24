@@ -1,8 +1,8 @@
 import { APIEmbed } from "../api";
 import { Client } from "../Client";
-import BaseEmbed from "./BaseEmbed";
+import { BaseEmbed } from "./BaseEmbed";
 
-export default class EmbedMedia extends BaseEmbed {
+export class EmbedMedia extends BaseEmbed {
   constructor(
     public client: Client,
     private source: (APIEmbed & { type: "Video" }) | (APIEmbed & { type: "Image" })

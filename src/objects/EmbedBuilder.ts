@@ -1,7 +1,7 @@
 import { Attachment } from "revolt-toolset";
-import Embed from "./Embed";
+import { Embed } from "./Embed";
 
-export default class EmbedBuilder extends Embed {
+export class EmbedBuilder extends Embed {
   constructor(data?: {
     color?: string;
     description?: string;

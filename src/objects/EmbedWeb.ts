@@ -1,8 +1,8 @@
 import { APIEmbed } from "../api";
 import { Client } from "../Client";
-import BaseEmbed from "./BaseEmbed";
+import { BaseEmbed } from "./BaseEmbed";
 
-export default class EmbedWeb extends BaseEmbed {
+export class EmbedWeb extends BaseEmbed {
   public readonly color?: string;
   public readonly description?: string;
   public readonly icon_url?: string;

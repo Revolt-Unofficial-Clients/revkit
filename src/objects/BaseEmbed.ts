@@ -1,8 +1,8 @@
-import Embed from "./Embed";
-import EmbedMedia from "./EmbedMedia";
-import EmbedWeb from "./EmbedWeb";
+import { Embed } from "./Embed";
+import { EmbedMedia } from "./EmbedMedia";
+import { EmbedWeb } from "./EmbedWeb";
 
-export default class BaseEmbed {
+export class BaseEmbed {
   constructor(private $: "Text" | "Media" | "Web") {}
 
   public isText(): this is Embed {

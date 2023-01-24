@@ -2,9 +2,9 @@ import { SendableEmbed } from "revolt-api";
 import { APIEmbed } from "../api";
 import { Client } from "../Client";
 import { Attachment } from "./Attachment";
-import BaseEmbed from "./BaseEmbed";
+import { BaseEmbed } from "./BaseEmbed";
 
-export default class Embed extends BaseEmbed {
+export class Embed extends BaseEmbed {
   public color?: string;
   public description?: string;
   public iconURL?: string;
