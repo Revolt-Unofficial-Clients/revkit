@@ -19,7 +19,7 @@ export class EmbedWeb extends BaseEmbed {
     size?: "Large" | "Preview";
   };
 
-  constructor(public client: Client, source: APIEmbed & { type: "Website" }) {
+  constructor(public client: Client, public readonly source: APIEmbed & { type: "Website" }) {
     super("Web");
     this.color = source.colour;
     this.description = source.description;

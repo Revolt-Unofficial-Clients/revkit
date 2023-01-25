@@ -5,7 +5,7 @@ import { BaseEmbed } from "./BaseEmbed";
 export class EmbedMedia extends BaseEmbed {
   constructor(
     public client: Client,
-    private source: (APIEmbed & { type: "Video" }) | (APIEmbed & { type: "Image" })
+    public readonly source: (APIEmbed & { type: "Video" }) | (APIEmbed & { type: "Image" })
   ) {
     super("Media");
   }
