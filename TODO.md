@@ -1,4 +1,3 @@
-- invite url generation
 - message reactions fix (restricted reactions)
 - settings
 - account creation

@@ -15,6 +15,7 @@ import { EmojiManager } from "./managers/EmojiManager";
 import { ServerManager } from "./managers/ServerManager";
 import { UnreadManager } from "./managers/UnreadManager";
 import { UserManager } from "./managers/UserManager";
+import { ServerInvite } from "./objects";
 import { AttachmentBucket } from "./objects/Attachment";
 import { BaseMessage } from "./objects/BaseMessage";
 import { Channel } from "./objects/Channel";
@@ -140,7 +141,9 @@ export class Client extends EventEmitter<ClientEvents> {
     return new GlobalInvite(this, { _id: invite.code, ...invite });
   }
   /** Accept an invite. (Group DMs not supported yet) */
-  public async acceptInvite(invite: string | GlobalInvite): Promise<Server | GroupDMChannel> {
+  public async acceptInvite(
+    invite: string | GlobalInvite | ServerInvite
+  ): Promise<Server | GroupDMChannel> {
     if (typeof invite !== "string") {
       switch (invite.type) {
         case "Group": {

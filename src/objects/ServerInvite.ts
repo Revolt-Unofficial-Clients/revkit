@@ -42,6 +42,14 @@ export class ServerInvite extends BaseObject<APIInvite> {
     return this.serverID ? this.client.servers.get(this.serverID) : null;
   }
 
+  /**
+   * Generates a url for this invite.
+   * @param base The base url to use without a trailing slash. (default: https://rvlt.gg)
+   */
+  public generateURL(base = "https://rvlt.gg") {
+    return `${base}/${this.id}`;
+  }
+
   public async delete() {
     await this.client.api.delete(`/invites/${this._id}`);
   }
