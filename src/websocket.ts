@@ -213,7 +213,10 @@ export class WebSocketClient {
                   reactions: {
                     ...message.source.reactions,
                     [packet.emoji_id]: [
-                      ...new Set([...message.source.reactions?.[packet.emoji_id], packet.user_id]),
+                      ...new Set([
+                        ...(message.source.reactions?.[packet.emoji_id] || []),
+                        packet.user_id,
+                      ]),
                     ],
                   },
                 });
@@ -269,7 +272,7 @@ export class WebSocketClient {
             case "ChannelCreate": {
               if (packet.channel_type === "TextChannel" || packet.channel_type === "VoiceChannel") {
                 const server = await this.client.servers.fetch(packet.server);
-                server.update({ channels: [...server.source.channels, packet._id] });
+                server.update({ channels: [...(server.source.channels || []), packet._id] });
               }
               this.client.emit("channelCreate", this.client.channels.construct(packet));
               break;
