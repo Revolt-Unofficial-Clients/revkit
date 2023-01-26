@@ -525,7 +525,7 @@ export class WebSocketClient {
           .forEach(clearTimeout);
 
         this.client.users.forEach((user) => user.update({ online: false }));
-        //TODO: [...this.client.channels.values()].forEach((channel) => channel.typing_ids.clear());
+        this.client.channels.forEach((channel) => (channel.typingIDs.clear(), channel.update()));
 
         if (!disallowReconnect && this.client.options.reconnect) {
           backOff(() => this.connect(true)).catch(reject);
