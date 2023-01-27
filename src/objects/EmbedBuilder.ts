@@ -1,4 +1,4 @@
-import { Attachment } from "revolt-toolset";
+import { Attachment } from "../objects/Attachment";
 import { Embed } from "./Embed";
 
 export class EmbedBuilder extends Embed {
