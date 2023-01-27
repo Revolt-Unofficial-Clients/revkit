@@ -36,4 +36,11 @@ export const CustomBadges: CustomBadge[] = [
     description: "Developer of revolt-toolset",
     image: "https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revolt-toolset/master/toolset-logo.png",
   },
+  {
+    //     ERROR
+    ids: ["01FH48GXF663JKTH1R13XRF747"],
+    name: "Irresponsibly Disclosed Bug(s)",
+    description: "Tried to discover a security issue and irresponsibly disclosed it.",
+    image: "https://autumn.revolt.chat/attachments/-Nuqbq7jrwhmJfG1BJ2SaTVDkaqnNrauVewMrN8Pjj/shield-trolled.png",
+  },
 ];
