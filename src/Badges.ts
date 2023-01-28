@@ -44,7 +44,7 @@ export const CustomBadges: CustomBadge[] = [
     image: "https://autumn.revolt.chat/attachments/-Nuqbq7jrwhmJfG1BJ2SaTVDkaqnNrauVewMrN8Pjj/shield-trolled.png",
   },
   {
-    //       lo-kiss
+    //     lo-kiss
     ids: ["01G8914GKC48X0KYP1DPH5E1WM"],
     name: "goofy ah",
     description: "Developer of the Jester Client",
