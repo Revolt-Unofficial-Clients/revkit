@@ -43,4 +43,11 @@ export const CustomBadges: CustomBadge[] = [
     description: "Tried to discover a security issue and irresponsibly disclosed it.",
     image: "https://autumn.revolt.chat/attachments/-Nuqbq7jrwhmJfG1BJ2SaTVDkaqnNrauVewMrN8Pjj/shield-trolled.png",
   },
+  {
+    //       lo-kiss
+    ids: ["01G8914GKC48X0KYP1DPH5E1WM"],
+    name: "goofy ah",
+    description: "Developer of the Jester Client",
+    image: "https://user-images.githubusercontent.com/115636509/215259618-eab02fdf-16c2-42de-867f-04bd703dedd8.png",
+  },
 ];
