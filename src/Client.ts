@@ -11,6 +11,7 @@ import {
   MFAResponse,
   RevoltConfig,
 } from "revolt-api";
+import { ulid } from "ulid";
 import { ChannelManager } from "./managers/ChannelManager";
 import { EmojiManager } from "./managers/EmojiManager";
 import { ServerManager } from "./managers/ServerManager";
@@ -44,6 +45,12 @@ const DefaultOptions: ClientOptions = {
   reconnect: true,
 };
 
+export interface ClientSession {
+  id: string;
+  name: string;
+  token: string;
+  type: "user" | "bot";
+}
 export type ClientEvents =
   | "ready"
   | "connecting"
@@ -80,7 +87,7 @@ export class Client extends EventEmitter<ClientEvents> {
   public api: API;
   public options: ClientOptions;
   public config: RevoltConfig;
-  public session: { token: string; type: "user" | "bot" };
+  public session: ClientSession;
   public ws: WebSocketClient;
 
   public channels: ChannelManager;
@@ -170,9 +177,14 @@ export class Client extends EventEmitter<ClientEvents> {
   }
 
   /** Log in using an existing session or bot token. */
-  public async login(token: string, type: "user" | "bot", connect = true) {
+  public async login(
+    token: string,
+    type: "user" | "bot",
+    connect = true,
+    details?: Partial<Omit<Omit<ClientSession, "token">, "type">>
+  ) {
     await this.fetchConfiguration();
-    this.session = { token, type };
+    this.session = { token, type, id: details?.id || ulid(), name: details?.name || "" };
     this.api = new API({
       baseURL: this.options.apiURL,
       authentication: {
@@ -209,11 +221,12 @@ export class Client extends EventEmitter<ClientEvents> {
           type: "onboard",
           async respond(username: string, loginAfterSuccess = true) {
             await client.api.post("/onboard/complete", { username });
-            if (loginAfterSuccess) await client.login(data.token, "user");
+            if (loginAfterSuccess)
+              await client.login(data.token, "user", true, { name: data.name, id: data._id });
           },
         };
       }
-      await this.login(data.token, "user");
+      await this.login(data.token, "user", true, { name: data.name, id: data._id });
       return { type: "none" };
     } else if (data.result == "MFA") {
       return {
