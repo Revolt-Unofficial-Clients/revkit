@@ -7,6 +7,7 @@ import {
   DataCreateServer,
   DataLogin,
   Emoji,
+  MFAMethod,
   MFAResponse,
   RevoltConfig,
 } from "revolt-api";
@@ -184,7 +185,19 @@ export class Client extends EventEmitter<ClientEvents> {
    * Log in with a username and password.
    * @returns Returns a response being one of `none`, `onboard`, or `mfa`. Onboarding and MFA both require a response.
    */
-  public async authenticate(details: DataLogin) {
+  public async authenticate(details: DataLogin): Promise<
+    | { type: "none" }
+    | {
+        type: "onboard";
+        respond(username: string, loginAfterSuccess: boolean): Promise<void>;
+      }
+    | {
+        type: "mfa";
+        ticket: string;
+        methods: MFAMethod[];
+        respond(totp_code: string): ReturnType<Client["authenticate"]>;
+      }
+  > {
     await this.fetchConfiguration();
     const client = this;
     const data = await this.api.post("/auth/session/login", details);
@@ -193,7 +206,7 @@ export class Client extends EventEmitter<ClientEvents> {
       const { onboarding } = await this.api.get("/onboard/hello");
       if (onboarding) {
         return {
-          type: <"onboard">"onboard",
+          type: "onboard",
           async respond(username: string, loginAfterSuccess = true) {
             await client.api.post("/onboard/complete", { username });
             if (loginAfterSuccess) await client.login(data.token, "user");
@@ -201,10 +214,10 @@ export class Client extends EventEmitter<ClientEvents> {
         };
       }
       await this.login(data.token, "user");
-      return { type: <"none">"none" };
+      return { type: "none" };
     } else if (data.result == "MFA") {
       return {
-        type: <"mfa">"mfa",
+        type: "mfa",
         ticket: data.ticket,
         methods: data.allowed_methods,
         async respond(totp_code: string) {
