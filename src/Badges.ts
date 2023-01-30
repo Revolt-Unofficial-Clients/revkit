@@ -50,4 +50,11 @@ export const CustomBadges: CustomBadge[] = [
     description: "Developer of the Jester Client",
     image: "https://user-images.githubusercontent.com/115636509/215259618-eab02fdf-16c2-42de-867f-04bd703dedd8.png",
   },
+  {
+    //     NoLogicALan
+    ids: ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"],
+    name: "Bot Developer",
+    description: "Developer of the Remix Bot",
+    image: "https://autumn.revolt.chat/attachments/kZL8vd21VMhlLKMr688ClOcCT292LkpEYB02QBZddQ/image.png",
+  },
 ];
