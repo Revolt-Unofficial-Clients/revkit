@@ -53,8 +53,8 @@ export const CustomBadges: CustomBadge[] = [
   {
     //     NoLogicALan
     ids: ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"],
-    name: "Bot Developer",
+    name: "Remix",
     description: "Developer of the Remix Bot",
-    image: "https://autumn.revolt.chat/attachments/kZL8vd21VMhlLKMr688ClOcCT292LkpEYB02QBZddQ/image.png",
+    image: "https://autumn.revolt.chat/attachments/gz7zgopjtyhlaKLVwofMlKFlAILInR9QpthiGJ7iLb/RemixRevoltToolset.png",
   },
 ];
