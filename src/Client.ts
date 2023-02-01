@@ -3,8 +3,10 @@ import EventEmitter from "eventemitter3";
 import FormData from "form-data";
 import {
   API,
+  DataChangeUsername,
   DataCreateGroup,
   DataCreateServer,
+  DataEditUser,
   DataLogin,
   Emoji,
   MFAMethod,
@@ -141,6 +143,14 @@ export class Client extends EventEmitter<ClientEvents> {
   public async createGroup(data: DataCreateGroup) {
     const group = await this.api.post(`/channels/create`, data);
     return await this.channels.fetch(group._id, group);
+  }
+  /** Edit the client User's profile information. */
+  public async editUser(details: DataEditUser) {
+    return this.user.update(await this.api.patch("/users/@me", details));
+  }
+  /** Change the client User's username. */
+  public async changeUsername(details: DataChangeUsername) {
+    return this.user.update(await this.api.patch("/users/@me/username", details));
   }
 
   /** Fetch an existing invite. */
