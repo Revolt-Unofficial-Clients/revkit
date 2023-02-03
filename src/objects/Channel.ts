@@ -199,8 +199,10 @@ export class Channel extends BaseObject<APIChannel> {
    * Set `expandEmojis` to do the same for emojis (using uniqueName).
    */
   public async send(data: MessagePayload) {
-    return this.messages.construct(
-      await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data))
+    return <Message>(
+      this.messages.construct(
+        await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data))
+      )
     );
   }
   public async fetchMessage(id: string) {
@@ -208,7 +210,7 @@ export class Channel extends BaseObject<APIChannel> {
   }
 
   async edit(data: DataEditChannel) {
-    this.update(await this.client.api.patch(`/channels/${this._id}`, data));
+    return this.update(await this.client.api.patch(`/channels/${this._id}`, data));
   }
   /** Delete or leave this channel. */
   async delete(silent?: boolean) {
