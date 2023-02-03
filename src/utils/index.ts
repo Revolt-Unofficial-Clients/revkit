@@ -1,5 +1,6 @@
 export * from "./Autocomplete";
 export * from "./Emojis";
+export * from "./Messaging";
 export * from "./PermissionFlags";
 export * from "./Permissions";
 export * from "./ServerFlags";
