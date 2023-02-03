@@ -1,6 +1,6 @@
-import { DataEditMessage } from "revolt-api";
 import { APIMessage } from "../api";
 import { Client } from "../Client";
+import { constructMessageEditPayload, MessageEditPayload } from "../utils/Messaging";
 import { Attachment } from "./Attachment";
 import { BaseMessage } from "./BaseMessage";
 import { Embed } from "./Embed";
@@ -128,9 +128,12 @@ export class Message extends BaseMessage {
   public appendEmbed({ embeds }: Pick<Partial<APIMessage>, "embeds">) {
     if (embeds) this.update({ embeds: [...(this.source.embeds ?? []), ...embeds] });
   }
-  public async edit(data: DataEditMessage) {
+  public async edit(data: MessageEditPayload) {
     return this.update(
-      await this.client.api.patch(`/channels/${<"">this.channel.id}/messages/${this._id}`, data)
+      await this.client.api.patch(
+        `/channels/${<"">this.channel.id}/messages/${this._id}`,
+        constructMessageEditPayload(data)
+      )
     );
   }
 }

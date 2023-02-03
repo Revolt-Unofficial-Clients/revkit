@@ -1,6 +1,6 @@
-import { DataMessageSend } from "revolt-api";
 import { APIMessage } from "../api";
 import { Client } from "../Client";
+import { constructMessagePayload, MessagePayload } from "../utils/Messaging";
 import { BaseObject } from "./BaseObject";
 import { Message } from "./Message";
 import { SystemMessage } from "./SystemMessage";
@@ -32,12 +32,11 @@ export class BaseMessage extends BaseObject<APIMessage> {
     await this.channel?.ack(this);
   }
 
-  public async reply(data: string | DataMessageSend, mention = true) {
-    const obj = typeof data === "string" ? { content: data } : data;
-    return await this.channel.send({
-      ...obj,
-      replies: [{ id: this._id, mention }],
-    });
+  /** Reply to this message. (mention off by default) */
+  public async reply(data: MessagePayload, mention = false) {
+    const payload = constructMessagePayload(data);
+    payload.replies = [{ id: this.id, mention }];
+    return await this.channel.send(payload);
   }
 
   public async delete() {
