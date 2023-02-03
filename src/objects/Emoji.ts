@@ -1,6 +1,6 @@
 import { APIEmoji } from "../api";
 import { Client } from "../Client";
-import { RevoltEmojiLib } from "../utils";
+import { RevoltEmojiLib } from "../utils/Emojis";
 import { BaseObject } from "./BaseObject";
 import { DefaultEmoji } from "./DefaultEmoji";
 

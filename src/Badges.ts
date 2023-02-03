@@ -1,4 +1,4 @@
-import { CustomBadge } from "./utils";
+import { CustomBadge } from "./utils/UserBadges";
 
 /*
  * Keep your image size relatively small. (<512px)

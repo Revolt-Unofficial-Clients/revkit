@@ -1,6 +1,6 @@
 // Shamelessly copied from https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts
 
-import { DefaultEmoji } from "../objects";
+import { DefaultEmoji } from "../objects/DefaultEmoji";
 
 // Originally taken from Twemoji source code,
 // re-written by bree to be more readable.

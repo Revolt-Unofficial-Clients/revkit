@@ -1,6 +1,7 @@
 import { DataEditMessage, DataMessageSend, SendableEmbed } from "revolt-api";
 import { ulid } from "ulid";
-import { Channel, Embed } from "../objects";
+import { Channel } from "../objects/Channel";
+import { Embed } from "../objects/Embed";
 import { escapeRegex } from "./utils";
 
 export interface MessageOptions {

@@ -1,7 +1,7 @@
-import { User } from "../objects";
 import { Channel } from "../objects/Channel";
 import { DefaultEmoji } from "../objects/DefaultEmoji";
 import { Emoji } from "../objects/Emoji";
+import { User } from "../objects/User";
 import { RevoltEmojiLib } from "./Emojis";
 
 export enum AutocompleteType {

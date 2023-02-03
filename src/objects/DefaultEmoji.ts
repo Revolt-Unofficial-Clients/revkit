@@ -1,5 +1,3 @@
-import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "../utils";
-
 export class DefaultEmoji {
   public get id() {
     return this.name;
@@ -20,3 +18,5 @@ export class DefaultEmoji {
     return this;
   }
 }
+
+import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "../utils/Emojis";
