@@ -198,7 +198,7 @@ export class Channel extends BaseObject<APIChannel> {
    * Set `expandMentions` to automatically turn plaintext user mentions into 'real' ones.
    * Set `expandEmojis` to do the same for emojis (using uniqueName).
    */
-  public async send(data: MessagePayload) {
+  public async send(data: MessagePayload): Promise<Message> {
     return <Message>(
       this.messages.construct(
         await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data))
