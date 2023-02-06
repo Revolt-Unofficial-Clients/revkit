@@ -29,6 +29,7 @@ import { Role } from "./objects/Role";
 import { Server } from "./objects/Server";
 import { ServerInvite } from "./objects/ServerInvite";
 import { User } from "./objects/User";
+import { AutumnConfig, JanuaryConfig, VortexConfig } from "./utils/ServiceConfig";
 import { WebSocketClient } from "./websocket";
 import { ClientboundNotification } from "./websocketNotifications";
 
@@ -334,6 +335,21 @@ export class Client extends EventEmitter<ClientEvents> {
 
   public async fetchConfiguration(force = false) {
     if (!this.config || force) this.config = await this.api.get("/");
+  }
+  public async fetchAutumnConfiguration(): Promise<AutumnConfig | null> {
+    await this.fetchConfiguration();
+    if (!this.config.features.autumn.enabled) return null;
+    return (await axios.get(this.config.features.autumn.url)).data;
+  }
+  public async fetchJanuaryConfiguration(): Promise<JanuaryConfig | null> {
+    await this.fetchConfiguration();
+    if (!this.config.features.january.enabled) return null;
+    return (await axios.get(this.config.features.january.url)).data;
+  }
+  public async fetchVortexConfiguration(): Promise<VortexConfig | null> {
+    await this.fetchConfiguration();
+    if (!this.config.features.voso.enabled) return null;
+    return (await axios.get(this.config.features.voso.url)).data;
   }
   public setup() {
     this.channels = new ChannelManager(this);

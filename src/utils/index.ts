@@ -4,6 +4,7 @@ export * from "./Messaging";
 export * from "./PermissionFlags";
 export * from "./Permissions";
 export * from "./ServerFlags";
+export * from "./ServiceConfig";
 export * from "./Theme";
 export * from "./TimeParser";
 export * from "./Timestamp";
