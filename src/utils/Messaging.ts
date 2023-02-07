@@ -68,8 +68,8 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
   return opts;
 }
 
-export function constructMessageEditPayload(data: MessageEditPayload): DataEditMessage {
-  const payload = constructMessagePayload(data),
+export function constructMessageEditPayload(data: MessageEditPayload, channel?: Channel): DataEditMessage {
+  const payload = constructMessagePayload(data, channel),
     opts: DataEditMessage = {};
 
   if ("content" in payload) opts.content = payload.content;
