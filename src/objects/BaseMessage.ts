@@ -34,7 +34,7 @@ export class BaseMessage extends BaseObject<APIMessage> {
 
   /** Reply to this message. (mention off by default) */
   public async reply(data: MessagePayload, mention = false) {
-    const payload = constructMessagePayload(data);
+    const payload = constructMessagePayload(data, this.channel);
     payload.replies = [{ id: this.id, mention }];
     return await this.channel.send(payload);
   }

@@ -201,7 +201,7 @@ export class Channel extends BaseObject<APIChannel> {
   public async send(data: MessagePayload): Promise<Message> {
     return <Message>(
       this.messages.construct(
-        await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data))
+        await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data, this))
       )
     );
   }

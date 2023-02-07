@@ -132,7 +132,7 @@ export class Message extends BaseMessage {
     return this.update(
       await this.client.api.patch(
         `/channels/${<"">this.channel.id}/messages/${this._id}`,
-        constructMessageEditPayload(data)
+        constructMessageEditPayload(data, this.channel)
       )
     );
   }
