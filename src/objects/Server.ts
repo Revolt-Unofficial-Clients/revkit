@@ -135,6 +135,9 @@ export class Server extends BaseObject<APIServer> {
   public get defaultPermissions() {
     return new PermissionFlags(this.source.default_permissions);
   }
+  public get systemMessages() {
+    return this.source.system_messages ?? null;
+  }
 
   public get icon() {
     return this.source.icon ? new Attachment(this.client, this.source.icon) : null;
