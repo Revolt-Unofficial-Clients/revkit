@@ -1,6 +1,14 @@
 # Table of contents
 
 * [Home](README.md)
+
+## 💬 Messaging
+
+* [Getting Messages](messaging/getting-messages.md)
+* [Sending Messages](messaging/sending-messages.md)
+
+***
+
 * [🚀 Quick Start](quick-start/README.md)
   * [Installing Node](quick-start/installing-node.md)
   * [Creating a new project](quick-start/creating-a-new-project.md)
