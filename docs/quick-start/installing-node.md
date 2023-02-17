@@ -1,5 +1,5 @@
 ---
-description: 'If you don''t like node.js, screw you (:'
+description: Node deez
 ---
 
 # Installing Node
@@ -10,7 +10,7 @@ Alternatively, If you use Linux, you could either install it with your package m
 
 We will go through all of them, except windows, because I really (really) don't want to touch it ever again.
 
-> If you need a step-by-step tutorial on how to install Node, you shouldnt be programming.\
+> If you need a step-by-step tutorial on how to install Node, you shouldn't be programming.\
 > \- Meow 2023
 
 ## Option #1: The official way
@@ -94,11 +94,25 @@ I won't cover every single distro out there, because it is really time-consuming
 
 ### FNM (Fast Node Manager)
 
-FNM is a fast (yeah, crazy I know) and intuitive way to install Node versions and manage them, the installation is pretty simple
+FNM is a fast (yeah, crazy I know) and intuitive way to install Node versions and manage them.
+
+To install it, use the following command and follow the steps. If prompted to use sudo, allow it.
 
 ```bash
 # from schniz/fnm
 curl -fsSL https://fnm.vercel.app/install | bash
+```
+
+After installing, source your configuration file or restart your terminal session.
+
+```bash
+source ~/.bashrc
+```
+
+Install node by providing your desired node version with the `fnm install` command.
+
+```bash
+fnm install 18
 ```
 
 ### NVM (Node Version Manager)
@@ -115,4 +129,16 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 
 # using wget
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+```
+
+After installing, source your `.bashrc` file (If you are using other shells, source it's updated config file) or restart your bash/terminal session
+
+```bash
+source ~/.bashrc
+```
+
+Let's now install node. To install it, use the command `nvm install` alongside the node version you want to install, for example, Node 18.
+
+```bash
+nvm install 18
 ```

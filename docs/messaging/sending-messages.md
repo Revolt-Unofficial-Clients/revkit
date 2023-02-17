@@ -44,11 +44,9 @@ channel.send({
 
 Using Toolset's `EmbedBuilder`
 
-<pre class="language-javascript"><code class="lang-javascript">const embedContent = new EmbedBuilder({
-    color: "#fff",
-<strong>    title: "this is cool",
-</strong><strong>    description: "Hello World"
-</strong><strong>})
-</strong><strong>
-</strong><strong>channel.send({embed: embedContent});
-</strong></code></pre>
+<pre class="language-javascript"><code class="lang-javascript"><strong>channel.send(new EmbedBuilder({
+</strong>    color: "#fff",
+    title: "this is cool",
+    description: "Hello World"
+}));
+</code></pre>
