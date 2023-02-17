@@ -20,6 +20,8 @@ Attachments, in the other hand, require the `id` that the `uploadAttachment()` f
 channel.send("**hello world!**");
 ```
 
+Sends: **hello world!**
+
 ## Sending attachments
 
 ```javascript
@@ -28,6 +30,25 @@ channel.send({ attachments: ["autumn_attachment_id"] })
 
 ## Sending embedded content
 
+Using Revolt.js styled embeds
+
 ```javascript
-channel.send(" ", {colour: "#fff", title: "this is cool", description: "Hello World!"});
+channel.send({
+    embed: {
+        colour: "#fff",
+        title: "this is cool",
+        description: "Hello World!"
+    }
+);
 ```
+
+Using Toolset's `EmbedBuilder`
+
+<pre class="language-javascript"><code class="lang-javascript">const embedContent = new EmbedBuilder({
+    color: "#fff",
+<strong>    title: "this is cool",
+</strong><strong>    description: "Hello World"
+</strong><strong>})
+</strong><strong>
+</strong><strong>channel.send({embed: embedContent});
+</strong></code></pre>

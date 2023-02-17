@@ -18,7 +18,7 @@ You can either fetch a specific message or fetch a batch of them.
 
 `fetch` fetches a single message by providing it `id`. You can get a message ID by going into revite and right-clicking a message, then clicking "Copy message ID". This function returns a `Message` object.
 
-`fetchMultiple` in the other hand, allows you to fetch a maximum of 50 messages per call. This is the recommended way to fetch a message for clients. But if you need to fetch a single one for, let's say, a feature, `fetch` is the right approach.
+`fetchMultiple` in the other hand, allows you to fetch a maximum of 100 messages per call. This is the recommended way to fetch a message for clients. But if you need to fetch a single one for, let's say, a feature, `fetch` is the right approach.
 
 ### Getting its content, author, role, etc
 
@@ -35,14 +35,32 @@ Toolset also comes with a way to interact with web socket events. Using the `on(
 There are 3 events we can look out for when it comes to messages.
 
 * `message`
-* `message/updated`
-* `message/deleted`
+* `messageUpdated`
+* `messageDeleted`
 
-To listen for new messages, you can use `on()`&#x20;
+Subscribe to those events using the `client.on` function.
+
+### To listen for new messages
 
 ```javascript
 client.on("message", await (message) => {
     console.log(message);
+})
+```
+
+### To listen if a message has been updated
+
+```javascript
+client.on("messageUpdated", await (updated_message) => {
+    console.log(updated_message);
+})
+```
+
+### To listen if a message has been deleted
+
+```javascript
+client.on("messageDeleted", await (deleted_message) => {
+    console.log(deleted_message);
 })
 ```
 
