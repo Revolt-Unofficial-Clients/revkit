@@ -43,7 +43,7 @@ Subscribe to those events using the `client.on` function.
 ### To listen for new messages
 
 ```javascript
-client.on("message", await (message) => {
+client.on("message", async (message) => {
     console.log(message);
 })
 ```
@@ -51,7 +51,7 @@ client.on("message", await (message) => {
 ### To listen if a message has been updated
 
 ```javascript
-client.on("messageUpdated", await (updated_message) => {
+client.on("messageUpdated", async (updated_message) => {
     console.log(updated_message);
 })
 ```
@@ -59,7 +59,7 @@ client.on("messageUpdated", await (updated_message) => {
 ### To listen if a message has been deleted
 
 ```javascript
-client.on("messageDeleted", await (deleted_message) => {
+client.on("messageDeleted", async (deleted_message) => {
     console.log(deleted_message);
 })
 ```
