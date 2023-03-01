@@ -32,7 +32,7 @@ export class MemberManager extends BaseManager<Member> {
     else {
       const member = new Member(this.client, data);
       this.set(member.id, member);
-      member.onUpdate(() => this.fireUpdate());
+      member.onUpdate(() => this.fireUpdate([member]));
       return member;
     }
   }

@@ -32,7 +32,7 @@ export class RoleManager extends BaseManager<Role> {
     else {
       const role = new Role(this.client, this.server, data);
       this.set(role.id, role);
-      role.onUpdate(() => this.fireUpdate());
+      role.onUpdate(() => this.fireUpdate([role]));
       return role;
     }
   }

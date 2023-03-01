@@ -23,7 +23,7 @@ export class MessageManager extends BaseManager<BaseMessage> {
         data
       );
       this.set(message.id, message);
-      message.onUpdate(() => this.fireUpdate());
+      message.onUpdate(() => this.fireUpdate([message]));
       return message;
     }
   }

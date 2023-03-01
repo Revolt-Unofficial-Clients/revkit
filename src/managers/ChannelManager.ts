@@ -34,7 +34,7 @@ export class ChannelManager extends BaseManager<Channel> {
         }
       })();
       this.set(channel.id, channel);
-      channel.onUpdate(() => this.fireUpdate());
+      channel.onUpdate(() => this.fireUpdate([channel]));
       return channel;
     }
   }

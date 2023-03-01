@@ -24,7 +24,7 @@ export class EmojiManager extends BaseManager<Emoji> {
     else {
       const emoji = new Emoji(this.client, data);
       this.set(emoji.id, emoji);
-      emoji.onUpdate(() => this.fireUpdate());
+      emoji.onUpdate(() => this.fireUpdate([emoji]));
       return emoji;
     }
   }

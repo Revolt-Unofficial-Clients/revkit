@@ -14,7 +14,7 @@ export class ServerManager extends BaseManager<Server> {
     else {
       const server = new Server(this.client, data);
       this.set(server.id, server);
-      server.onUpdate(() => this.fireUpdate());
+      server.onUpdate(() => this.fireUpdate([server]));
       return server;
     }
   }
