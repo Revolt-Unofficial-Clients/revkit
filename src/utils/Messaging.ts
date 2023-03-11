@@ -43,7 +43,7 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
           .forEach(
             (m) =>
               (opts.content = opts.content.replace(
-                new RegExp(escapeRegex(`@${m.user.username}`)),
+                new RegExp(escapeRegex(`@${m.user.username}`), "g"),
                 `<@${m.id}>`
               ))
           );
@@ -57,7 +57,7 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
         channel.client.emojis.forEach(
           (e) =>
             (opts.content = opts.content.replace(
-              new RegExp(escapeRegex(`:${e.uniqueName}:`)),
+              new RegExp(escapeRegex(`:${e.uniqueName}:`), "g"),
               `:${e.id}:`
             ))
         );
@@ -68,7 +68,10 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
   return opts;
 }
 
-export function constructMessageEditPayload(data: MessageEditPayload, channel?: Channel): DataEditMessage {
+export function constructMessageEditPayload(
+  data: MessageEditPayload,
+  channel?: Channel
+): DataEditMessage {
   const payload = constructMessagePayload(data, channel),
     opts: DataEditMessage = {};
 
