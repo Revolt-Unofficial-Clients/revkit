@@ -15,7 +15,10 @@ export class EmojiManager extends BaseManager<Emoji> {
   public get ordered() {
     return this.orderCache.length
       ? this.orderCache
-      : (this.orderCache = this.items().sort((e1, e2) => e1.createdAt - e2.createdAt));
+      : (this.orderCache = this.sort((e1, e2) => e1.createdAt - e2.createdAt));
+  }
+  public get known() {
+    return this.filter((e) => e.parentID && this.client.servers.has(e.parentID));
   }
 
   public construct(data: APIEmoji) {

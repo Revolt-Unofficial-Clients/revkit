@@ -54,7 +54,7 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
         !(data instanceof Embed) &&
         data.expandEmojis
       ) {
-        channel.client.emojis.forEach(
+        channel.client.emojis.known.forEach(
           (e) =>
             (opts.content = opts.content.replace(
               new RegExp(escapeRegex(`:${e.uniqueName}:`), "g"),

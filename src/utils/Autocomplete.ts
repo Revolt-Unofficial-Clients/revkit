@@ -136,7 +136,7 @@ export function parseAutocomplete(
       case AutocompleteType.EMOJI: {
         if (matchedText) {
           const items = [
-            ...channel.client.emojis.filter(
+            ...channel.client.emojis.known.filter(
               (e) => e.parent && e.name.toLowerCase().includes(matchedText)
             ),
             ...RevoltEmojiLib.filter((k) => k.name.toLowerCase().includes(matchedText)),
