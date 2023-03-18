@@ -1,6 +1,5 @@
 import { APIEmoji } from "../api";
 import { Client } from "../Client";
-import { Attachment } from "../objects/Attachment";
 import { Emoji } from "../objects/Emoji";
 import { Server } from "../objects/Server";
 import { BaseManager } from "./BaseManager";
@@ -36,11 +35,10 @@ export class EmojiManager extends BaseManager<Emoji> {
     return this.construct(await this.client.api.get(`/custom/emoji/${<"">id}`));
   }
 
-  /** Create an emoji. Attachment bucket must be `emojis`. */
-  public async create(server: Server, attachment: Attachment, name: string) {
-    if (attachment.bucket !== "emojis") throw "Invalid attachment bucket for emoji.";
+  /** Create an emoji. Attachment bucket for ID must be `emojis`. */
+  public async create(server: Server, attachmentID: string, name: string) {
     return this.construct(
-      await this.client.api.put(`/custom/emoji/${<"">attachment.id}`, {
+      await this.client.api.put(`/custom/emoji/${<"">attachmentID}`, {
         name,
         parent: { type: "Server", id: server.id },
       })
