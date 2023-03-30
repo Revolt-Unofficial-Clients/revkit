@@ -7,7 +7,8 @@
   "types": "dist/es6/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -b tsconfig.json && tsc -b tsconfig.cjs.json",
-    "pub": "pnpm run build && pnpm publish"
+    "pub": "pnpm run build && pnpm publish",
+    "build:docs": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -36,8 +37,10 @@
     "ulid": "^2.3.0"
   },
   "devDependencies": {
+    "@mxssfd/typedoc-theme": "^1.0.6",
     "@types/node": "^18.8.5",
     "rimraf": "^3.0.2",
+    "typedoc": "^0.23.28",
     "typescript": "^4.8.4"
   }
 }
