@@ -2,9 +2,11 @@ lockfileVersion: 5.4
 
 specifiers:
   typedoc: ^0.23.28
+  typescript: ^5.0.3
 
 dependencies:
-  typedoc: 0.23.28
+  typedoc: 0.23.28_typescript@5.0.3
+  typescript: 5.0.3
 
 packages:
 
@@ -52,7 +54,7 @@ packages:
       vscode-textmate: 8.0.0
     dev: false
 
-  /typedoc/0.23.28:
+  /typedoc/0.23.28_typescript@5.0.3:
     resolution: {integrity: sha512-9x1+hZWTHEQcGoP7qFmlo4unUoVJLB0H/8vfO/7wqTnZxg4kPuji9y3uRzEu0ZKez63OJAUmiGhUrtukC6Uj3w==}
     engines: {node: '>= 14.14'}
     hasBin: true
@@ -63,6 +65,13 @@ packages:
       marked: 4.3.0
       minimatch: 7.4.5
       shiki: 0.14.1
+      typescript: 5.0.3
+    dev: false
+
+  /typescript/5.0.3:
+    resolution: {integrity: sha512-xv8mOEDnigb/tN9PSMTwSEqAnUvkoXMQlicOb0IUVDBSQCgBSaAAROUZYy2IcUy5qU6XajK5jjjO7TMWqBTKZA==}
+    engines: {node: '>=12.20'}
+    hasBin: true
     dev: false
 
   /vscode-oniguruma/1.7.0:
