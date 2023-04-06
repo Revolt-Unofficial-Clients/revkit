@@ -1,14 +1,25 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@mxssfd/typedoc-theme': ^1.0.6
   typedoc: ^0.23.28
   typescript: ^5.0.3
 
 dependencies:
+  '@mxssfd/typedoc-theme': 1.0.6_typedoc@0.23.28
   typedoc: 0.23.28_typescript@5.0.3
   typescript: 5.0.3
 
 packages:
+
+  /@mxssfd/typedoc-theme/1.0.6_typedoc@0.23.28:
+    resolution: {integrity: sha512-GmaVRWWCaL9jIr58uKyXuBS+yn5L4e5BznclGCB+VlDSGHfZEc8GZdVc4ApKFUC3UEtZkS3fWy9S5aJMQttUyQ==}
+    engines: {node: '>= 14'}
+    peerDependencies:
+      typedoc: ^0.23.21
+    dependencies:
+      typedoc: 0.23.28_typescript@5.0.3
+    dev: false
 
   /ansi-sequence-parser/1.1.0:
     resolution: {integrity: sha512-lEm8mt52to2fT8GhciPCGeCXACSz2UwIN4X2e2LJSnZ5uAbn2/dsYdOmUXq0AtWS5cpAupysIneExOgH0Vd2TQ==}

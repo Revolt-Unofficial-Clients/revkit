@@ -34,7 +34,6 @@
     "ulid": "^2.3.0"
   },
   "devDependencies": {
-    "@mxssfd/typedoc-theme": "^1.0.6",
     "@types/luxon": "^3.2.0",
     "@types/node": "^18.8.5",
     "@types/ws": "^8.5.4",

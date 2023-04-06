@@ -3,7 +3,6 @@ lockfileVersion: 5.4
 specifiers:
   '@insertish/exponential-backoff': ^3.1.0-patch.2
   '@insertish/isomorphic-ws': ^4.0.1
-  '@mxssfd/typedoc-theme': ^1.0.6
   '@types/luxon': ^3.2.0
   '@types/node': ^18.8.5
   '@types/ws': ^8.5.4
@@ -29,7 +28,6 @@ dependencies:
   ulid: 2.3.0
 
 devDependencies:
-  '@mxssfd/typedoc-theme': 1.0.6
   '@types/luxon': 3.2.0
   '@types/node': 18.11.18
   '@types/ws': 8.5.4
@@ -59,13 +57,6 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: false
-
-  /@mxssfd/typedoc-theme/1.0.6:
-    resolution: {integrity: sha512-GmaVRWWCaL9jIr58uKyXuBS+yn5L4e5BznclGCB+VlDSGHfZEc8GZdVc4ApKFUC3UEtZkS3fWy9S5aJMQttUyQ==}
-    engines: {node: '>= 14'}
-    peerDependencies:
-      typedoc: ^0.23.21
-    dev: true
 
   /@types/luxon/3.2.0:
     resolution: {integrity: sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==}
