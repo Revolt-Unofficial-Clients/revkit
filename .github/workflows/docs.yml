@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -24,7 +24,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build:docs
+        run: pnpm run docs
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.5
