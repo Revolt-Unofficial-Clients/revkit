@@ -1,0 +1,43 @@
+{
+  "name": "revkit",
+  "version": "1.1.1",
+  "description": "An alternative to revolt.js that aims to be familiar to use.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es6/index.js",
+  "types": "dist/es6/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc -b tsconfig.json && tsc -b tsconfig.cjs.json",
+    "pub": "pnpm run build && pnpm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Revolt-Unofficial-Clients/revkit.git"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "author": "Meow",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Revolt-Unofficial-Clients/revkit/issues"
+  },
+  "homepage": "https://github.com/Revolt-Unofficial-Clients/revkit#readme",
+  "dependencies": {
+    "@insertish/exponential-backoff": "^3.1.0-patch.2",
+    "@insertish/isomorphic-ws": "^4.0.1",
+    "axios": "^1.1.2",
+    "eventemitter3": "^5.0.0",
+    "form-data": "^4.0.0",
+    "long": "^5.2.1",
+    "luxon": "^3.2.0",
+    "revolt-api": "^0.5.5-5",
+    "ulid": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.2.0",
+    "@types/node": "^18.8.5",
+    "@types/ws": "^8.5.4",
+    "rimraf": "^4.4.1",
+    "typescript": "^4.8.4"
+  }
+}
