@@ -4,7 +4,7 @@
   "printWidth": 100,
   "overrides": [
     {
-      "files": ["src/Badges.ts"],
+      "files": ["core/src/Badges.ts"],
       "options": {
         "printWidth": 9999
       }

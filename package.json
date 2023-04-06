@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "docs": "typedoc"
+  },
+  "dependencies": {
+    "typedoc": "^0.23.28"
+  }
+}
