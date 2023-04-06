@@ -32,9 +32,9 @@ export const CustomBadges: CustomBadge[] = [
   {
     //     Meow
     ids: ["01FESEWQKT7RESCNX5YF3JR29H"],
-    name: "Revolt Toolset",
-    description: "Developer of revolt-toolset",
-    image: "https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revolt-toolset/master/toolset-logo.png",
+    name: "RevKit",
+    description: "Developer of RevKit",
+    image: "https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-logo.png",
   },
   {
     //     ERROR

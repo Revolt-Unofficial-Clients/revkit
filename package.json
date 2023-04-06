@@ -1,7 +1,7 @@
 {
-  "name": "revolt-toolset",
-  "version": "1.0.66",
-  "description": "Tools for Revolt based apps.",
+  "name": "revkit",
+  "version": "1.1.0",
+  "description": "An alternative to revolt.js that aims to be familiar to use.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
   "types": "dist/es6/index.d.ts",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Revolt-Unofficial-Clients/revolt-toolset.git"
+    "url": "git+https://github.com/Revolt-Unofficial-Clients/revkit.git"
   },
   "files": [
     "dist/*"
@@ -20,9 +20,9 @@
   "author": "Meow",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Revolt-Unofficial-Clients/revolt-toolset/issues"
+    "url": "https://github.com/Revolt-Unofficial-Clients/revkit/issues"
   },
-  "homepage": "https://github.com/Revolt-Unofficial-Clients/revolt-toolset#readme",
+  "homepage": "https://github.com/Revolt-Unofficial-Clients/revkit#readme",
   "dependencies": {
     "@insertish/exponential-backoff": "^3.1.0-patch.2",
     "@insertish/isomorphic-ws": "^4.0.1",
