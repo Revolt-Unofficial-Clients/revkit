@@ -1,4 +1,0 @@
-- message reactions fix (restricted reactions)
-- settings
-- account creation
-- regex
