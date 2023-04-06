@@ -20,8 +20,11 @@ jobs:
         with:
           version: 6.0.2
 
-      - name: Install dependencies
+      - name: Install typedoc
         run: pnpm install --frozen-lockfile
+        
+      - name: Install dependencies
+        run: cd core && pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run docs
