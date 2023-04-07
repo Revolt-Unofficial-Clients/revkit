@@ -1,6 +1,8 @@
 export * from "./Autocomplete";
 export * from "./Emojis";
+export * from "./Flags";
 export * from "./Messaging";
+export * from "./MiniEmitter";
 export * from "./PermissionFlags";
 export * from "./Permissions";
 export * from "./ServerFlags";
@@ -9,5 +11,6 @@ export * from "./Theme";
 export * from "./TimeParser";
 export * from "./Timestamp";
 export * from "./UserBadges";
+export * from "./UserFlags";
 export * from "./UserPermissionFlags";
 export * from "./utils";
