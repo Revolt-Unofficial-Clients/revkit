@@ -151,10 +151,11 @@ export class VoiceClient extends EventEmitter<{
     return this.signaling.connect(address);
   }
 
-  public disconnect(error?: VoiceError, ignoreDisconnected?: boolean) {
-    if (!this.signaling.connected() && !ignoreDisconnected) return;
+  public disconnect(error?: VoiceError, forceDisconnect = false) {
+    if (!this.signaling.connected() && !forceDisconnect) return;
     this.signaling.disconnect();
-    this.participants = new Map();
+    this.participants.clear();
+    this.participants.fireUpdate([]);
     this.consumers = new Map();
     this.userId = undefined;
     this.roomId = undefined;
