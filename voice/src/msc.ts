@@ -1,5 +1,14 @@
-import type * as browser from "mediasoup-client";
-import type * as node from "msc-node";
+import * as browser from "mediasoup-client";
+import * as node from "msc-node";
+
+/** Returns `true` to use the msc-node package. */
+export function shouldUseNode() {
+  return typeof navigator !== "object";
+}
+/** Returns the correct MSC client based on `shouldUseNode()`. */
+export function getMSC() {
+  return shouldUseNode() ? node : browser;
+}
 
 /* Utility types for compatibility between both clients. */
 

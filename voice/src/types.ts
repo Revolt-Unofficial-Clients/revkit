@@ -1,4 +1,5 @@
-import {
+import type { User } from "revkit";
+import type {
   MSCConsumer,
   MSCDTLSParameters,
   MSCIceCandidate,
@@ -72,16 +73,17 @@ export interface AuthenticationResult {
 export interface Room {
   id: string;
   videoAllowed: boolean;
-  users: Map<string, VoiceParticipant>;
+  users: Map<string, VoiceParticipantData>;
 }
 
 /** Details about a participant. */
-export interface VoiceParticipant {
+export interface VoiceParticipantData {
   audio?: boolean;
   //video?: boolean,
   //saudio?: boolean,
   //svideo?: boolean,
 }
+export type VoiceParticipant = { user: User } & Required<VoiceParticipantData>;
 
 /** An incoming stream from a participant. */
 export interface VoiceConsumer {
