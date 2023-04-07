@@ -1,10 +1,11 @@
 import EventEmitter from "eventemitter3";
 import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
-import { Client, MiniMapEmitter } from "revkit";
+import { Client, MiniMapEmitter, VoiceChannel } from "revkit";
 import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
+  VoiceStatus,
   WSErrorCode,
   WSEvents,
   type ProduceType,
@@ -22,9 +23,11 @@ export interface VoiceClientEvents {
   ready: () => void;
   error: (error: Error) => void;
   close: (error?: VoiceError) => void;
+  status: (status: VoiceStatus) => void;
 
   startProduce: (type: ProduceType) => void;
   stopProduce: (type: ProduceType) => void;
+  selfDeafenUpdate: (isDeaf: boolean) => void;
 
   userJoined: (user: VoiceParticipant) => void;
   userLeft: (user: VoiceParticipant) => void;
@@ -53,6 +56,10 @@ export class VoiceClient<
     return this._deafened;
   }
   public participants = new MiniMapEmitter<VoiceParticipant>();
+  public status = VoiceStatus.UNLOADED;
+  public get connected() {
+    return this.status == VoiceStatus.CONNECTED && !!this.channelID;
+  }
 
   public channelID: string | null = null;
   public get channel() {
@@ -153,7 +160,7 @@ export class VoiceClient<
     this.signaling.on(
       "close",
       (error) => {
-        this.disconnect(
+        this.disconnectTransport(
           {
             error: error.code,
             message: error.reason,
@@ -163,20 +170,26 @@ export class VoiceClient<
       },
       this
     );
+
+    if (!this.supported) {
+      this.setStatus(VoiceStatus.UNAVAILABLE);
+    } else {
+      this.setStatus(VoiceStatus.READY);
+    }
   }
 
   private throwIfUnsupported() {
     if (!this.supported) throw new this.msc.types.UnsupportedError("RTC not supported");
   }
 
-  public connect(address: string, roomId: string) {
+  public connectTransport(address: string, roomId: string) {
     this.throwIfUnsupported();
     this.device = this.createDevice();
     this.channelID = roomId;
     return this.signaling.connect(address);
   }
 
-  public disconnect(error?: VoiceError, forceDisconnect = false) {
+  public disconnectTransport(error?: VoiceError, forceDisconnect = false) {
     if (!this.signaling.connected() && !forceDisconnect) return;
     this.signaling.disconnect();
     this.participants.clear();
@@ -268,6 +281,7 @@ export class VoiceClient<
     const consumer = await this.recvTransport.consume(consumerParams);
     switch (type) {
       case "audio":
+        if (this.deafened) consumer.pause();
         consumers.audio = {
           consumer: <any>consumer,
           callback: this.consumeTrack(type, <any>consumer),
@@ -353,5 +367,71 @@ export class VoiceClient<
       if (error.error === WSErrorCode.ProducerNotFound) return;
       throw error;
     }
+  }
+
+  public setStatus(status: VoiceStatus) {
+    this.status = status;
+    this.emit("status", status);
+  }
+
+  public async connect(channel: VoiceChannel) {
+    if (!this.supported) throw new Error("RTC is unavailable");
+    await this.client.fetchConfiguration();
+    const vortexURL = this.client.config?.features.voso?.enabled
+      ? this.client.config.features.voso.ws
+      : null;
+    if (!vortexURL) {
+      this.setStatus(VoiceStatus.UNAVAILABLE);
+      throw new Error("Vortex is not enabled on target server.");
+    }
+
+    this.setStatus(VoiceStatus.CONNECTING);
+
+    try {
+      const call = await channel.joinCall();
+      await this.connectTransport(channel.client.config.features.voso.ws, channel.id);
+      this.setStatus(VoiceStatus.AUTHENTICATING);
+      await this.authenticate(call);
+      this.setStatus(VoiceStatus.RTC_CONNECTING);
+      await this.initializeTransports();
+    } catch (err) {
+      this.emit("error", err);
+      this.setStatus(VoiceStatus.READY);
+      return channel;
+    }
+
+    this.setStatus(VoiceStatus.CONNECTED);
+    return channel;
+  }
+
+  public disconnect() {
+    this.disconnectTransport();
+    this.setStatus(VoiceStatus.READY);
+  }
+
+  public isProducing(type: ProduceType) {
+    switch (type) {
+      case "audio":
+        return !!this.audioProducer;
+      default:
+        return false;
+    }
+  }
+
+  public async startDeafen() {
+    if (this.deafened) return;
+    this._deafened = true;
+    this.consumers.forEach((consumer) => {
+      consumer.audio?.consumer.pause();
+    });
+    this.emit("selfDeafenUpdate", true);
+  }
+  public async stopDeafen() {
+    if (!this.deafened) return;
+    this._deafened = false;
+    this.consumers.forEach((consumer) => {
+      consumer.audio?.consumer.resume();
+    });
+    this.emit("selfDeafenUpdate", false);
   }
 }
