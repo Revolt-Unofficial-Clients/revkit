@@ -3,36 +3,36 @@ lockfileVersion: 5.4
 specifiers:
   '@insertish/exponential-backoff': ^3.1.0-patch.2
   '@insertish/isomorphic-ws': ^4.0.1
-  '@types/luxon': ^3.2.0
-  '@types/node': ^18.8.5
+  '@types/luxon': ^3.3.0
+  '@types/node': ^18.15.11
   '@types/ws': ^8.5.4
-  axios: ^1.1.2
+  axios: ^1.3.5
   eventemitter3: ^5.0.0
   form-data: ^4.0.0
   long: ^5.2.1
-  luxon: ^3.2.0
+  luxon: ^3.3.0
   revolt-api: ^0.5.5-5
   rimraf: ^4.4.1
-  typescript: ^4.8.4
+  typescript: ^5.0.4
   ulid: ^2.3.0
 
 dependencies:
   '@insertish/exponential-backoff': 3.1.0-patch.2
   '@insertish/isomorphic-ws': 4.0.1
-  axios: 1.2.3
+  axios: 1.3.5
   eventemitter3: 5.0.0
   form-data: 4.0.0
   long: 5.2.1
-  luxon: 3.2.1
+  luxon: 3.3.0
   revolt-api: 0.5.5-5
   ulid: 2.3.0
 
 devDependencies:
-  '@types/luxon': 3.2.0
-  '@types/node': 18.11.18
+  '@types/luxon': 3.3.0
+  '@types/node': 18.15.11
   '@types/ws': 8.5.4
   rimraf: 4.4.1
-  typescript: 4.9.4
+  typescript: 5.0.4
 
 packages:
 
@@ -58,18 +58,18 @@ packages:
       - debug
     dev: false
 
-  /@types/luxon/3.2.0:
-    resolution: {integrity: sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==}
+  /@types/luxon/3.3.0:
+    resolution: {integrity: sha512-uKRI5QORDnrGFYgcdAVnHvEIvEZ8noTpP/Bg+HeUzZghwinDlIS87DEenV5r1YoOF9G4x600YsUXLWZ19rmTmg==}
     dev: true
 
-  /@types/node/18.11.18:
-    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
+  /@types/node/18.15.11:
+    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
     dev: true
 
   /@types/ws/8.5.4:
     resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
     dependencies:
-      '@types/node': 18.11.18
+      '@types/node': 18.15.11
     dev: true
 
   /argparse/2.0.1:
@@ -89,8 +89,8 @@ packages:
       - debug
     dev: false
 
-  /axios/1.2.3:
-    resolution: {integrity: sha512-pdDkMYJeuXLZ6Xj/Q5J3Phpe+jbGdsSzlQaFVkMQzRUL05+6+tetX8TV3p4HrU4kzuO9bt+io/yGQxuyxA/xcw==}
+  /axios/1.3.5:
+    resolution: {integrity: sha512-glL/PvG/E+xCWwV8S6nCHcrfg1exGx7vxyUIivIA1iL7BIh6bePylCfVHwp6k13ao7SATxB6imau2kqY+I67kw==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -197,8 +197,8 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /luxon/3.2.1:
-    resolution: {integrity: sha512-QrwPArQCNLAKGO/C+ZIilgIuDnEnKx5QYODdDtbFaxzsbZcc/a7WFq7MhsVYgRlwawLtvOUESTlfJ+hc/USqPg==}
+  /luxon/3.3.0:
+    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
     engines: {node: '>=12'}
     dev: false
 
@@ -303,6 +303,13 @@ packages:
     resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+    dev: false
+
+  /typescript/5.0.4:
+    resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
+    engines: {node: '>=12.20'}
+    hasBin: true
+    dev: true
 
   /ulid/2.3.0:
     resolution: {integrity: sha512-keqHubrlpvT6G2wH0OEfSW4mquYRcbe/J8NMmveoQOjUqmo+hXtO+ORCpWhdbZ7k72UtY61BL7haGxW6enBnjw==}
