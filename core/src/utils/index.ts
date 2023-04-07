@@ -8,7 +8,6 @@ export * from "./Permissions";
 export * from "./ServerFlags";
 export * from "./ServiceConfig";
 export * from "./Theme";
-export * from "./TimeParser";
 export * from "./Timestamp";
 export * from "./UserBadges";
 export * from "./UserFlags";
