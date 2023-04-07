@@ -36,10 +36,10 @@ export default class VoiceClient extends BaseVoiceClient<"browser"> {
     switch (type) {
       case "audio": {
         if (!this.audioProducer) throw "No audio producer.";
-        if (navigator.mediaDevices === undefined) throw "No media devices.";
 
         try {
           if (!(track instanceof MediaStreamTrack)) {
+            if (navigator.mediaDevices === undefined) throw "No media devices.";
             track = (
               await navigator.mediaDevices.getUserMedia({
                 audio: track ? { deviceId: track } : true,
