@@ -1,32 +1,58 @@
-/*
+import * as MSC from "mediasoup-client";
+import type { Client } from "revkit";
+import { VoiceClient as BaseVoiceClient, type VoiceClientConsumer } from "./VoiceClient";
+import type { ProduceType } from "./types";
 
-const mediaStream = new MediaStream([consumer.track]);
+export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) => {
+  if (type == "audio") {
+    const mediaStream = new MediaStream([track]);
     const audio = new Audio();
-audio.srcObject = mediaStream;
+    audio.srcObject = mediaStream;
     audio.load();
     audio.play();
+    return () => audio.pause();
+  }
+};
 
-async startProducing(type: ProduceType) {
-    switch (type) {
-      case "audio": {
-        if (this.client?.audioProducer !== undefined) return alert("No audio producer.");
-
-        if (navigator.mediaDevices === undefined) return alert("No media devices.");
-
-        const mediaDevice = window.localStorage.getItem("audioInputDevice");
-
-        try {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: mediaDevice ? { deviceId: mediaDevice } : true,
-          });
-
-          await this.client?.startProduce(mediaStream.getAudioTracks()[0], "audio");
-        } catch (err) {
-          alert("WebRTC Error: " + err);
-        }
-      }
-    }
-    this.syncState();
+/**
+ * A VoiceClient implementation for use in browsers.
+ * You can pass DEFAULT_CONSUMER to the trackConsumer to simply play the audio in the browser using `Audio`.
+ */
+export default class VoiceClient extends BaseVoiceClient<"browser"> {
+  /**
+   * @param client The RevKit client to use.
+   * @param trackConsumer A function that is called when there is a new `MediaStreamTrack` to play. The function returned will be called when the track ends.
+   */
+  constructor(client: Client, trackConsumer?: VoiceClientConsumer<"browser">) {
+    super("browser", client, MSC, () => new MSC.Device(), trackConsumer);
   }
 
-*/
+  /**
+   * Play a MediaStreamTrack in the channel.
+   * @param type The type of track to play.
+   * @param track The track to play, device ID to use, or leave out to use the default user media device.
+   */
+  public async play(type: ProduceType, track?: MediaStreamTrack | string) {
+    switch (type) {
+      case "audio": {
+        if (!this.audioProducer) throw "No audio producer.";
+        if (navigator.mediaDevices === undefined) throw "No media devices.";
+
+        try {
+          if (!(track instanceof MediaStreamTrack)) {
+            track = (
+              await navigator.mediaDevices.getUserMedia({
+                audio: track ? { deviceId: track } : true,
+              })
+            ).getAudioTracks()[0];
+          }
+
+          await this.startProduce("audio", track);
+        } catch (err) {
+          throw "WebRTC Error: " + err;
+        }
+        break;
+      }
+    }
+  }
+}

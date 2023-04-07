@@ -49,7 +49,7 @@ export class VoiceClient<
   private recvTransport: MSC["Transport"] | null = null;
 
   private consumers = new Map<string, VoiceConsumer<Platform>>();
-  private audioProducer?: MSC["Producer"];
+  protected audioProducer?: MSC["Producer"];
 
   private _deafened = false;
   public get deafened() {

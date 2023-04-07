@@ -1,5 +1,5 @@
 import type { User } from "revkit";
-import { MSCPlatform, MediaSoup } from "./msc";
+import type { MSCPlatform, MediaSoup } from "./msc";
 
 /* Mostly copied from revite's MSC implementation. */
 

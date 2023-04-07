@@ -1,6 +1,6 @@
 import WebSocket from "@insertish/isomorphic-ws";
 import EventEmitter from "eventemitter3";
-import { MSCPlatform, MediaSoup } from "./msc";
+import type { MSCPlatform, MediaSoup } from "./msc";
 import {
   WSCommands,
   WSErrorCode,
