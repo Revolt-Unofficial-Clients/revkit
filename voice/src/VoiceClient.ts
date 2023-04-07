@@ -18,10 +18,7 @@ export type VoiceClientConsumer<P extends MSCPlatform> = (
   track: MediaSoup<P>["MediaStreamTrack"]
 ) => () => any;
 
-export class VoiceClient<
-  Platform extends MSCPlatform,
-  MSC extends MediaSoup<Platform> = MediaSoup<Platform>
-> extends EventEmitter<{
+export interface VoiceClientEvents {
   ready: () => void;
   error: (error: Error) => void;
   close: (error?: VoiceError) => void;
@@ -34,7 +31,12 @@ export class VoiceClient<
 
   userStartProduce: (user: VoiceParticipant, type: ProduceType) => void;
   userStopProduce: (user: VoiceParticipant, type: ProduceType) => void;
-}> {
+}
+
+export class VoiceClient<
+  Platform extends MSCPlatform,
+  MSC extends MediaSoup<Platform> = MediaSoup<Platform>
+> extends EventEmitter<VoiceClientEvents> {
   readonly supported: boolean = false;
 
   private device?: MSC["Device"];

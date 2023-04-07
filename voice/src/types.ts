@@ -103,3 +103,14 @@ export interface ConsumerData<P extends MSCPlatform> {
   kind: MediaSoup<P>["MediaKind"];
   rtpParameters: MediaSoup<P>["RTPParameters"];
 }
+
+export enum VoiceStatus {
+  UNAVAILABLE,
+  UNLOADED,
+  LOADING,
+  READY,
+  CONNECTING,
+  AUTHENTICATING,
+  RTC_CONNECTING,
+  CONNECTED,
+}
