@@ -27,7 +27,7 @@
     "eventemitter3": "^5.0.0",
     "mediasoup-client": "^3.6.84",
     "msc-node": "^0.0.10",
-    "revkit": "^1.1.1"
+    "revkit": "^1.1.2"
   },
   "devDependencies": {
     "@types/node": "^18.8.5",

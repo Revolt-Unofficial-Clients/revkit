@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3";
 import { Device, Producer, Transport } from "mediasoup-client/lib/types";
-import { Client, User } from "revkit";
+import { Client } from "revkit";
 import { MiniMapEmitter } from "revkit/dist/es6/utils/MiniEmitter";
 import Signaling from "./Signaling";
 import { getMSC } from "./msc";
@@ -24,8 +24,8 @@ export class VoiceClient extends EventEmitter<{
   userJoined: (user: VoiceParticipant) => void;
   userLeft: (user: VoiceParticipant) => void;
 
-  userStartProduce: (user: User, type: ProduceType) => void;
-  userStopProduce: (user: User, type: ProduceType) => void;
+  userStartProduce: (user: VoiceParticipant, type: ProduceType) => void;
+  userStopProduce: (user: VoiceParticipant, type: ProduceType) => void;
 }> {
   readonly supported: boolean = getMSC().detectDevice() !== undefined;
 
@@ -57,17 +57,19 @@ export class VoiceClient extends EventEmitter<{
           case WSEvents.UserJoined: {
             const user = await this.client.users.fetch(data.id);
             if (user) {
-              this.participants.set(user.id, { user, audio: false });
-              this.emit("userJoined", this.participants.get(user.id));
-            } else {
-              throw new Error(`Invalid voice channel participant: ${data.id}`);
-            }
+              const participant: VoiceParticipant = { user, audio: false };
+              this.participants.set(data.id, participant);
+              this.participants.fireUpdate([participant]);
+              this.emit("userJoined", participant);
+            } else throw new Error(`Invalid voice channel participant: ${data.id}`);
+
             break;
           }
           case WSEvents.UserLeft: {
             const participant = this.participants.get(data.id);
             if (!participant) return;
             this.participants.delete(data.id);
+            this.participants.fireUpdate([participant]);
             if (this.recvTransport) this.stopConsume(data.id);
             this.emit("userLeft", participant);
             break;
@@ -75,33 +77,39 @@ export class VoiceClient extends EventEmitter<{
           case WSEvents.UserStartProduce: {
             const participant = this.participants.get(data.id);
             if (!participant) return;
-            switch (data.type) {
-              case "audio":
-                participant.audio = true;
-                break;
-              default:
-                throw new Error(`Invalid produce type ${data.type}`);
+            if (<any>data.type in participant) {
+              participant[data.type] = true;
+            } else {
+              return this.emit(
+                "error",
+                new Error(
+                  `Invalid produce type ${data.type} for ${participant.user.username} (${participant.user.id})`
+                )
+              );
             }
-            this.participants.
+            this.participants.fireUpdate([participant]);
+
             if (this.recvTransport) this.startConsume(data.id, data.type);
-            const user = await this.client.users.fetch(data.id);
-            if (user) this.emit("userStartProduce", data.id, data.type);
+            this.emit("userStartProduce", participant, data.type);
             break;
           }
           case WSEvents.UserStopProduce: {
             const participant = this.participants.get(data.id);
-            if (participant === undefined) return;
-            switch (data.type) {
-              case "audio":
-                participant.audio = false;
-                break;
-              default:
-                throw new Error(`Invalid produce type ${data.type}`);
+            if (!participant) return;
+            if (<any>data.type in participant) {
+              participant[data.type] = false;
+            } else {
+              return this.emit(
+                "error",
+                new Error(
+                  `Invalid produce type ${data.type} for ${participant.user.username} (${participant.user.id})`
+                )
+              );
             }
+            this.participants.fireUpdate([participant]);
 
             if (this.recvTransport) this.stopConsume(data.id, data.type);
-            const user = await this.client.users.fetch(data.id);
-            if (user) this.emit("userStopProduce", data.id, data.type);
+            this.emit("userStopProduce", participant, data.type);
             break;
           }
         }
