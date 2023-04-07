@@ -1,6 +1,6 @@
 import WebSocket from "@insertish/isomorphic-ws";
 import EventEmitter from "eventemitter3";
-import { MSCDTLSParameters, MSCRTPCapabilities, MSCRTPParameters } from "./msc";
+import { MSCPlatform, MediaSoup } from "./msc";
 import {
   WSCommands,
   WSErrorCode,
@@ -11,7 +11,7 @@ import {
   type TransportInitDataTuple,
 } from "./types";
 
-export default class Signaling extends EventEmitter<{
+export default class Signaling<Platform extends MSCPlatform> extends EventEmitter<{
   open: (event: WebSocket.Event) => void;
   close: (event: WebSocket.CloseEvent) => void;
   error: (event: WebSocket.Event) => void;
@@ -117,7 +117,7 @@ export default class Signaling extends EventEmitter<{
     });
   }
 
-  authenticate(token: string, roomId: string): Promise<AuthenticationResult> {
+  public authenticate(token: string, roomId: string): Promise<AuthenticationResult<Platform>> {
     return this.sendRequest(WSCommands.Authenticate, { token, roomId });
   }
 
@@ -126,25 +126,33 @@ export default class Signaling extends EventEmitter<{
     return {
       id: room.id,
       videoAllowed: room.videoAllowed,
-      users: new Map(Object.entries(room.users)),
+      users: room.users,
     };
   }
 
-  initializeTransports(rtpCapabilities: MSCRTPCapabilities): Promise<TransportInitDataTuple> {
+  initializeTransports(
+    rtpCapabilities: MediaSoup<Platform>["RTPCapabilities"]
+  ): Promise<TransportInitDataTuple<Platform>> {
     return this.sendRequest(WSCommands.InitializeTransports, {
       mode: "SplitWebRTC",
       rtpCapabilities,
     });
   }
 
-  connectTransport(id: string, dtlsParameters: MSCDTLSParameters): Promise<void> {
+  connectTransport(
+    id: string,
+    dtlsParameters: MediaSoup<Platform>["DTLSParameters"]
+  ): Promise<void> {
     return this.sendRequest(WSCommands.ConnectTransport, {
       id,
       dtlsParameters,
     });
   }
 
-  async startProduce(type: ProduceType, rtpParameters: MSCRTPParameters): Promise<string> {
+  async startProduce(
+    type: ProduceType,
+    rtpParameters: MediaSoup<Platform>["RTPParameters"]
+  ): Promise<string> {
     const result = await this.sendRequest(WSCommands.StartProduce, {
       type,
       rtpParameters,
@@ -156,7 +164,7 @@ export default class Signaling extends EventEmitter<{
     return this.sendRequest(WSCommands.StopProduce, { type });
   }
 
-  startConsume(userId: string, type: ProduceType): Promise<ConsumerData> {
+  startConsume(userId: string, type: ProduceType): Promise<ConsumerData<Platform>> {
     return this.sendRequest(WSCommands.StartConsume, { type, userId });
   }
 

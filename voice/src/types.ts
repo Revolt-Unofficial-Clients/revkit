@@ -1,14 +1,5 @@
 import type { User } from "revkit";
-import type {
-  MSCConsumer,
-  MSCDTLSParameters,
-  MSCIceCandidate,
-  MSCIceParameters,
-  MSCMediaKind,
-  MSCRTPCapabilities,
-  MSCRTPParameters,
-  MSCSCTPParameters,
-} from "./msc";
+import { MSCPlatform, MediaSoup } from "./msc";
 
 /* Mostly copied from revite's MSC implementation. */
 
@@ -63,17 +54,17 @@ export interface VoiceError {
 export type ProduceType = "audio"; //| "video" | "saudio" | "svideo";
 
 /** Response sent back from the websocket when authenticated. */
-export interface AuthenticationResult {
+export interface AuthenticationResult<P extends MSCPlatform> {
   userId: string;
   roomId: string;
-  rtpCapabilities: MSCRTPCapabilities;
+  rtpCapabilities: MediaSoup<P>["RTPCapabilities"];
 }
 
 /** Data for the current voice channel. */
 export interface Room {
   id: string;
   videoAllowed: boolean;
-  users: Map<string, VoiceParticipantData>;
+  users: Record<string, VoiceParticipantData>;
 }
 
 /** Details about a participant. */
@@ -86,29 +77,29 @@ export interface VoiceParticipantData {
 export type VoiceParticipant = { user: User } & Required<VoiceParticipantData>;
 
 /** An incoming stream from a participant. */
-export interface VoiceConsumer {
-  audio?: MSCConsumer;
+export interface VoiceConsumer<P extends MSCPlatform> {
+  audio?: { consumer: MediaSoup<P>["Consumer"]; callback: () => any };
   //video?: Consumer,
   //saudio?: Consumer,
   //svideo?: Consumer,
 }
 
-export interface TransportInitData {
+export interface TransportInitData<P extends MSCPlatform> {
   id: string;
-  iceParameters: MSCIceParameters;
-  iceCandidates: MSCIceCandidate[];
-  dtlsParameters: MSCDTLSParameters;
-  sctpParameters: MSCSCTPParameters | undefined;
+  iceParameters: MediaSoup<P>["IceParameters"];
+  iceCandidates: MediaSoup<P>["IceCandidate"][];
+  dtlsParameters: MediaSoup<P>["DTLSParameters"];
+  sctpParameters: MediaSoup<P>["SCTPParameters"] | undefined;
 }
 
-export interface TransportInitDataTuple {
-  sendTransport: TransportInitData;
-  recvTransport: TransportInitData;
+export interface TransportInitDataTuple<P extends MSCPlatform> {
+  sendTransport: TransportInitData<P>;
+  recvTransport: TransportInitData<P>;
 }
 
-export interface ConsumerData {
+export interface ConsumerData<P extends MSCPlatform> {
   id: string;
   producerId: string;
-  kind: MSCMediaKind;
-  rtpParameters: MSCRTPParameters;
+  kind: MediaSoup<P>["MediaKind"];
+  rtpParameters: MediaSoup<P>["RTPParameters"];
 }

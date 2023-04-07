@@ -1,9 +1,9 @@
 import EventEmitter from "eventemitter3";
-import { Device, Producer, Transport } from "mediasoup-client/lib/types";
-import { Client } from "revkit";
-import { MiniMapEmitter } from "revkit/dist/es6/utils/MiniEmitter";
+import type * as MSCBrowser from "mediasoup-client";
+import type * as MSCNode from "msc-node";
+import { Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
-import { getMSC } from "./msc";
+import { MSCPlatform, MediaSoup } from "./msc";
 import {
   WSErrorCode,
   WSEvents,
@@ -13,7 +13,15 @@ import {
   type VoiceParticipant,
 } from "./types";
 
-export class VoiceClient extends EventEmitter<{
+export type VoiceClientConsumer<P extends MSCPlatform> = (
+  type: ProduceType,
+  track: MediaSoup<P>["MediaStreamTrack"]
+) => () => any;
+
+export class VoiceClient<
+  Platform extends MSCPlatform,
+  MSC extends MediaSoup<Platform> = MediaSoup<Platform>
+> extends EventEmitter<{
   ready: () => void;
   error: (error: Error) => void;
   close: (error?: VoiceError) => void;
@@ -27,15 +35,16 @@ export class VoiceClient extends EventEmitter<{
   userStartProduce: (user: VoiceParticipant, type: ProduceType) => void;
   userStopProduce: (user: VoiceParticipant, type: ProduceType) => void;
 }> {
-  readonly supported: boolean = getMSC().detectDevice() !== undefined;
+  readonly supported: boolean = false;
 
-  private device?: Device;
-  private signaling = new Signaling();
+  private device?: MSC["Device"];
+  private signaling = new Signaling<Platform>();
 
-  private sendTransport: Transport | null = null;
-  private recvTransport: Transport | null = null;
+  private sendTransport: MSC["Transport"] | null = null;
+  private recvTransport: MSC["Transport"] | null = null;
 
-  private consumers = new Map<string, VoiceConsumer>();
+  private consumers = new Map<string, VoiceConsumer<Platform>>();
+  private audioProducer?: MSC["Producer"];
 
   private _deafened = false;
   public get deafened() {
@@ -43,12 +52,27 @@ export class VoiceClient extends EventEmitter<{
   }
   public participants = new MiniMapEmitter<VoiceParticipant>();
 
-  userId?: string;
-  roomId?: string;
+  public channelID: string | null = null;
+  public get channel() {
+    return this.client.channels.get(this.channelID);
+  }
 
-  audioProducer?: Producer;
-  constructor(public client: Client) {
+  /**
+   * The base voice client. It's recommended to use the platform-specific clients instead.
+   * @param client The RevKit client to use.
+   * @param msc The MediaSoup client to use. (for tree-shaking)
+   * @param createDevice A function called to create a new MediaSoup Device for the client.
+   * @param consumeTrack A callback that is run to play a new MediaStreamTrack. The function returned will be called when the stream is closed. (leave out to disable consuming media)
+   */
+  constructor(
+    public readonly platform: Platform,
+    public client: Client,
+    private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
+    private createDevice: () => MSC["Device"],
+    private consumeTrack?: VoiceClientConsumer<Platform>
+  ) {
     super();
+    this.supported = this.msc.detectDevice() !== undefined;
 
     this.signaling.on(
       "data",
@@ -61,8 +85,7 @@ export class VoiceClient extends EventEmitter<{
               this.participants.set(data.id, participant);
               this.participants.fireUpdate([participant]);
               this.emit("userJoined", participant);
-            } else throw new Error(`Invalid voice channel participant: ${data.id}`);
-
+            } else this.emit("error", new Error(`Invalid voice channel participant: ${data.id}`));
             break;
           }
           case WSEvents.UserLeft: {
@@ -141,13 +164,13 @@ export class VoiceClient extends EventEmitter<{
   }
 
   private throwIfUnsupported() {
-    if (!this.supported) throw new (getMSC().types.UnsupportedError)("RTC not supported");
+    if (!this.supported) throw new this.msc.types.UnsupportedError("RTC not supported");
   }
 
   public connect(address: string, roomId: string) {
     this.throwIfUnsupported();
-    this.device = new Device();
-    this.roomId = roomId;
+    this.device = this.createDevice();
+    this.channelID = roomId;
     return this.signaling.connect(address);
   }
 
@@ -156,9 +179,8 @@ export class VoiceClient extends EventEmitter<{
     this.signaling.disconnect();
     this.participants.clear();
     this.participants.fireUpdate([]);
-    this.consumers = new Map();
-    this.userId = undefined;
-    this.roomId = undefined;
+    this.consumers.clear();
+    this.channelID = null;
 
     this.audioProducer = undefined;
 
@@ -172,27 +194,44 @@ export class VoiceClient extends EventEmitter<{
 
   async authenticate(token: string) {
     this.throwIfUnsupported();
-    if (this.device === undefined || this.roomId === undefined)
-      throw new ReferenceError("Voice Client is in an invalid state");
-    const result = await this.signaling.authenticate(token, this.roomId);
+    if (!this.device || !this.channelID)
+      throw new ReferenceError("Voice client is in an invalid state");
+    const result = await this.signaling.authenticate(token, this.channelID);
     const [room] = await Promise.all([
       this.signaling.roomInfo(),
-      this.device.load({ routerRtpCapabilities: result.rtpCapabilities }),
+      this.device.load({
+        routerRtpCapabilities: <any>result.rtpCapabilities,
+      }),
     ]);
 
-    this.userId = result.userId;
-    this.participants = room.users;
+    // this should really never happen
+    if (result.userId !== this.client.user.id)
+      this.emit("error", new Error("Authenticated user ID does not match client user ID."));
+    await Promise.all(
+      Object.entries(room.users).map(async ([id, details]) => {
+        const user = await this.client.users.fetch(id);
+        if (user) this.participants.set(id, { user, audio: !!details.audio });
+        else this.emit("error", new Error(`Invalid voice user: ${id}`));
+      })
+    );
+    this.participants.fireUpdate([...this.participants.values()]);
   }
 
   async initializeTransports() {
     this.throwIfUnsupported();
-    if (this.device === undefined) throw new ReferenceError("Voice Client is in an invalid state");
-    const initData = await this.signaling.initializeTransports(this.device.rtpCapabilities);
+    if (!this.device) throw new ReferenceError("Voice client is in an invalid state");
+    const initData = await this.signaling.initializeTransports(
+      <MSC["RTPCapabilities"]>this.device.rtpCapabilities
+    );
 
-    this.sendTransport = this.device.createSendTransport(initData.sendTransport);
-    this.recvTransport = this.device.createRecvTransport(initData.recvTransport);
+    this.sendTransport = <MSC["Transport"]>(
+      this.device.createSendTransport(<any>initData.sendTransport)
+    );
+    this.recvTransport = <MSC["Transport"]>(
+      this.device.createRecvTransport(<any>initData.recvTransport)
+    );
 
-    const connectTransport = (transport: Transport) => {
+    const connectTransport = (transport: MSC["Transport"]) => {
       transport.on("connect", ({ dtlsParameters }, callback, errback) => {
         this.signaling.connectTransport(transport.id, dtlsParameters).then(callback).catch(errback);
       });
@@ -214,39 +253,24 @@ export class VoiceClient extends EventEmitter<{
     });
 
     this.emit("ready");
-    for (const user of this.participants) {
-      if (user[1].audio && user[0] !== this.userId) this.startConsume(user[0], "audio");
-    }
+    this.participants.forEach((p) => {
+      if (p.audio && p.user.id !== this.client.user.id) this.startConsume(p.user.id, "audio");
+    });
   }
 
   private async startConsume(userId: string, type: ProduceType) {
-    if (this.recvTransport === undefined) throw new Error("Receive transport undefined");
+    if (!this.consumeTrack) return;
+    if (!this.recvTransport) throw new Error("Receive transport undefined");
     const consumers = this.consumers.get(userId) || {};
     const consumerParams = await this.signaling.startConsume(userId, type);
     const consumer = await this.recvTransport.consume(consumerParams);
     switch (type) {
       case "audio":
-        consumers.audio = consumer;
+        consumers.audio = {
+          consumer: <any>consumer,
+          callback: this.consumeTrack(type, <any>consumer),
+        };
     }
-
-    const mediaStream = new MediaStream([consumer.track]);
-    const audio = new Audio();
-
-    audio.onplaying = () => playbtn?.remove();
-    const playbtn = document.createElement("div");
-    playbtn.innerText = "Click to play audio.";
-    playbtn.className = "btn btn-primary absolute";
-    playbtn.style.top = "30%";
-    playbtn.style.left = "0px";
-    document.body.appendChild(playbtn);
-    playbtn.onclick = () => {
-      playbtn.classList.add("loading");
-      audio.play();
-    };
-
-    audio.srcObject = mediaStream;
-    audio.load();
-    audio.play();
 
     await this.signaling.setConsumerPause(consumer.id, false);
     this.consumers.set(userId, consumers);
@@ -254,16 +278,20 @@ export class VoiceClient extends EventEmitter<{
 
   private async stopConsume(userId: string, type?: ProduceType) {
     const consumers = this.consumers.get(userId);
-    if (consumers === undefined) return;
-    if (type === undefined) {
-      if (consumers.audio !== undefined) consumers.audio.close();
+    if (!consumers) return;
+    if (!type) {
+      if (consumers.audio) {
+        consumers.audio.consumer.close();
+        consumers.audio.callback();
+      }
       this.consumers.delete(userId);
     } else {
       switch (type) {
         case "audio": {
-          if (consumers.audio !== undefined) {
-            consumers.audio.close();
-            this.signaling.stopConsume(consumers.audio.id);
+          if (consumers.audio) {
+            consumers.audio.consumer.close();
+            consumers.audio.callback();
+            this.signaling.stopConsume(consumers.audio.consumer.id);
           }
           consumers.audio = undefined;
           break;
@@ -274,30 +302,31 @@ export class VoiceClient extends EventEmitter<{
     }
   }
 
-  async startProduce(track: MediaStreamTrack, type: ProduceType) {
-    if (this.sendTransport === undefined) throw new Error("Send transport undefined");
+  public async startProduce(type: ProduceType, track: MSC["MediaStreamTrack"]) {
+    if (!this.sendTransport) throw new Error("Send transport undefined");
     const producer = await this.sendTransport.produce({
-      track,
+      track: <any>track,
       appData: { type },
     });
 
     switch (type) {
       case "audio":
-        this.audioProducer = producer;
+        this.audioProducer = <any>producer;
         break;
     }
 
-    const participant = this.participants.get(this.userId || "");
-    if (participant !== undefined) {
+    const participant = this.participants.get(this.client.user.id);
+    if (participant) {
       participant[type] = true;
-      this.participants.set(this.userId || "", participant);
+      this.participants.set(this.client.user.id, participant);
+      this.participants.fireUpdate([participant]);
     }
 
     this.emit("startProduce", type);
   }
 
-  async stopProduce(type: ProduceType) {
-    let producer;
+  public async stopProduce(type: ProduceType) {
+    let producer: MSC["Producer"];
     switch (type) {
       case "audio":
         producer = this.audioProducer;
@@ -305,22 +334,21 @@ export class VoiceClient extends EventEmitter<{
         break;
     }
 
-    if (producer !== undefined) {
+    if (producer) {
       producer.close();
       this.emit("stopProduce", type);
     }
 
-    const participant = this.participants.get(this.userId || "");
-    if (participant !== undefined) {
+    const participant = this.participants.get(this.client.user.id);
+    if (participant) {
       participant[type] = false;
-      this.participants.set(this.userId || "", participant);
+      this.participants.set(this.client.user.id, participant);
     }
 
     try {
       await this.signaling.stopProduce(type);
     } catch (error) {
-      // eslint-disable-next-line
-      if ((error as any).error === WSErrorCode.ProducerNotFound) return;
+      if (error.error === WSErrorCode.ProducerNotFound) return;
       throw error;
     }
   }
