@@ -31,7 +31,7 @@
 <ul>
 <li class="current selected tsd-kind-module"><a href="revkit.html">
 <div>revkit
-<div class="menu-item-desc">![RevKit](https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png)</div></div></a>
+<div class="menu-item-desc">The main module.</div></div></a>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module tsd-is-external"><a href="revkit.API.html">
 <div>API</div></a></li></ul></li>
@@ -302,10 +302,16 @@
 <li><a href="revkit.html">revkit</a></li></ul>
 <h1>Module revkit</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Revolt-Unofficial-Clients/revkit/blob/5fa78ae/core/src/index.ts#L1">core/src/index.ts:1</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/Revolt-Unofficial-Clients/revkit/blob/44dbec5/core/src/index.ts#L1">core/src/index.ts:1</a></li></ul></aside>
 <section class="tsd-panel-group">
-<section class="tsd-panel tsd-typography"><p><img src="https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png" alt="RevKit"></p>
-<p>main module</p>
+<section class="tsd-panel tsd-typography"><p>The main module.</p>
+<p><img src="https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png" alt="RevKit"></p>
+
+<a href="#quick-example" id="quick-example" style="color: inherit; text-decoration: none;">
+  <h4>Quick Example</h4>
+</a>
+<pre><code class="language-js"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Client</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;revkit&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">bot</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Client</span><span class="hl-1">();</span><br/><br/><span class="hl-2">bot</span><span class="hl-1">.</span><span class="hl-6">on</span><span class="hl-1">(</span><span class="hl-3">&quot;ready&quot;</span><span class="hl-1">, () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`</span><span class="hl-4">${</span><span class="hl-2">bot</span><span class="hl-7">.</span><span class="hl-2">user</span><span class="hl-7">.</span><span class="hl-2">username</span><span class="hl-4">}</span><span class="hl-3"> is online!`</span><span class="hl-1">);</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-2">bot</span><span class="hl-1">.</span><span class="hl-6">on</span><span class="hl-1">(</span><span class="hl-3">&quot;message&quot;</span><span class="hl-1">, (</span><span class="hl-2">message</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-0">if</span><span class="hl-1"> (</span><span class="hl-2">message</span><span class="hl-1">.</span><span class="hl-6">isUser</span><span class="hl-1">() &amp;&amp; </span><span class="hl-2">message</span><span class="hl-1">.</span><span class="hl-2">content</span><span class="hl-1"> == </span><span class="hl-3">&quot;!ping&quot;</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">message</span><span class="hl-1">.</span><span class="hl-6">reply</span><span class="hl-1">(</span><span class="hl-3">&quot;pong&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-2">bot</span><span class="hl-1">.</span><span class="hl-6">login</span><span class="hl-1">(</span><span class="hl-2">process</span><span class="hl-1">.</span><span class="hl-2">env</span><span class="hl-1">.</span><span class="hl-5">TOKEN</span><span class="hl-1">, </span><span class="hl-3">&quot;bot&quot;</span><span class="hl-1">);</span>
+</code></pre>
 </section></section>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
