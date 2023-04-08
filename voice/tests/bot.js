@@ -16,7 +16,7 @@ voice.on("error", console.error);
 
 bot.on("message", async (message) => {
   if (!message.isUser() || !message.server) return;
-  if (message.content.startsWith("!play")) {
+  if (message.content?.startsWith("!play")) {
     const channel = message.server.channels.find((c) =>
       c.name.toLowerCase().includes(message.content.slice("!play".length).trim().toLowerCase())
     );
@@ -27,10 +27,10 @@ bot.on("message", async (message) => {
     await voice.play("audio", str);
     message.reply("Playing audio.");
   }
-  if (message.content.startsWith("!leave")) {
+  if (message.content?.startsWith("!leave")) {
     voice.disconnect();
   }
-  if (message.content.startsWith("!stop")) {
+  if (message.content?.startsWith("!stop")) {
     voice.stopProduce("audio");
   }
 });

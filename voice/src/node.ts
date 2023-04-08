@@ -1,12 +1,12 @@
+import { createSocket } from "dgram";
 import * as MSC from "msc-node";
-import { FFmpeg, VolumeTransformer, opus } from "prism-media";
+import { FFmpeg, VolumeTransformer } from "prism-media";
 import type { Client } from "revkit";
-import { RtpEncoder, RtpOpusToPcm } from "rtp-ogg-opus";
 import { Readable } from "stream";
 import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
 import type { ProduceType, VoiceParticipant } from "./types";
 
-const AUDIO_ENCODING = "s32le",
+const AUDIO_ENCODING = "s16le",
   RTP_PAYLOAD_TYPE = 100;
 
 export interface VoiceClientOptions {
@@ -30,6 +30,7 @@ export interface VoiceClientOptions {
  */
 export default class VoiceClient extends BaseVoiceClient<"node"> {
   public options: VoiceClientOptions;
+  public port: number = 5002;
 
   /**
    * @param client The RevKit client to use.
@@ -67,12 +68,15 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
       () => () => {}
     );
     this.options = opts;
+    this.resetPort();
+  }
+  public async resetPort() {
+    this.port = await MSC.findPort(5030, 65535, "udp4");
   }
 
   private transcoder: FFmpeg;
   private volumeTransformer: VolumeTransformer;
-  private encoder: opus.Encoder;
-  private rtpEncoder: RtpEncoder;
+  private encoder: FFmpeg;
 
   /** Current volume of the player. */
   public get volume() {
@@ -91,76 +95,68 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
 
   /** Resets and destroys old encoders/transformers. */
   public reset() {
+    const baseArgs = [
+      "-ar",
+      this.options.sampleRate.toString(),
+      "-ac",
+      this.options.audioChannels.toString(),
+    ];
     if (this.transcoder) this.transcoder.destroy();
     this.transcoder = new FFmpeg({
-      args: [
-        "-re",
-        "-i",
-        "-",
-        "-analyzeduration",
-        "0",
-        "-loglevel",
-        "0",
-        "-f",
-        AUDIO_ENCODING,
-        "-ar",
-        this.options.sampleRate.toString(),
-        "-ac",
-        this.options.audioChannels.toString(),
-        ...this.options.args,
-      ],
+      args: [...baseArgs, "-f", AUDIO_ENCODING, ...this.options.args],
     });
     if (this.volumeTransformer) this.volumeTransformer.destroy();
     this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING });
     if (this.encoder) this.encoder.destroy();
-    this.encoder = new opus.Encoder({
-      rate: this.options.sampleRate,
-      channels: this.options.audioChannels,
-      frameSize: this.options.frameSize,
+    this.encoder = new FFmpeg({
+      args: [
+        "-re",
+        "-i",
+        "-",
+        "-reconnect",
+        "1",
+        "-reconnect_streamed",
+        "1",
+        "-reconnect_delay_max",
+        "4",
+        ...baseArgs,
+        "-acodec",
+        "libopus",
+        "-f",
+        "rtp",
+      ],
+      output: `rtp://127.0.0.1:${this.port}`,
     });
-    if (this.rtpEncoder) this.rtpEncoder.destroy();
-    this.rtpEncoder = new RtpEncoder({
-      // sampleRate: this.options.sampleRate,
-      payloadType: RTP_PAYLOAD_TYPE,
+    this.encoder.on("data", () => {});
+    this.encoder.on("error", (err) => {
+      if ((<any>err).code == "EPIPE") return;
+      this.emit("error", err);
     });
   }
 
   public async play(type: ProduceType, stream: Readable) {
+    await this.resetPort();
     this.reset();
     switch (type) {
       case "audio": {
         // create track sent to vortex
-        const MediaTrack = new MSC.MediaStreamTrack({ kind: "audio" }),
-          // pipe the stream through transformers
-          audio = stream.pipe(this.transcoder).pipe(this.volumeTransformer).pipe(this.encoder);
+        const MediaTrack = new MSC.MediaStreamTrack({ kind: "audio" });
 
-        const packets: Buffer[] = [],
-          sendInterval = this.options.frameSize - this.options.overhead,
-          sendPacket = () => {
-            try {
-              const packet = packets.shift();
-              // stop producing audio after all packets sent
-              if (!packet) return this.stopProduce("audio");
-              // write RTP packet to stream track
-              MediaTrack.writeRtp(packet);
-              setTimeout(sendPacket, sendInterval);
-            } catch (err) {
-              // keep going if there's an error
-              this.emit("error", err);
-              setTimeout(sendPacket, sendInterval);
-            }
-          };
-        this.rtpEncoder.on("data", (packet: Buffer) => {
-          if (packet && packet.length > 0) MediaTrack.writeRtp(packet);
+        // create UDP socket to output RTP packets
+        const socket = createSocket("udp4");
+        socket.bind(this.port);
+        socket.on("message", (data) => {
+          console.log("packet");
+          MediaTrack.writeRtp(data);
         });
-        audio.once("readable", () => {
-          // start sending packets after the first one arrives
-          // setTimeout(sendPacket, sendInterval);
-        });
+
         // start producing track on vortex
         await this.startProduce("audio", MediaTrack);
-        // pipe the transformed audio into the encoder
-        audio.pipe(this.rtpEncoder);
+
+        // pipe the stream through transformers
+        stream
+          //.pipe(this.transcoder).pipe(this.volumeTransformer)
+          .pipe(this.encoder);
       }
     }
   }
@@ -176,7 +172,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     const producer = this.consumers.get(participant.user.id);
     if (!producer || !producer[type]) return null;
 
-    const rtpDecoder = new RtpOpusToPcm({
+    /*  const rtpDecoder = new RtpOpusToPcm({
         sampleRate: this.options.sampleRate,
         channels: this.options.audioChannels,
       }),
@@ -225,6 +221,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     this.on("userStopProduce", cancel);
 
     const out = rtpDecoder.pipe(decoder).pipe(ffmpeg);
-    return out;
+    return out;*/
   }
 }
