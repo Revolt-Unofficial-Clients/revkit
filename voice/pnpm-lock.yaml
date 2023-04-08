@@ -12,7 +12,7 @@ specifiers:
   prism-media: github:itzTheMeow/prism-media
   revkit: ^1.1.3
   rimraf: ^4.4.1
-  typescript: ^4.8.4
+  typescript: ^5.0.4
   ws: ^8.13.0
 
 dependencies:
@@ -29,7 +29,7 @@ devDependencies:
   '@types/node': 18.15.11
   '@types/ws': 8.5.4
   rimraf: 4.4.1
-  typescript: 4.9.5
+  typescript: 5.0.4
   ws: 8.13.0
 
 packages:
@@ -919,6 +919,13 @@ packages:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+    dev: false
+
+  /typescript/5.0.4:
+    resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
+    engines: {node: '>=12.20'}
+    hasBin: true
+    dev: true
 
   /ulid/2.3.0:
     resolution: {integrity: sha512-keqHubrlpvT6G2wH0OEfSW4mquYRcbe/J8NMmveoQOjUqmo+hXtO+ORCpWhdbZ7k72UtY61BL7haGxW6enBnjw==}
