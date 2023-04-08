@@ -38,5 +38,8 @@
     "rimraf": "^4.4.1",
     "typescript": "^5.0.4",
     "ws": "^8.13.0"
+  },
+  "typeDoc": {
+    "entryPoint": "./src/full.ts"
   }
 }

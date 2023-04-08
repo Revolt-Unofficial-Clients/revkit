@@ -39,5 +39,8 @@
     "@types/ws": "^8.5.4",
     "rimraf": "^4.4.1",
     "typescript": "^5.0.4"
+  },
+  "typeDoc": {
+    "entryPoint": "./src/index.ts"
   }
 }
