@@ -1,6 +1,6 @@
 {
   "name": "@revkit/voice",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Voice support for browser/node using revkit-based clients.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
@@ -43,5 +43,15 @@
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "displayName": "revkit/voice"
+  },
+  "exports": {
+    "browser": {
+      "require": "./dist/cjs/browser.js",
+      "import": "./dist/cjs/browser.js"
+    },
+    "node": {
+      "require": "./dist/es6/node.js",
+      "import": "./dist/es6/node.js"
+    }
   }
 }
