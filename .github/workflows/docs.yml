@@ -25,6 +25,8 @@ jobs:
         
       - name: Install dependencies (core)
         run: cd core && pnpm install --frozen-lockfile
+      - name: Install dependencies (commandeer)
+        run: cd commandeer && pnpm install --frozen-lockfile  
       - name: Install dependencies (voice)
         run: cd voice && pnpm install --frozen-lockfile 
 

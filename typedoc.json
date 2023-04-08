@@ -2,6 +2,7 @@
   "entryPointStrategy": "packages",
   "entryPoints": [
     "core",
+    "commandeer",
     "voice",
   ],
   "out": "docs",

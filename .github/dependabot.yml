@@ -5,7 +5,11 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
-    directory: "/voice"
+    directory: "/commandeer"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/voice"
+    schedule:
+      interval: "daily" 
  
