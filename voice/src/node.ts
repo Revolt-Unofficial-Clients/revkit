@@ -7,7 +7,9 @@ import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
 import type { ProduceType, VoiceParticipant } from "./types";
 
 const AUDIO_ENCODING = "s16le",
-  RTP_PAYLOAD_TYPE = 100;
+  RTP_PAYLOAD_TYPE = 100,
+  PORT_MIN = 5030,
+  PORT_MAX = 65535;
 
 export interface VoiceClientOptions {
   /** Additional FFmpeg args to use. */
@@ -71,7 +73,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     this.resetPort();
   }
   public async resetPort() {
-    this.port = await MSC.findPort(5030, 65535, "udp4");
+    this.port = await MSC.findPort(PORT_MIN, Math.floor(PORT_MAX / 2), "udp4");
   }
 
   private transcoder: FFmpeg;
@@ -95,17 +97,21 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     this.options.args = args || [];
   }
 
-  /** Resets and destroys old encoders/transformers. */
-  public reset() {
-    const baseArgs = [
+  public get baseArgs() {
+    return [
       "-ar",
       this.options.sampleRate.toString(),
       "-ac",
       this.options.audioChannels.toString(),
     ];
+  }
+
+  /** Resets and destroys old encoders/transformers. */
+  public reset() {
+    this.stopProduce("audio");
     if (this.transcoder) this.transcoder.destroy();
     this.transcoder = new FFmpeg({
-      args: ["-analyzeduration", "0", "-loglevel", "0", ...baseArgs, "-f", AUDIO_ENCODING],
+      args: ["-analyzeduration", "0", "-loglevel", "0", ...this.baseArgs, "-f", AUDIO_ENCODING],
     });
     if (this.volumeTransformer) this.volumeTransformer.destroy();
     this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING, volume: this.volume });
@@ -115,7 +121,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         "-re",
         "-f",
         AUDIO_ENCODING,
-        ...baseArgs,
+        ...this.baseArgs,
         "-i",
         "-",
         "-reconnect",
@@ -124,7 +130,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         "1",
         "-reconnect_delay_max",
         "4",
-        ...baseArgs,
+        ...this.baseArgs,
         "-acodec",
         "libopus",
         ...this.options.args,
@@ -133,7 +139,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
       ],
       output: `rtp://127.0.0.1:${this.port}`,
     });
-    this.encoder.on("data", () => {});
     this.encoder.on("error", (err) => {
       if ((<any>err).code == "EPIPE") return;
       this.emit("error", err);
@@ -175,37 +180,40 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     const producer = this.consumers.get(participant.user.id);
     if (!producer || !producer[type]) return null;
 
-    /*  const rtpDecoder = new RtpOpusToPcm({
-        sampleRate: this.options.sampleRate,
-        channels: this.options.audioChannels,
-      }),
-      decoder = new opus.Decoder({
-        rate: this.options.sampleRate,
-        channels: this.options.audioChannels,
-        frameSize: this.options.frameSize,
-      }),
-      ffmpeg = new FFmpeg({
+    const port = await MSC.findPort(Math.floor(PORT_MAX / 2), PORT_MAX, "udp4"),
+      decoder = new FFmpeg({
         args: [
-          "-analyzeduration",
-          "0",
-          "-loglevel",
-          "0",
+          "-re",
+          "-f",
+          "rtp",
+          ...this.baseArgs,
+          "-i",
+          `rtp://127.0.0.1:${port}`,
+          "-reconnect",
+          "1",
+          "-reconnect_streamed",
+          "1",
+          "-reconnect_delay_max",
+          "4",
+          ...this.baseArgs,
           "-f",
           AUDIO_ENCODING,
-          "-ar",
-          this.options.sampleRate.toString(),
-          "-ac",
-          this.options.audioChannels.toString(),
         ],
-      });
+      }),
+      socket = createSocket("udp4");
+    decoder.on("error", (err) => {
+      if ((<any>err).code == "EPIPE") return;
+      this.emit("error", err);
+    });
 
     const track = producer[type].consumer.track;
     if (!track) return null;
 
     track.onReceiveRtp.subscribe((packet) => {
+      console.log(decoder.destroyed);
       if (decoder.destroyed) return cancel(participant, type);
       try {
-        decoder.write(packet.serialize());
+        socket.send(packet.serialize(), port);
       } catch (err) {
         this.emit("error", err);
       }
@@ -213,17 +221,15 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
 
     const cancel = (p: VoiceParticipant, t: ProduceType) => {
       if (p.user.id !== participant.user.id || t !== type) return;
+      console.log("cancel");
       this.off("userStopProduce", cancel);
       track.onReceiveRtp.allUnsubscribe();
-      rtpDecoder.destroy();
+      decoder.end();
       decoder.destroy();
-      ffmpeg.destroy();
-      out.destroy();
     };
 
     this.on("userStopProduce", cancel);
 
-    const out = rtpDecoder.pipe(decoder).pipe(ffmpeg);
-    return out;*/
+    return decoder;
   }
 }

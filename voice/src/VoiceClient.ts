@@ -109,7 +109,7 @@ export class VoiceClient<
           }
           case WSEvents.UserStartProduce: {
             const participant = this.participants.get(data.id);
-            if (!participant) return;
+            if (!participant || participant.user.id == this.client.user.id) return;
             if (<any>data.type in participant) {
               participant[data.type] = true;
             } else {
@@ -122,7 +122,7 @@ export class VoiceClient<
             }
             this.participants.fireUpdate([participant]);
 
-            if (this.recvTransport) this.startConsume(data.id, data.type);
+            if (this.recvTransport) await this.startConsume(data.id, data.type);
             this.emit("userStartProduce", participant, data.type);
             break;
           }
@@ -269,8 +269,11 @@ export class VoiceClient<
     });
 
     this.emit("ready");
-    this.participants.forEach((p) => {
-      if (p.audio && p.user.id !== this.client.user.id) this.startConsume(p.user.id, "audio");
+    this.participants.forEach(async (p) => {
+      if (p.audio && p.user.id !== this.client.user.id) {
+        await this.startConsume(p.user.id, "audio");
+        this.emit("userStartProduce", p, "audio");
+      }
     });
   }
 
@@ -360,6 +363,7 @@ export class VoiceClient<
     if (participant) {
       participant[type] = false;
       this.participants.set(this.client.user.id, participant);
+      this.participants.fireUpdate([participant]);
     }
 
     try {
@@ -377,7 +381,8 @@ export class VoiceClient<
 
   public async connect(channel: VoiceChannel) {
     if (this.status > VoiceStatus.READY) return;
-    if (!this.supported) throw new Error("RTC is unavailable");
+    if (!this.supported) throw new Error("RTC is unavailable.");
+    if (!channel.isVoice()) throw new Error("Not a voice channel.");
     await this.client.fetchConfiguration();
     const vortexURL = this.client.config?.features.voso?.enabled
       ? this.client.config.features.voso.ws

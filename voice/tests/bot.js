@@ -1,13 +1,7 @@
 const { Client } = require("revkit");
 const { default: VoiceClient } = require("../dist/cjs/node.js");
-const { createReadStream } = require("fs");
-
-const token = process.argv[2];
-
-if (!token) {
-  console.error("Must include a token as first argument!");
-  process.exit();
-}
+const { createReadStream, createWriteStream } = require("fs");
+require("dotenv").config();
 
 const bot = new Client(),
   voice = new VoiceClient(bot);
@@ -17,8 +11,10 @@ voice.on("error", console.error);
 bot.on("message", async (message) => {
   if (!message.isUser() || !message.server) return;
   if (message.content?.startsWith("!play")) {
-    const channel = message.server.channels.find((c) =>
-      c.name.toLowerCase().includes(message.content.slice("!play".length).trim().toLowerCase())
+    const channel = message.server.channels.find(
+      (c) =>
+        c.isVoice() &&
+        c.name.toLowerCase().includes(message.content.slice("!play".length).trim().toLowerCase())
     );
     if (!channel || message.content.trim().length <= "!play".length)
       return message.reply("Invalid channel.");
@@ -27,11 +23,24 @@ bot.on("message", async (message) => {
     await voice.play("audio", str);
     message.reply("Playing audio.");
   }
+  if (message.content?.startsWith("!join")) {
+    const channel = message.server.channels.find(
+      (c) =>
+        c.isVoice() &&
+        c.name.toLowerCase().includes(message.content.slice("!join".length).trim().toLowerCase())
+    );
+    if (!channel || message.content.trim().length <= "!join".length)
+      return message.reply("Invalid channel.");
+    await voice.connect(channel);
+    message.reply("ok");
+  }
   if (message.content?.startsWith("!leave")) {
     voice.disconnect();
+    message.reply("ok");
   }
   if (message.content?.startsWith("!stop")) {
-    voice.stopProduce("audio");
+    await voice.stopProduce("audio");
+    message.reply("ok");
   }
 });
 
@@ -39,4 +48,15 @@ bot.on("ready", () => {
   console.log("Bot online. " + bot.user.username);
 });
 
-bot.login(token, "bot");
+voice.on("userStartProduce", async (part, type) => {
+  if (type !== "audio") return;
+  const incoming = await voice.listenTo(part, "audio");
+  if (!incoming) return console.error("No incoming stream for " + part.user.username);
+  const file = createWriteStream(`${part.user.username}-audio.mp3`);
+  incoming.pipe(file);
+  file.on("close", () => {
+    console.log("closed");
+  });
+});
+
+bot.login(process.env.TOKEN, "bot");
