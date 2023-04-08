@@ -40,7 +40,7 @@
     "rimraf": "^4.4.1",
     "typescript": "^5.0.4"
   },
-  "typeDoc": {
+  "typedoc": {
     "entryPoint": "./src/index.ts"
   }
 }
