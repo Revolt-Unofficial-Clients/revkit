@@ -108,7 +108,7 @@ export enum VoiceStatus {
   UNAVAILABLE,
   UNLOADED,
   LOADING,
-  READY,
+  READY, // "ready" and other 'in channel' statuses should be higher
   CONNECTING,
   AUTHENTICATING,
   RTC_CONNECTING,

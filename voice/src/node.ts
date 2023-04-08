@@ -126,8 +126,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     this.reset();
     switch (type) {
       case "audio": {
-        if (!this.audioProducer) throw "No audio producer.";
-
         // create track sent to vortex
         const MediaTrack = new MSC.MediaStreamTrack({ kind: "audio" }),
           // pipe the stream through transformers

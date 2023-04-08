@@ -24,6 +24,7 @@ export interface VoiceClientEvents {
   error: (error: Error) => void;
   close: (error?: VoiceError) => void;
   status: (status: VoiceStatus) => void;
+  connected: () => void;
 
   startProduce: (type: ProduceType) => void;
   stopProduce: (type: ProduceType) => void;
@@ -375,6 +376,7 @@ export class VoiceClient<
   }
 
   public async connect(channel: VoiceChannel) {
+    if (this.status > VoiceStatus.READY) return;
     if (!this.supported) throw new Error("RTC is unavailable");
     await this.client.fetchConfiguration();
     const vortexURL = this.client.config?.features.voso?.enabled
@@ -397,11 +399,12 @@ export class VoiceClient<
     } catch (err) {
       this.emit("error", err);
       this.setStatus(VoiceStatus.READY);
-      return channel;
+      return this;
     }
 
     this.setStatus(VoiceStatus.CONNECTED);
-    return channel;
+    this.emit("connected");
+    return this;
   }
 
   public disconnect() {
