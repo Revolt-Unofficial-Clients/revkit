@@ -45,12 +45,16 @@
     "displayName": "revkit/voice"
   },
   "exports": {
-    "browser": {
-      "require": "./dist/cjs/browser.js",
-      "import": "./dist/cjs/browser.js"
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/es6/index.js"
     },
-    "node": {
-      "require": "./dist/es6/node.js",
+    "./browser": {
+      "require": "./dist/cjs/browser.js",
+      "import": "./dist/es6/browser.js"
+    },
+    "./node": {
+      "require": "./dist/cjs/node.js",
       "import": "./dist/es6/node.js"
     }
   }
