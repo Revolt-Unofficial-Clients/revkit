@@ -109,43 +109,59 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     ];
   }
 
-  /** Resets and destroys old encoders/transformers. */
-  public reset() {
+  /**
+   * Resets and destroys old encoders/transformers.
+   * @param respawn Respawns the processes. (default true)
+   */
+  public reset(respawn = true) {
     this.stopProduce("audio");
     if (this.transcoder) this.transcoder.destroy();
-    this.transcoder = new FFmpeg({
-      args: ["-analyzeduration", "0", "-loglevel", "0", ...this.baseArgs, "-f", AUDIO_ENCODING],
-    });
+    if (respawn) {
+      this.transcoder = new FFmpeg({
+        args: ["-analyzeduration", "0", "-loglevel", "0", ...this.baseArgs, "-f", AUDIO_ENCODING],
+      });
+      this.transcoder.on("error", (err) => {
+        if ((<any>err).code == "EPIPE") return;
+        this.emit("error", err);
+      });
+    } else delete this.transcoder;
     if (this.volumeTransformer) this.volumeTransformer.destroy();
-    this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING, volume: this.volume });
+    if (respawn) {
+      this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING, volume: this.volume });
+      this.volumeTransformer.on("error", (err) => {
+        this.emit("error", err);
+      });
+    } else delete this.volumeTransformer;
     if (this.encoder) this.encoder.destroy();
-    this.encoder = new FFmpeg({
-      args: [
-        "-re",
-        "-f",
-        AUDIO_ENCODING,
-        ...this.baseArgs,
-        "-i",
-        "-",
-        "-reconnect",
-        "1",
-        "-reconnect_streamed",
-        "1",
-        "-reconnect_delay_max",
-        "4",
-        ...this.baseArgs,
-        "-acodec",
-        "libopus",
-        ...this.options.args,
-        "-f",
-        "rtp",
-      ],
-      output: `rtp://127.0.0.1:${this.port}`,
-    });
-    this.encoder.on("error", (err) => {
-      if ((<any>err).code == "EPIPE") return;
-      this.emit("error", err);
-    });
+    if (respawn) {
+      this.encoder = new FFmpeg({
+        args: [
+          "-re",
+          "-f",
+          AUDIO_ENCODING,
+          ...this.baseArgs,
+          "-i",
+          "-",
+          "-reconnect",
+          "1",
+          "-reconnect_streamed",
+          "1",
+          "-reconnect_delay_max",
+          "4",
+          ...this.baseArgs,
+          "-acodec",
+          "libopus",
+          ...this.options.args,
+          "-f",
+          "rtp",
+        ],
+        output: `rtp://127.0.0.1:${this.port}`,
+      });
+      this.encoder.on("error", (err) => {
+        if ((<any>err).code == "EPIPE") return;
+        this.emit("error", err);
+      });
+    } else delete this.encoder;
   }
 
   public async play(type: ProduceType, stream: Readable) {
@@ -167,7 +183,14 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         await this.startProduce("audio", MediaTrack);
 
         // pipe the stream through transformers
-        stream.pipe(this.transcoder).pipe(this.volumeTransformer).pipe(this.encoder);
+        stream
+          .pipe(this.transcoder)
+          .pipe(this.volumeTransformer)
+          .pipe(this.encoder)
+          .once("end", () => {
+            socket.close();
+            this.reset(false);
+          });
       }
     }
   }
@@ -219,14 +242,15 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
     const track = producer[type].consumer.track;
     if (!track) return null;
 
-    track.onReceiveRtp.subscribe((packet) => {
-      if (decoder.destroyed) return cancel(participant, type);
-      try {
-        socket.send(packet.serialize(), port, "127.0.0.1");
-      } catch (err) {
-        this.emit("error", err);
-      }
-    });
+    if (!track.onReceiveRtp.ended)
+      track.onReceiveRtp.subscribe((packet) => {
+        if (decoder.destroyed) return cancel(participant, type);
+        try {
+          socket.send(packet.serialize(), port, "127.0.0.1");
+        } catch (err) {
+          this.emit("error", err);
+        }
+      });
 
     const cancel = (p: VoiceParticipant, t: ProduceType) => {
       if (p.user.id !== participant.user.id || t !== type) return;
