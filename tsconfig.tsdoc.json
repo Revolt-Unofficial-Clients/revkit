@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "moduleResolution": "Node"
   },
-  "include": ["core/src", "voice/src"]
+  "include": ["core", "voice"]
 }
