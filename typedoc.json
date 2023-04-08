@@ -1,5 +1,10 @@
 {
-  "entryPoints": ["core/src/index.ts"],
+  "entryPoints": [
+    "core/src/index.ts",
+    "voice/src/index.ts",
+    "voice/src/browser.ts",
+    "voice/src/node.ts",
+  ],
   "out": "docs",
   "$schema": "https://typedoc.org/schema.json",
   "plugin": ["@mxssfd/typedoc-theme"],
