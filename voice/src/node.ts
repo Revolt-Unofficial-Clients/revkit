@@ -1,10 +1,10 @@
 import * as MSC from "msc-node";
 import { FFmpeg, VolumeTransformer, opus } from "prism-media";
 import type { Client } from "revkit";
-import { OggOpusToRtp } from "rtp-ogg-opus";
+import { OggOpusToRtp, RtpOpusToPcm } from "rtp-ogg-opus";
 import { Readable } from "stream";
-import { VoiceClient as BaseVoiceClient, type VoiceClientConsumer } from "./VoiceClient";
-import type { ProduceType } from "./types";
+import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
+import type { ProduceType, VoiceParticipant } from "./types";
 
 const AUDIO_ENCODING = "s32le",
   RTP_PAYLOAD_TYPE = 100;
@@ -33,13 +33,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
 
   /**
    * @param client The RevKit client to use.
-   * @param trackConsumer A function that is called when there is a new `MediaStreamTrack` to play. The function returned will be called when the track ends.
+   * @param options Additional options for the player. Some of them also apply to incoming tracks. (you shouldn't need to mess with these)
    */
-  constructor(
-    client: Client,
-    trackConsumer?: VoiceClientConsumer<"node">,
-    options: Partial<VoiceClientOptions> = {}
-  ) {
+  constructor(client: Client, options: Partial<VoiceClientOptions> = {}) {
     const opts: VoiceClientOptions = {
       args: [],
       audioChannels: 2,
@@ -68,7 +64,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
             ],
           },
         }),
-      trackConsumer
+      () => () => {}
     );
     this.options = opts;
   }
@@ -166,5 +162,68 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         audio.pipe(this.rtpEncoder);
       }
     }
+  }
+
+  /**
+   * Listen to a voice participant.
+   * @returns A `Readable` stream of audio data. Will be `null` if the user is not producing that track.
+   */
+  public async listenTo(
+    participant: VoiceParticipant,
+    type: ProduceType
+  ): Promise<Readable | null> {
+    const producer = this.consumers.get(participant.user.id);
+    if (!producer || !producer[type]) return null;
+
+    const rtpDecoder = new RtpOpusToPcm({
+        sampleRate: this.options.sampleRate,
+        channels: this.options.audioChannels,
+      }),
+      decoder = new opus.Decoder({
+        rate: this.options.sampleRate,
+        channels: this.options.audioChannels,
+        frameSize: this.options.frameSize,
+      }),
+      ffmpeg = new FFmpeg({
+        args: [
+          "-analyzeduration",
+          "0",
+          "-loglevel",
+          "0",
+          "-f",
+          AUDIO_ENCODING,
+          "-ar",
+          this.options.sampleRate.toString(),
+          "-ac",
+          this.options.audioChannels.toString(),
+        ],
+      });
+
+    const track = producer[type].consumer.track;
+    if (!track) return null;
+
+    track.onReceiveRtp.subscribe((packet) => {
+      if (decoder.destroyed) return cancel(participant, type);
+      try {
+        decoder.write(packet.serialize());
+      } catch (err) {
+        this.emit("error", err);
+      }
+    });
+
+    const cancel = (p: VoiceParticipant, t: ProduceType) => {
+      if (p.user.id !== participant.user.id || t !== type) return;
+      this.off("userStopProduce", cancel);
+      track.onReceiveRtp.allUnsubscribe();
+      rtpDecoder.destroy();
+      decoder.destroy();
+      ffmpeg.destroy();
+      out.destroy();
+    };
+
+    this.on("userStopProduce", cancel);
+
+    const out = rtpDecoder.pipe(decoder).pipe(ffmpeg);
+    return out;
   }
 }

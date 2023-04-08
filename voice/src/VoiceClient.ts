@@ -48,7 +48,7 @@ export class VoiceClient<
   private sendTransport: MSC["Transport"] | null = null;
   private recvTransport: MSC["Transport"] | null = null;
 
-  private consumers = new Map<string, VoiceConsumer<Platform>>();
+  protected consumers = new Map<string, VoiceConsumer<Platform>>();
   protected audioProducer?: MSC["Producer"];
 
   private _deafened = false;
