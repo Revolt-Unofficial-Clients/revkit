@@ -9,5 +9,5 @@
   "$schema": "https://typedoc.org/schema.json",
   "plugin": ["@mxssfd/typedoc-theme"],
   "theme": "my-theme",
-  "tsconfig": "core/tsconfig.json"
+  "tsconfig": "tsconfig.tsdoc.json"
 }
