@@ -80,12 +80,14 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
 
   /** Current volume of the player. */
   public get volume() {
-    return this.volumeTransformer.volume;
+    return this._volume;
   }
+  private _volume = 1;
   /** Set the volume of the player. (1 = 100%, 0 = 0%) */
   public setVolume(vol: number) {
     if (vol < 0) vol = 0;
-    this.volumeTransformer.setVolume(vol);
+    this.volumeTransformer?.setVolume(vol);
+    this._volume = vol;
   }
 
   /** Change the extra FFmpeg args used. */
@@ -103,14 +105,17 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     ];
     if (this.transcoder) this.transcoder.destroy();
     this.transcoder = new FFmpeg({
-      args: [...baseArgs, "-f", AUDIO_ENCODING, ...this.options.args],
+      args: ["-analyzeduration", "0", "-loglevel", "0", ...baseArgs, "-f", AUDIO_ENCODING],
     });
     if (this.volumeTransformer) this.volumeTransformer.destroy();
-    this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING });
+    this.volumeTransformer = new VolumeTransformer({ type: AUDIO_ENCODING, volume: this.volume });
     if (this.encoder) this.encoder.destroy();
     this.encoder = new FFmpeg({
       args: [
         "-re",
+        "-f",
+        AUDIO_ENCODING,
+        ...baseArgs,
         "-i",
         "-",
         "-reconnect",
@@ -122,6 +127,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         ...baseArgs,
         "-acodec",
         "libopus",
+        ...this.options.args,
         "-f",
         "rtp",
       ],
@@ -146,7 +152,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         const socket = createSocket("udp4");
         socket.bind(this.port);
         socket.on("message", (data) => {
-          console.log("packet");
           MediaTrack.writeRtp(data);
         });
 
@@ -154,9 +159,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         await this.startProduce("audio", MediaTrack);
 
         // pipe the stream through transformers
-        stream
-          //.pipe(this.transcoder).pipe(this.volumeTransformer)
-          .pipe(this.encoder);
+        stream.pipe(this.transcoder).pipe(this.volumeTransformer).pipe(this.encoder);
       }
     }
   }
