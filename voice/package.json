@@ -41,7 +41,7 @@
     "ws": "^8.13.0"
   },
   "typedoc": {
-    "entryPoint": "./src/full.ts",
+    "entryPoint": "./src/index.ts",
     "displayName": "revkit/voice"
   }
 }
