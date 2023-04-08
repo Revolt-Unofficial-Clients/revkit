@@ -12,6 +12,8 @@ if (!token) {
 const bot = new Client(),
   voice = new VoiceClient(bot);
 
+voice.on("error", console.error);
+
 bot.on("message", async (message) => {
   if (!message.isUser() || !message.server) return;
   if (message.content.startsWith("!play")) {
@@ -21,7 +23,8 @@ bot.on("message", async (message) => {
     if (!channel || message.content.trim().length <= "!play".length)
       return message.reply("Invalid channel.");
     await voice.connect(channel);
-    await voice.play("audio", createReadStream("./sample.mp3"));
+    const str = createReadStream("sample.mp3");
+    await voice.play("audio", str);
     message.reply("Playing audio.");
   }
   if (message.content.startsWith("!leave")) {

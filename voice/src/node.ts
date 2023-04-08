@@ -1,7 +1,7 @@
 import * as MSC from "msc-node";
 import { FFmpeg, VolumeTransformer, opus } from "prism-media";
 import type { Client } from "revkit";
-import { OggOpusToRtp, RtpOpusToPcm } from "rtp-ogg-opus";
+import { RtpEncoder, RtpOpusToPcm } from "rtp-ogg-opus";
 import { Readable } from "stream";
 import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
 import type { ProduceType, VoiceParticipant } from "./types";
@@ -72,7 +72,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
   private transcoder: FFmpeg;
   private volumeTransformer: VolumeTransformer;
   private encoder: opus.Encoder;
-  private rtpEncoder: OggOpusToRtp;
+  private rtpEncoder: RtpEncoder;
 
   /** Current volume of the player. */
   public get volume() {
@@ -94,6 +94,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     if (this.transcoder) this.transcoder.destroy();
     this.transcoder = new FFmpeg({
       args: [
+        "-re",
+        "-i",
+        "-",
         "-analyzeduration",
         "0",
         "-loglevel",
@@ -116,8 +119,8 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
       frameSize: this.options.frameSize,
     });
     if (this.rtpEncoder) this.rtpEncoder.destroy();
-    this.rtpEncoder = new OggOpusToRtp({
-      sampleRate: this.options.sampleRate,
+    this.rtpEncoder = new RtpEncoder({
+      // sampleRate: this.options.sampleRate,
       payloadType: RTP_PAYLOAD_TYPE,
     });
   }
@@ -148,11 +151,11 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
             }
           };
         this.rtpEncoder.on("data", (packet: Buffer) => {
-          if (packet && packet.length > 0) packets.push(packet);
+          if (packet && packet.length > 0) MediaTrack.writeRtp(packet);
         });
         audio.once("readable", () => {
           // start sending packets after the first one arrives
-          setTimeout(sendPacket, sendInterval);
+          // setTimeout(sendPacket, sendInterval);
         });
         // start producing track on vortex
         await this.startProduce("audio", MediaTrack);
