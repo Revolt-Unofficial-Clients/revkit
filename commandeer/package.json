@@ -1,7 +1,7 @@
 {
   "name": "@revkit/commandeer",
-  "version": "0.0.1-beta1",
-  "description": "Command handler for revkit.",
+  "version": "0.0.1",
+  "description": "Command handler for revkit-based clients.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
   "types": "dist/es6/index.d.ts",

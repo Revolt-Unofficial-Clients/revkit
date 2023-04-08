@@ -1,10 +1,11 @@
 The main module.
 
 ![RevKit](https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png)
+[![npm](https://img.shields.io/npm/dt/revkit?label=Downloads&style=flat-square&color=ff4654)](https://www.npmjs.com/package/revkit)
 
 #### Quick Example
 
-```js
+```javascript
 import { Client } from "revkit";
 
 const bot = new Client();
