@@ -1,6 +1,6 @@
 {
   "name": "@revkit/voice",
-  "version": "0.0.1-beta1",
+  "version": "0.0.1",
   "description": "Voice support for revkit.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",

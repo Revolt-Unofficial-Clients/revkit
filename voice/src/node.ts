@@ -206,9 +206,12 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     const producer = this.consumers.get(participant.user.id);
     if (!producer || !producer[type]) return null;
 
+    // pick a free port (high range) for the rtp socket
     const port = await MSC.findPort(Math.floor(PORT_MAX / 2), PORT_MAX, "udp4"),
       SDP = path.join(os.tmpdir(), `revkitvoice-${port}.sdp`);
 
+    // ffmpeg needs an 'sdp' file to read the RTP packets
+    // seems to *require* an actual file
     writeFileSync(
       SDP,
       `c=IN IP4 127.0.0.1
@@ -219,7 +222,7 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
     const decoder = new FFmpeg({
         args: [
           "-protocol_whitelist",
-          "rtp,file,udp,opus",
+          "rtp,file,udp,opus", // whitelist the protocols needed to read the SDP file
           "-i",
           SDP,
           "-reconnect",
@@ -230,7 +233,7 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
           "4",
           ...this.baseArgs,
           "-f",
-          "mp3",
+          "mp3", // it seems to not like other formats
         ],
       }),
       socket = createSocket("udp4");
@@ -241,26 +244,28 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
 
     const track = producer[type].consumer.track;
     if (!track) return null;
+    if (track.onReceiveRtp.ended) return; // if the user unmuted and muted too quickly
 
-    if (!track.onReceiveRtp.ended)
-      track.onReceiveRtp.subscribe((packet) => {
-        if (decoder.destroyed) return cancel(participant, type);
-        try {
-          socket.send(packet.serialize(), port, "127.0.0.1");
-        } catch (err) {
-          this.emit("error", err);
-        }
-      });
+    track.onReceiveRtp.subscribe((packet) => {
+      // if the decoder is destroyed, stop sending packets to it
+      if (decoder.destroyed) return cancel(participant, type);
+      try {
+        socket.send(packet.serialize(), port, "127.0.0.1");
+      } catch (err) {
+        this.emit("error", err);
+      }
+    });
 
     const cancel = (p: VoiceParticipant, t: ProduceType) => {
       if (p.user.id !== participant.user.id || t !== type) return;
       this.off("userStopProduce", cancel);
       if (!track.onReceiveRtp.ended) track.onReceiveRtp.allUnsubscribe();
-      decoder.end();
+      decoder.emit("end");
       decoder.destroy();
-      unlinkSync(SDP);
+      unlinkSync(SDP); // make sure we remove the temp sdp file
     };
 
+    // listen for this user to stop talking
     this.on("userStopProduce", cancel);
     return decoder;
   }

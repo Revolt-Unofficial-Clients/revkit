@@ -23,7 +23,7 @@ dependencies:
   ffmpeg-static: 5.1.0
   mediasoup-client: 3.6.84
   msc-node: 0.0.10
-  prism-media: github.com/itzTheMeow/prism-media/8b42200fee5ce7357498a7d8984fa7700175a049_ffmpeg-static@5.1.0
+  prism-media: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409_ffmpeg-static@5.1.0
   revkit: 1.1.3_ws@8.13.0
 
 devDependencies:
@@ -1012,9 +1012,9 @@ packages:
     dev: false
     optional: true
 
-  github.com/itzTheMeow/prism-media/8b42200fee5ce7357498a7d8984fa7700175a049_ffmpeg-static@5.1.0:
-    resolution: {tarball: https://codeload.github.com/itzTheMeow/prism-media/tar.gz/8b42200fee5ce7357498a7d8984fa7700175a049}
-    id: github.com/itzTheMeow/prism-media/8b42200fee5ce7357498a7d8984fa7700175a049
+  github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409_ffmpeg-static@5.1.0:
+    resolution: {tarball: https://codeload.github.com/itzTheMeow/prism-media/tar.gz/f3e33538bbd00cd9f2a2184a75a832f961ba5409}
+    id: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409
     name: prism-media
     version: 1.3.5
     peerDependencies:

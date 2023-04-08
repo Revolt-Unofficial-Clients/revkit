@@ -369,7 +369,7 @@ export class VoiceClient<
       await this.signaling.stopProduce(type);
     } catch (error) {
       if (error.error === "ProducerNotFound") return;
-      throw error;
+      this.emit("error", error);
     }
   }
 
