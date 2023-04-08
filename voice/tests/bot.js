@@ -54,9 +54,6 @@ voice.on("userStartProduce", async (part, type) => {
   if (!incoming) return console.error("No incoming stream for " + part.user.username);
   const file = createWriteStream(`${part.user.username}-audio.mp3`);
   incoming.pipe(file);
-  file.on("close", () => {
-    console.log("closed");
-  });
 });
 
 bot.login(process.env.TOKEN, "bot");

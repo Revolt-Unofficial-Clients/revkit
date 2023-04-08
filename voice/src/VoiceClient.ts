@@ -6,7 +6,6 @@ import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
   VoiceStatus,
-  WSErrorCode,
   WSEvents,
   type ProduceType,
   type VoiceConsumer,
@@ -354,7 +353,7 @@ export class VoiceClient<
         break;
     }
 
-    if (producer) {
+    if (producer && !producer.closed) {
       producer.close();
       this.emit("stopProduce", type);
     }
@@ -369,7 +368,7 @@ export class VoiceClient<
     try {
       await this.signaling.stopProduce(type);
     } catch (error) {
-      if (error.error === WSErrorCode.ProducerNotFound) return;
+      if (error.error === "ProducerNotFound") return;
       throw error;
     }
   }

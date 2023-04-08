@@ -1,5 +1,8 @@
 import { createSocket } from "dgram";
+import { unlinkSync, writeFileSync } from "fs";
 import * as MSC from "msc-node";
+import os from "os";
+import path from "path";
 import { FFmpeg, VolumeTransformer } from "prism-media";
 import type { Client } from "revkit";
 import { Readable } from "stream";
@@ -181,14 +184,21 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     if (!producer || !producer[type]) return null;
 
     const port = await MSC.findPort(Math.floor(PORT_MAX / 2), PORT_MAX, "udp4"),
-      decoder = new FFmpeg({
+      SDP = path.join(os.tmpdir(), `revkitvoice-${port}.sdp`);
+
+    writeFileSync(
+      SDP,
+      `c=IN IP4 127.0.0.1
+m=audio ${port} RTP/AVP ${RTP_PAYLOAD_TYPE}
+a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audioChannels}`
+    );
+
+    const decoder = new FFmpeg({
         args: [
-          "-re",
-          "-f",
-          "rtp",
-          ...this.baseArgs,
+          "-protocol_whitelist",
+          "rtp,file,udp,opus",
           "-i",
-          `rtp://127.0.0.1:${port}`,
+          SDP,
           "-reconnect",
           "1",
           "-reconnect_streamed",
@@ -197,7 +207,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
           "4",
           ...this.baseArgs,
           "-f",
-          AUDIO_ENCODING,
+          "mp3",
         ],
       }),
       socket = createSocket("udp4");
@@ -210,10 +220,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     if (!track) return null;
 
     track.onReceiveRtp.subscribe((packet) => {
-      console.log(decoder.destroyed);
       if (decoder.destroyed) return cancel(participant, type);
       try {
-        socket.send(packet.serialize(), port);
+        socket.send(packet.serialize(), port, "127.0.0.1");
       } catch (err) {
         this.emit("error", err);
       }
@@ -221,15 +230,14 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
 
     const cancel = (p: VoiceParticipant, t: ProduceType) => {
       if (p.user.id !== participant.user.id || t !== type) return;
-      console.log("cancel");
       this.off("userStopProduce", cancel);
-      track.onReceiveRtp.allUnsubscribe();
+      if (!track.onReceiveRtp.ended) track.onReceiveRtp.allUnsubscribe();
       decoder.end();
       decoder.destroy();
+      unlinkSync(SDP);
     };
 
     this.on("userStopProduce", cancel);
-
     return decoder;
   }
 }
