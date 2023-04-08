@@ -1,6 +1,6 @@
 {
   "entryPoints": [
-    "core/src/index.ts",
+    "core",
     "voice/src/index.ts",
     "voice/src/browser.ts",
     "voice/src/node.ts",
@@ -9,5 +9,6 @@
   "$schema": "https://typedoc.org/schema.json",
   "plugin": ["@mxssfd/typedoc-theme"],
   "theme": "my-theme",
+  "name": "RevKit Documentation",
   "tsconfig": "tsconfig.tsdoc.json"
 }
