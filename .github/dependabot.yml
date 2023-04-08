@@ -4,3 +4,8 @@ updates:
     directory: "/core"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/voice"
+    schedule:
+      interval: "daily"
+ 
