@@ -1,12 +1,13 @@
 import { CustomBadge } from "./utils/UserBadges";
 
-/*
+/**
+ * Custom badges added by users.
+ *
  * Keep your image size relatively small. (<512px)
  * CORS is not required as the image should be proxied clientside.
  *
  * It would be cool of you to comment your name by your ID to make it easier for others.
  */
-
 export const CustomBadges: CustomBadge[] = [
   {
     //     StationaryStation             Bloom                         StationaryStation's Alt

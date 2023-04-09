@@ -18,6 +18,7 @@ type WebSocketError = {
   error: "InternalError" | "InvalidSession" | "OnboardingNotFinished" | "AlreadyAuthenticated";
 };
 
+/** Packets that are sendable to the server. */
 export type ServerboundNotification =
   | { type: "Ping"; data: number }
   | { type: "Pong"; data: number }
@@ -25,6 +26,7 @@ export type ServerboundNotification =
   | { type: "BeginTyping"; channel: string }
   | { type: "EndTyping"; channel: string };
 
+/** Pcket received to initialize the client. */
 export type ReadyPacket = {
   type: "Ready";
   users: User[];
@@ -34,6 +36,7 @@ export type ReadyPacket = {
   emojis?: Emoji[];
 };
 
+/** Packets that come from the server. */
 export type ClientboundNotification =
   | { type: "Bulk"; v: ClientboundNotification[] }
   | { type: "Ping"; data: number }
