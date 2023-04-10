@@ -1,6 +1,6 @@
 {
   "name": "@revkit/voice",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Voice support for browser/node using revkit-based clients.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
@@ -14,7 +14,9 @@
     "url": "git+https://github.com/Revolt-Unofficial-Clients/revkit.git"
   },
   "files": [
-    "dist/*"
+    "dist/*",
+    "browser.d.ts",
+    "node.d.ts"
   ],
   "author": "Meow",
   "license": "ISC",
