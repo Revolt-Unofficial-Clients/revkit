@@ -118,7 +118,16 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     if (this.transcoder) this.transcoder.destroy();
     if (respawn) {
       this.transcoder = new FFmpeg({
-        args: ["-analyzeduration", "0", "-loglevel", "0", ...this.baseArgs, "-f", AUDIO_ENCODING],
+        args: [
+          "-analyzeduration",
+          "0",
+          "-loglevel",
+          "0", 
+          ...this.baseArgs, 
+          "-f", 
+          AUDIO_ENCODING,
+          ...this.options.args,
+        ],
       });
       this.transcoder.on("error", (err) => {
         if ((<any>err).code == "EPIPE") return;
@@ -151,7 +160,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
           ...this.baseArgs,
           "-acodec",
           "libopus",
-          ...this.options.args,
           "-f",
           "rtp",
         ],
