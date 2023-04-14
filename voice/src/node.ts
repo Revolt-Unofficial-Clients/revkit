@@ -122,9 +122,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
           "-analyzeduration",
           "0",
           "-loglevel",
-          "0", 
-          ...this.baseArgs, 
-          "-f", 
+          "0",
+          ...this.baseArgs,
+          "-f",
           AUDIO_ENCODING,
           ...this.options.args,
         ],
@@ -133,6 +133,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         if ((<any>err).code == "EPIPE") return;
         this.emit("error", err);
       });
+      this.transcoder.process.stderr.on("data", () => {});
     } else delete this.transcoder;
     if (this.volumeTransformer) this.volumeTransformer.destroy();
     if (respawn) {
@@ -169,6 +170,8 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         if ((<any>err).code == "EPIPE") return;
         this.emit("error", err);
       });
+      // fixes stream stopping after 4min
+      this.encoder.process.stderr.on("data", () => {});
     } else delete this.encoder;
   }
 
