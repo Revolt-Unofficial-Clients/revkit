@@ -157,4 +157,9 @@ export class User extends BaseObject<APIUser> {
 
     return new UserPermissionFlags(permissions);
   }
+
+  /** @returns The user formatted for markdown. `<@id>` */
+  public toString() {
+    return `<@${this.id}>`;
+  }
 }

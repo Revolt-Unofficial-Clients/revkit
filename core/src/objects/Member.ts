@@ -1,8 +1,8 @@
 import { DataBanCreate, DataMemberEdit } from "revolt-api";
-import { APIMember } from "../api";
 import { Client } from "../Client";
+import { APIMember } from "../api";
 import { PermissionFlags } from "../utils/PermissionFlags";
-import { calculatePermissions, Permissions } from "../utils/Permissions";
+import { Permissions, calculatePermissions } from "../utils/Permissions";
 import { Attachment, AttachmentArgs } from "./Attachment";
 import { BaseObject } from "./BaseObject";
 import { Role } from "./Role";
@@ -139,5 +139,10 @@ export class Member extends BaseObject<APIMember> {
         this.update({ timeout: null });
       }
     }
+  }
+
+  /** @returns The member's user formatted for markdown. `<@id>` */
+  public toString() {
+    return `<@${this.id}>`;
   }
 }

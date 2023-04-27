@@ -1,3 +1,7 @@
+v1.1.7
+
+- Added `toString()` methods to objects.
+
 v1.1.6
 
 - Add `AnyEmoji` utility type.

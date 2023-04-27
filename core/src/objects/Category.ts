@@ -20,4 +20,8 @@ export class Category extends BaseObject<APICategory> {
   public get channels() {
     return this.channelIDs.map((c) => this.server.channels.get(c)).filter((c) => c);
   }
+  /** @returns The category name. */
+  public toString() {
+    return this.name;
+  }
 }

@@ -26,4 +26,11 @@ export class BaseObject<APIType extends { _id: string | { user: string } }> exte
     this.fireUpdate();
     return this;
   }
+  /**
+   * Converts this object to a string.
+   * @returns The object ID.
+   */
+  public toString(): string {
+    return this.id;
+  }
 }

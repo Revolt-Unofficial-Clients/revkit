@@ -1,10 +1,10 @@
 import { DataEditChannel, Override } from "revolt-api";
 import { ulid } from "ulid";
-import { APIChannel } from "../api";
 import { Client } from "../Client";
+import { APIChannel } from "../api";
 import { MessageManager } from "../managers/MessageManager";
 import { UnreadManager } from "../managers/UnreadManager";
-import { constructMessagePayload, MessagePayload } from "../utils/Messaging";
+import { MessagePayload, constructMessagePayload } from "../utils/Messaging";
 import { PermissionFlags } from "../utils/PermissionFlags";
 import { calculatePermissions } from "../utils/Permissions";
 import { Attachment, AttachmentArgs } from "./Attachment";
@@ -201,7 +201,10 @@ export class Channel extends BaseObject<APIChannel> {
   public async send(data: MessagePayload): Promise<Message> {
     return <Message>(
       this.messages.construct(
-        await this.client.api.post(`/channels/${this._id}/messages`, constructMessagePayload(data, this))
+        await this.client.api.post(
+          `/channels/${this._id}/messages`,
+          constructMessagePayload(data, this)
+        )
       )
     );
   }
@@ -209,15 +212,20 @@ export class Channel extends BaseObject<APIChannel> {
     return await this.messages.fetch(id);
   }
 
-  async edit(data: DataEditChannel) {
+  public async edit(data: DataEditChannel) {
     return this.update(await this.client.api.patch(`/channels/${this._id}`, data));
   }
   /** Delete or leave this channel. */
-  async delete(silent?: boolean) {
+  public async delete(silent?: boolean) {
     await this.client.api.delete(`/channels/${this._id}`, {
       leave_silently: silent,
     });
     if (this.isDM()) this.update({ active: false });
     this.client.channels.delete(this.id);
+  }
+
+  /** @returns The channel formatted for markdown. `<#id>` */
+  public toString() {
+    return `<#${this.id}>`;
   }
 }

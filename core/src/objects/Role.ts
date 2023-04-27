@@ -1,6 +1,6 @@
 import { DataEditRole } from "revolt-api";
-import { APIRole } from "../api";
 import { Client } from "../Client";
+import { APIRole } from "../api";
 import { PermissionFlags, PermissionOverride } from "../utils/PermissionFlags";
 import { BaseObject } from "./BaseObject";
 import { Server } from "./Server";
@@ -37,5 +37,10 @@ export class Role extends BaseObject<APIRole> {
   public async delete() {
     await this.client.api.delete(`/servers/${this.server.id}/roles/${this._id}`);
     this.server.roles.delete(this.id);
+  }
+
+  /** @returns The role name. */
+  public toString() {
+    return this.name;
   }
 }

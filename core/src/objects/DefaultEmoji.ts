@@ -17,6 +17,10 @@ export class DefaultEmoji {
     this.pack = pack;
     return this;
   }
+  /** @returns The emoji formatted for markdown. `:id:` */
+  public toString() {
+    return `:${this.id}:`;
+  }
 }
 
 import { EmojiPacks, RevoltEmojiDictionary, unicodeEmojiURL } from "../utils/Emojis";

@@ -53,4 +53,9 @@ export class Emoji extends BaseObject<APIEmoji> {
     await this.client.api.delete(`/custom/emoji/${this._id}`);
     this.client.emojis.delete(this.id);
   }
+
+  /** @returns The emoji formatted for markdown. `:id:` */
+  public toString() {
+    return `:${this.id}:`;
+  }
 }
