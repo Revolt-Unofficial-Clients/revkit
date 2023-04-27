@@ -1,6 +1,6 @@
 import { DataCreateChannel } from "revolt-api";
-import { APIChannel } from "../api";
 import { Client } from "../Client";
+import { APIChannel } from "../api";
 import { Channel } from "../objects/Channel";
 import { DMChannel } from "../objects/DMChannel";
 import { GroupDMChannel } from "../objects/GroupDMChannel";
@@ -17,7 +17,7 @@ export class ChannelManager extends BaseManager<Channel> {
 
   public construct(data: APIChannel): Channel {
     const has = this.get(data._id);
-    if (has) has.update(data);
+    if (has) return has.update(data);
     else {
       const channel = ((): Channel => {
         switch (data.channel_type) {

@@ -22,7 +22,7 @@ export class EmojiManager extends BaseManager<Emoji> {
 
   public construct(data: APIEmoji) {
     const has = this.get(data._id);
-    if (has) has.update(data);
+    if (has) return has.update(data);
     else {
       const emoji = new Emoji(this.client, data);
       this.set(emoji.id, emoji);
