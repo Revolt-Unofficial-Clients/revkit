@@ -25,3 +25,8 @@ export * from "./SystemMessage";
 export * from "./TextChannel";
 export * from "./User";
 export * from "./VoiceChannel";
+
+import { DefaultEmoji } from "./DefaultEmoji";
+import { Emoji } from "./Emoji";
+/** Utility type. One of `DefaultEmoji` or `Emoji`. */
+export type AnyEmoji = DefaultEmoji | Emoji;
