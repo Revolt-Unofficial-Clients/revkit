@@ -34,7 +34,7 @@ jobs:
         run: pnpm run docs
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.4.1
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: docs
           folder: docs
