@@ -61,6 +61,7 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
+  private _loginPromise: Promise<void>;
   public userId: string;
   public client = new Client();
   public channelID: string | null = null;
@@ -76,12 +77,20 @@ export class VoiceClient<
    */
   constructor(
     public readonly platform: Platform,
+    client: Client | { token: string; type: "user" | "bot"; baseURL: string },
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
   ) {
     super();
     this.supported = this.msc.detectDevice() !== undefined;
+    if ("token" in client) {
+      this.client = new Client({ apiURL: client.baseURL });
+      this._loginPromise = this.client.login(client.token, client.type, false);
+    } else {
+      this.client = client;
+      this._loginPromise = Promise.resolve();
+    }
 
     this.signaling.on(
       "data",
@@ -205,18 +214,6 @@ export class VoiceClient<
     this.recvTransport = undefined;
 
     this.emit("close", error);
-  }
-
-  /**
-   * Authenticate the user.
-   * @param userId Current session's user ID.
-   * @param token The session token of a logged in user.
-   * @param type Whether the current user is a user or a bot. 
-   * @param baseURL The URL to use when talking to the Revolt API.
-   */
-  authenticate(token: string, userId: string, type: "user" | "bot", baseURL?: string) {
-    this.userId = userId;
-    this.client.login(token, type, false);
   }
 
   async joinCall(token: string) {
@@ -391,6 +388,8 @@ export class VoiceClient<
   }
 
   public async connect(channelID?: string) {
+    await this._loginPromise;
+
     const channel =
       channelID == undefined ? this.channel : await this.client.channels.fetch(channelID);
 
