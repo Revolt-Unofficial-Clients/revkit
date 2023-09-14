@@ -1,7 +1,7 @@
 import EventEmitter from "eventemitter3";
 import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
-import { API, Client, MiniMapEmitter } from "revkit";
+import { Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
@@ -216,13 +216,7 @@ export class VoiceClient<
    */
   authenticate(token: string, userId: string, type: "user" | "bot", baseURL?: string) {
     this.userId = userId;
-    this.client.session = { token, type, id: "", name: "" };
-    this.client.api = new API.API({
-      baseURL,
-      authentication: {
-        revolt: type == "user" ? { token } : token,
-      },
-    });
+    this.client.login(token, type, false);
   }
 
   async joinCall(token: string) {
