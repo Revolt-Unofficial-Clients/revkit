@@ -1,7 +1,7 @@
 import EventEmitter from "eventemitter3";
 import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
-import { Client, MiniMapEmitter, VoiceChannel } from "revkit";
+import { API, Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
@@ -61,6 +61,7 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
+  public client = new Client();
   public channelID: string | null = null;
   public get channel() {
     return this.client.channels.get(this.channelID);
@@ -68,19 +69,32 @@ export class VoiceClient<
 
   /**
    * The base voice client. It's recommended to use the platform-specific clients instead.
-   * @param client The RevKit client to use.
+   * @param baseURL The URL to use when talking to the Revolt API.
+   * @param token The session token of a logged in user.
+   * @param type Whether the current user is a user or a bot.
    * @param msc The MediaSoup client to use. (for tree-shaking)
    * @param createDevice A function called to create a new MediaSoup Device for the client.
    * @param consumeTrack A callback that is run to play a new MediaStreamTrack. The function returned will be called when the stream is closed. (leave out to disable consuming media)
    */
   constructor(
     public readonly platform: Platform,
-    public client: Client,
+    baseURL: string,
+    private userId: string,
+    token: string,
+    type: "user" | "bot",
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
   ) {
     super();
+    this.client.session = { token, type, id: "", name: "" };
+    this.client.api = new API.API({
+      baseURL,
+      authentication: {
+        revolt: type == "user" ? { token } : token,
+      },
+    });
+
     this.supported = this.msc.detectDevice() !== undefined;
 
     this.signaling.on(
@@ -108,7 +122,7 @@ export class VoiceClient<
           }
           case WSEvents.UserStartProduce: {
             const participant = this.participants.get(data.id);
-            if (!participant || participant.user.id == this.client.user.id) return;
+            if (!participant || participant.user.id == this.userId) return;
             if (<any>data.type in participant) {
               participant[data.type] = true;
             } else {
@@ -220,7 +234,7 @@ export class VoiceClient<
     ]);
 
     // this should really never happen
-    if (result.userId !== this.client.user.id)
+    if (result.userId !== this.userId)
       this.emit("error", new Error("Authenticated user ID does not match client user ID."));
     await Promise.all(
       Object.entries(room.users).map(async ([id, details]) => {
@@ -269,7 +283,7 @@ export class VoiceClient<
 
     this.emit("ready");
     this.participants.forEach(async (p) => {
-      if (p.audio && p.user.id !== this.client.user.id) {
+      if (p.audio && p.user.id !== this.userId) {
         await this.startConsume(p.user.id, "audio");
         this.emit("userStartProduce", p, "audio");
       }
@@ -287,7 +301,7 @@ export class VoiceClient<
         if (this.deafened) consumer.pause();
         consumers.audio = {
           consumer: <any>consumer,
-          callback: this.consumeTrack(type, <any>consumer),
+          callback: this.consumeTrack(type, <any>consumer.track),
         };
     }
 
@@ -334,10 +348,10 @@ export class VoiceClient<
         break;
     }
 
-    const participant = this.participants.get(this.client.user.id);
+    const participant = this.participants.get(this.userId);
     if (participant) {
       participant[type] = true;
-      this.participants.set(this.client.user.id, participant);
+      this.participants.set(this.userId, participant);
       this.participants.fireUpdate([participant]);
     }
 
@@ -358,10 +372,10 @@ export class VoiceClient<
       this.emit("stopProduce", type);
     }
 
-    const participant = this.participants.get(this.client.user.id);
+    const participant = this.participants.get(this.userId);
     if (participant) {
       participant[type] = false;
-      this.participants.set(this.client.user.id, participant);
+      this.participants.set(this.userId, participant);
       this.participants.fireUpdate([participant]);
     }
 
@@ -378,7 +392,10 @@ export class VoiceClient<
     this.emit("status", status);
   }
 
-  public async connect(channel: VoiceChannel) {
+  public async connect(channelID?: string) {
+    const channel =
+      channelID == undefined ? this.channel : await this.client.channels.fetch(channelID);
+
     if (this.status > VoiceStatus.READY) return;
     if (!this.supported) throw new Error("RTC is unavailable.");
     if (!channel.isVoice()) throw new Error("Not a voice channel.");

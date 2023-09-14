@@ -1,5 +1,4 @@
 import * as MSC from "mediasoup-client";
-import type { Client } from "revkit";
 import { VoiceClient as BaseVoiceClient, type VoiceClientConsumer } from "./VoiceClient";
 import type { ProduceType } from "./types";
 
@@ -20,11 +19,28 @@ export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) =>
  */
 export default class VoiceClient extends BaseVoiceClient<"browser"> {
   /**
-   * @param client The RevKit client to use.
+   * @param baseURL The URL to use when talking to the Revolt API.
+   * @param token The session token of a logged in user.
+   * @param clientType Whether the current user is a user or a bot.
    * @param trackConsumer A function that is called when there is a new `MediaStreamTrack` to play. The function returned will be called when the track ends.
    */
-  constructor(client: Client, trackConsumer?: VoiceClientConsumer<"browser">) {
-    super("browser", client, MSC, () => new MSC.Device(), trackConsumer);
+  constructor(
+    baseURL: string,
+    userId: string,
+    token: string,
+    clientType: "user" | "bot",
+    trackConsumer?: VoiceClientConsumer<"browser">
+  ) {
+    super(
+      "browser",
+      baseURL,
+      userId,
+      token,
+      clientType,
+      MSC,
+      () => new MSC.Device(),
+      trackConsumer
+    );
   }
 
   /**

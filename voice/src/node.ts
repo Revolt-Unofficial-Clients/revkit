@@ -4,7 +4,6 @@ import * as MSC from "msc-node";
 import os from "os";
 import path from "path";
 import { FFmpeg, VolumeTransformer } from "prism-media";
-import type { Client } from "revkit";
 import { Readable } from "stream";
 import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
 import type { ProduceType, VoiceParticipant } from "./types";
@@ -38,10 +37,18 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
   public port: number = 5002;
 
   /**
-   * @param client The RevKit client to use.
+   * @param baseURL The URL to use when talking to the Revolt API.
+   * @param token The session token of a logged in user.
+   * @param clientType Whether the current user is a user or a bot.
    * @param options Additional options for the player. Some of them also apply to incoming tracks. (you shouldn't need to mess with these)
    */
-  constructor(client: Client, options: Partial<VoiceClientOptions> = {}) {
+  constructor(
+    baseURL: string,
+    userId: string,
+    token: string,
+    clientType: "user" | "bot",
+    options: Partial<VoiceClientOptions> = {}
+  ) {
     const opts: VoiceClientOptions = {
       args: [],
       audioChannels: 2,
@@ -52,7 +59,10 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     };
     super(
       "node",
-      client,
+      baseURL,
+      userId,
+      token,
+      clientType,
       MSC,
       () =>
         new MSC.Device({
