@@ -3,7 +3,7 @@ import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
 import { Client, MiniMapEmitter, VoiceChannel } from "revkit";
 import Signaling from "./Signaling";
-import { MSCPlatform, MediaSoup } from "./msc";
+import type { MSCPlatform, MediaSoup } from "./msc";
 import {
   VoiceStatus,
   WSEvents,
