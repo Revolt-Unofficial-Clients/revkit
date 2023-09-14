@@ -35,7 +35,7 @@ export default class VoiceClient extends BaseVoiceClient<"browser"> {
   public async play(type: ProduceType, track?: MediaStreamTrack | string) {
     switch (type) {
       case "audio": {
-        if (!this.audioProducer) throw "No audio producer.";
+        if (this.audioProducer) throw "Already producing audio.";
 
         try {
           if (!(track instanceof MediaStreamTrack)) {

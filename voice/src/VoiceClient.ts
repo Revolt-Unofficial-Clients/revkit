@@ -281,13 +281,13 @@ export class VoiceClient<
     if (!this.recvTransport) throw new Error("Receive transport undefined");
     const consumers = this.consumers.get(userId) || {};
     const consumerParams = await this.signaling.startConsume(userId, type);
-    const consumer = await this.recvTransport.consume(consumerParams);
+    const consumer = <MSC["Consumer"]>await this.recvTransport.consume(consumerParams);
     switch (type) {
       case "audio":
         if (this.deafened) consumer.pause();
         consumers.audio = {
-          consumer: <any>consumer,
-          callback: this.consumeTrack(type, <any>consumer),
+          consumer: consumer,
+          callback: this.consumeTrack(type, <MSC["MediaStreamTrack"]>consumer.track),
         };
     }
 
