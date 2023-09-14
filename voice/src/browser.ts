@@ -19,28 +19,10 @@ export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) =>
  */
 export default class VoiceClient extends BaseVoiceClient<"browser"> {
   /**
-   * @param baseURL The URL to use when talking to the Revolt API.
-   * @param token The session token of a logged in user.
-   * @param clientType Whether the current user is a user or a bot.
    * @param trackConsumer A function that is called when there is a new `MediaStreamTrack` to play. The function returned will be called when the track ends.
    */
-  constructor(
-    baseURL: string,
-    userId: string,
-    token: string,
-    clientType: "user" | "bot",
-    trackConsumer?: VoiceClientConsumer<"browser">
-  ) {
-    super(
-      "browser",
-      baseURL,
-      userId,
-      token,
-      clientType,
-      MSC,
-      () => new MSC.Device(),
-      trackConsumer
-    );
+  constructor(trackConsumer?: VoiceClientConsumer<"browser">) {
+    super("browser", MSC, () => new MSC.Device(), trackConsumer);
   }
 
   /**
@@ -51,7 +33,7 @@ export default class VoiceClient extends BaseVoiceClient<"browser"> {
   public async play(type: ProduceType, track?: MediaStreamTrack | string) {
     switch (type) {
       case "audio": {
-        if (!this.audioProducer) throw "No audio producer.";
+        if (this.audioProducer != undefined) throw "Already producing audio.";
 
         try {
           if (!(track instanceof MediaStreamTrack)) {

@@ -37,16 +37,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
   public port: number = 5002;
 
   /**
-   * @param baseURL The URL to use when talking to the Revolt API.
-   * @param token The session token of a logged in user.
-   * @param clientType Whether the current user is a user or a bot.
    * @param options Additional options for the player. Some of them also apply to incoming tracks. (you shouldn't need to mess with these)
    */
   constructor(
-    baseURL: string,
-    userId: string,
-    token: string,
-    clientType: "user" | "bot",
     options: Partial<VoiceClientOptions> = {}
   ) {
     const opts: VoiceClientOptions = {
@@ -59,10 +52,6 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     };
     super(
       "node",
-      baseURL,
-      userId,
-      token,
-      clientType,
       MSC,
       () =>
         new MSC.Device({

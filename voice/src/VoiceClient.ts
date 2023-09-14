@@ -61,6 +61,7 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
+  public userId: string;
   public client = new Client();
   public channelID: string | null = null;
   public get channel() {
@@ -69,32 +70,17 @@ export class VoiceClient<
 
   /**
    * The base voice client. It's recommended to use the platform-specific clients instead.
-   * @param baseURL The URL to use when talking to the Revolt API.
-   * @param token The session token of a logged in user.
-   * @param type Whether the current user is a user or a bot.
    * @param msc The MediaSoup client to use. (for tree-shaking)
    * @param createDevice A function called to create a new MediaSoup Device for the client.
    * @param consumeTrack A callback that is run to play a new MediaStreamTrack. The function returned will be called when the stream is closed. (leave out to disable consuming media)
    */
   constructor(
     public readonly platform: Platform,
-    baseURL: string,
-    private userId: string,
-    token: string,
-    type: "user" | "bot",
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
   ) {
     super();
-    this.client.session = { token, type, id: "", name: "" };
-    this.client.api = new API.API({
-      baseURL,
-      authentication: {
-        revolt: type == "user" ? { token } : token,
-      },
-    });
-
     this.supported = this.msc.detectDevice() !== undefined;
 
     this.signaling.on(
@@ -221,11 +207,29 @@ export class VoiceClient<
     this.emit("close", error);
   }
 
-  async authenticate(token: string) {
+  /**
+   * Authenticate the user.
+   * @param userId Current session's user ID.
+   * @param token The session token of a logged in user.
+   * @param type Whether the current user is a user or a bot. 
+   * @param baseURL The URL to use when talking to the Revolt API.
+   */
+  authenticate(token: string, userId: string, type: "user" | "bot", baseURL?: string) {
+    this.userId = userId;
+    this.client.session = { token, type, id: "", name: "" };
+    this.client.api = new API.API({
+      baseURL,
+      authentication: {
+        revolt: type == "user" ? { token } : token,
+      },
+    });
+  }
+
+  async joinCall(token: string) {
     this.throwIfUnsupported();
     if (!this.device || !this.channelID)
       throw new ReferenceError("Voice client is in an invalid state");
-    const result = await this.signaling.authenticate(token, this.channelID);
+    const result = await this.signaling.joinCall(token, this.channelID);
     const [room] = await Promise.all([
       this.signaling.roomInfo(),
       this.device.load({
@@ -414,7 +418,7 @@ export class VoiceClient<
       const call = await channel.joinCall();
       await this.connectTransport(channel.client.config.features.voso.ws, channel.id);
       this.setStatus(VoiceStatus.AUTHENTICATING);
-      await this.authenticate(call);
+      await this.joinCall(call);
       this.setStatus(VoiceStatus.RTC_CONNECTING);
       await this.initializeTransports();
     } catch (err) {
