@@ -299,7 +299,7 @@ export class VoiceClient<
         if (this.deafened) consumer.pause();
         consumers.audio = {
           consumer: <any>consumer,
-          callback: this.consumeTrack(type, <any>consumer.track),
+          callback: this.consumeTrack(type, <any>consumer),
         };
     }
 
