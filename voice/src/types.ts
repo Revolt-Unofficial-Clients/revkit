@@ -114,3 +114,9 @@ export enum VoiceStatus {
   RTC_CONNECTING,
   CONNECTED,
 }
+
+export interface VoiceClientOptions {
+  token: string;
+  type: "user" | "bot";
+  baseURL: string;
+}

@@ -5,6 +5,7 @@ import { Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
+  VoiceClientOptions,
   VoiceStatus,
   WSEvents,
   type ProduceType,
@@ -61,8 +62,8 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
-  private _loginPromise: Promise<void>;
-  public userId: string;
+  public token: string;
+  public type: "user" | "bot";
   public client = new Client();
   public channelID: string | null = null;
   public get channel() {
@@ -77,19 +78,21 @@ export class VoiceClient<
    */
   constructor(
     public readonly platform: Platform,
-    client: Client | { token: string; type: "user" | "bot"; baseURL: string },
+    client: Client | VoiceClientOptions,
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
   ) {
     super();
     this.supported = this.msc.detectDevice() !== undefined;
-    if ("token" in client) {
-      this.client = new Client({ apiURL: client.baseURL });
-      this._loginPromise = this.client.login(client.token, client.type, false);
-    } else {
+    if (client instanceof Client) {
       this.client = client;
-      this._loginPromise = Promise.resolve();
+      this.token = this.client.session.token;
+      this.type = this.client.session.type;
+    } else {
+      this.client = new Client({ apiURL: client.baseURL });
+      this.token = client.token;
+      this.type = client.type;
     }
 
     this.signaling.on(
@@ -117,7 +120,7 @@ export class VoiceClient<
           }
           case WSEvents.UserStartProduce: {
             const participant = this.participants.get(data.id);
-            if (!participant || participant.user.id == this.userId) return;
+            if (!participant || participant.user.id == this.client.user.id) return;
             if (<any>data.type in participant) {
               participant[data.type] = true;
             } else {
@@ -229,7 +232,7 @@ export class VoiceClient<
     ]);
 
     // this should really never happen
-    if (result.userId !== this.userId)
+    if (result.userId !== this.client.user.id)
       this.emit("error", new Error("Authenticated user ID does not match client user ID."));
     await Promise.all(
       Object.entries(room.users).map(async ([id, details]) => {
@@ -278,7 +281,7 @@ export class VoiceClient<
 
     this.emit("ready");
     this.participants.forEach(async (p) => {
-      if (p.audio && p.user.id !== this.userId) {
+      if (p.audio && p.user.id !== this.client.user.id) {
         await this.startConsume(p.user.id, "audio");
         this.emit("userStartProduce", p, "audio");
       }
@@ -343,10 +346,10 @@ export class VoiceClient<
         break;
     }
 
-    const participant = this.participants.get(this.userId);
+    const participant = this.participants.get(this.client.user.id);
     if (participant) {
       participant[type] = true;
-      this.participants.set(this.userId, participant);
+      this.participants.set(this.client.user.id, participant);
       this.participants.fireUpdate([participant]);
     }
 
@@ -367,10 +370,10 @@ export class VoiceClient<
       this.emit("stopProduce", type);
     }
 
-    const participant = this.participants.get(this.userId);
+    const participant = this.participants.get(this.client.user.id);
     if (participant) {
       participant[type] = false;
-      this.participants.set(this.userId, participant);
+      this.participants.set(this.client.user.id, participant);
       this.participants.fireUpdate([participant]);
     }
 
@@ -388,7 +391,10 @@ export class VoiceClient<
   }
 
   public async connect(channelID?: string) {
-    await this._loginPromise;
+    if (!this.client.session) {
+      await this.client.login(this.token, this.type, false);
+      await this.client.users.fetch("@me");
+    }
 
     const channel =
       channelID == undefined ? this.channel : await this.client.channels.fetch(channelID);
