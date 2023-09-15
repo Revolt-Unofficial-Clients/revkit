@@ -115,8 +115,8 @@ export enum VoiceStatus {
   CONNECTED,
 }
 
-export interface VoiceClientOptions {
+export interface RevkitClientOptions {
   token: string;
   type: "user" | "bot";
-  baseURL: string;
+  baseURL?: string;
 }

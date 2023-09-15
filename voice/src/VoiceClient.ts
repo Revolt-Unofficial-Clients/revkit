@@ -5,7 +5,7 @@ import { Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
 import { MSCPlatform, MediaSoup } from "./msc";
 import {
-  VoiceClientOptions,
+  RevkitClientOptions,
   VoiceStatus,
   WSEvents,
   type ProduceType,
@@ -78,7 +78,7 @@ export class VoiceClient<
    */
   constructor(
     public readonly platform: Platform,
-    client: Client | VoiceClientOptions,
+    client: Client | RevkitClientOptions,
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
@@ -90,7 +90,7 @@ export class VoiceClient<
       this.token = this.client.session.token;
       this.type = this.client.session.type;
     } else {
-      this.client = new Client({ apiURL: client.baseURL });
+      this.client = new Client(client.baseURL ? { apiURL: client.baseURL } : undefined);
       this.token = client.token;
       this.type = client.type;
     }

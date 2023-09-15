@@ -4,9 +4,10 @@ import * as MSC from "msc-node";
 import os from "os";
 import path from "path";
 import { FFmpeg, VolumeTransformer } from "prism-media";
+import { Client } from "revkit";
 import { Readable } from "stream";
 import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
-import type { ProduceType, VoiceParticipant } from "./types";
+import type { ProduceType, RevkitClientOptions, VoiceParticipant } from "./types";
 
 const AUDIO_ENCODING = "s16le",
   RTP_PAYLOAD_TYPE = 100,
@@ -39,9 +40,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
   /**
    * @param options Additional options for the player. Some of them also apply to incoming tracks. (you shouldn't need to mess with these)
    */
-  constructor(
-    options: Partial<VoiceClientOptions> = {}
-  ) {
+  constructor(client: Client | RevkitClientOptions, options: Partial<VoiceClientOptions> = {}) {
     const opts: VoiceClientOptions = {
       args: [],
       audioChannels: 2,
@@ -52,6 +51,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     };
     super(
       "node",
+      client,
       MSC,
       () =>
         new MSC.Device({
