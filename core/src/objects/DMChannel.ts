@@ -28,4 +28,9 @@ export class DMChannel extends Channel {
   public async fetchRecipient() {
     return this.recipientID ? await this.client.users.fetch(this.recipientID) : null;
   }
+
+  /** Request a call join token. */
+  public async joinCall() {
+    return (await this.client.api.post(`/channels/${<"">this.id}/join_call`)).token;
+  }
 }

@@ -52,6 +52,11 @@ export class GroupDMChannel extends Channel {
     );
   }
 
+  /** Request a call join token. */
+  public async joinCall() {
+    return (await this.client.api.post(`/channels/${<"">this.id}/join_call`)).token;
+  }
+
   public get permissions() {
     return new PermissionFlags(this.source.permissions || 0);
   }
