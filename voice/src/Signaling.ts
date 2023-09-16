@@ -117,7 +117,7 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
     });
   }
 
-  public joinCall(token: string, roomId: string): Promise<AuthenticationResult<Platform>> {
+  public authenticate(token: string, roomId: string): Promise<AuthenticationResult<Platform>> {
     return this.sendRequest(WSCommands.Authenticate, { token, roomId });
   }
 
