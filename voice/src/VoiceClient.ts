@@ -219,11 +219,11 @@ export class VoiceClient<
     this.emit("close", error);
   }
 
-  async joinCall(token: string) {
+  async authenticate(token: string) {
     this.throwIfUnsupported();
     if (!this.device || !this.channelID)
       throw new ReferenceError("Voice client is in an invalid state");
-    const result = await this.signaling.joinCall(token, this.channelID);
+    const result = await this.signaling.authenticate(token, this.channelID);
     const [room] = await Promise.all([
       this.signaling.roomInfo(),
       this.device.load({
@@ -417,7 +417,7 @@ export class VoiceClient<
       const call = await channel.joinCall();
       await this.connectTransport(channel.client.config.features.voso.ws, channel.id);
       this.setStatus(VoiceStatus.AUTHENTICATING);
-      await this.joinCall(call);
+      await this.authenticate(call);
       this.setStatus(VoiceStatus.RTC_CONNECTING);
       await this.initializeTransports();
     } catch (err) {
