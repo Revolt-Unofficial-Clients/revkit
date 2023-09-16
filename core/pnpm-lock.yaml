@@ -27,8 +27,8 @@ dependencies:
     specifier: ^3.3.0
     version: 3.3.0
   revolt-api:
-    specifier: ^0.5.5-5
-    version: 0.5.5-5
+    specifier: ^0.6.7
+    version: 0.6.7
   ulid:
     specifier: ^2.3.0
     version: 2.3.0
@@ -398,8 +398,8 @@ packages:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
-  /revolt-api@0.5.5-5:
-    resolution: {integrity: sha512-H8O1vty8pJikWZ1JIc/QFe49YPov/309G8AUUfR/EsJccjAxw8Pw1XT2dvOreCF6CrQx8k0uX0RIRcw0wS7XRA==}
+  /revolt-api@0.6.7:
+    resolution: {integrity: sha512-CfMs8xCy9VcZIzyaJ9/t6ixcUR+YJ1hahIiunHd2FcoSKKiPgJNZvCXSV2vSWW1b8y2ftFeFygU/+AfdZocOeQ==}
     dependencies:
       '@insertish/oapi': 0.1.18
       axios: 0.26.1

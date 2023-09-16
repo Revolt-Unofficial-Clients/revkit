@@ -33,9 +33,23 @@ export class User extends BaseObject<APIUser> {
   constructor(client: Client, data: APIUser) {
     super(client, data);
   }
+  /** Username for this user. */
   public get username() {
     return this.source.username;
   }
+  /** Four-digit discrimator for this user. */
+  public get discriminator() {
+    return this.source.discriminator;
+  }
+  /** Full tag for this user. (username#discriminator) */
+  public get tag() {
+    return this.username + "#" + this.discriminator;
+  }
+  /** This user's display name. (if any) */
+  public get displayName() {
+    return this.source.display_name;
+  }
+  /** If this user is a bot, their bot information. */
   public get bot() {
     return this.source.bot ? new Bot(this) : null;
   }
