@@ -46,7 +46,7 @@ function sortlen<Obj extends Record<string, any>>(items: Obj[], prop: keyof Obj)
  * @param channel The channel to use for calculation of channel/user mentions.
  * @param text The text to calculate against.
  * @param cursorPos The position of the cursor in the text.
- * @param unique If `emojis` is set, uses emoji's `uniqueName` instead of ID for autocomplete. If `users` is set, uses user's username for autocomplete. (pairs nicely with Channel.send expandMentions/expandEmojis)
+ * @param unique If `emojis` is set, uses emoji's `uniqueName` instead of ID for autocomplete. If `users` is set, uses user's tag for autocomplete. (pairs nicely with Channel.send expandMentions/expandEmojis)
  * @returns An AutocompleteResult with matched items.
  */
 export function parseAutocomplete(
@@ -86,7 +86,7 @@ export function parseAutocomplete(
         newText =
           textBeforeCursor.replace(
             new RegExp(`\\${i.delimiter}(\\S+)?$`, "i"),
-            (unique?.users ? "@%" : i.result).replace("%", unique?.users ? item.username : item.id)
+            (unique?.users ? "@%" : i.result).replace("%", unique?.users ? item.tag : item.id)
           ) + " ";
       }
       const totalText = newText + text.slice(cursorPos);
@@ -102,11 +102,17 @@ export function parseAutocomplete(
       .match(new RegExp(`\\${i.delimiter}([^\\s\\${i.delimiter}]+)?$`, "i"))?.[0]
       ?.substring(i.delimiter.length)
       .toLowerCase();
+    if (typeof matchedText !== "string") return (failed += 1);
+    const beforeMatch = textBeforeCursor.slice(
+      0,
+      textBeforeCursor.length - (matchedText.length + i.delimiter.length)
+    );
     if (
-      typeof matchedText !== "string" ||
-      textBeforeCursor
-        .slice(0, textBeforeCursor.length - (matchedText.length + i.delimiter.length))
-        .match(new RegExp(`:(([^\\s\\${i.delimiter}]{1,26}))$`))
+      beforeMatch.match(new RegExp(`:(([^\\s\\${i.delimiter}]{1,26}))$`)) ||
+      //                  Matches whitespace or beginning of line
+      //                  V    Matches 1-2 digits.                                       VVV
+      //                  V    V  "Meant to prevent autocomplete for times (ex. typing 10:45)"
+      beforeMatch.match(/(\s|^)\d{1,2}$/)
     )
       return (failed += 1);
     switch (i.type) {
@@ -162,7 +168,7 @@ export function parseAutocomplete(
               ? channel.server.members.filter(
                   (m) =>
                     m.nickname?.toLowerCase().includes(matchedText) ||
-                    m.user?.username.toLowerCase().includes(matchedText)
+                    m.user?.tag.toLowerCase().includes(matchedText)
                 )
               : [
                   ...new Set(
@@ -174,20 +180,20 @@ export function parseAutocomplete(
                     (u1, u2) =>
                       channel.lastMessageBy(u2)?.createdAt - channel.lastMessageBy(u1)?.createdAt
                   )
-                  .map((user) => ({ name: user.username, user }))
-            ).map((i) => ({ name: i.nickname || i.user?.username || "", user: i.user }))
+                  .map((user) => ({ name: user.tag, user }))
+            ).map((i) => ({ name: i.nickname || i.user?.tag || "", user: i.user }))
           : channel.isGroupDM()
           ? [channel.client.user, ...channel.recipients]
-              .filter((u) => u.username.toLowerCase().includes(matchedText))
+              .filter((u) => u.tag.toLowerCase().includes(matchedText))
               .map((user) => ({
-                name: user.username,
+                name: user.tag,
                 user,
               }))
           : channel.isDM()
           ? [channel.client.user, channel.recipient]
-              .filter((u) => u.username.toLowerCase().includes(matchedText))
+              .filter((u) => u.tag.toLowerCase().includes(matchedText))
               .map((user) => ({
-                name: user.username,
+                name: user.tag,
                 user,
               }))
           : [];

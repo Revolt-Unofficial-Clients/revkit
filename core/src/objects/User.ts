@@ -43,7 +43,7 @@ export class User extends BaseObject<APIUser> {
   }
   /** Full tag for this user. (username#discriminator) */
   public get tag() {
-    return this.username + "#" + this.discriminator;
+    return `${this.username}#${this.discriminator}`;
   }
   /** This user's display name. (if any) */
   public get displayName() {

@@ -1,3 +1,9 @@
+v1.1.10
+
+- Added tag support for autocomplete.
+- Added tag support for `expandMentions` in message payload.
+- Fixed autocomplete showing for times. (ex. 10:45 autocompletes with ":45")
+
 v1.1.9
 
 - Added `User.discriminator`, `User.tag`, and `User.displayName`.

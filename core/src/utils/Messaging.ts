@@ -43,7 +43,7 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
           .forEach(
             (m) =>
               (opts.content = opts.content.replace(
-                new RegExp(escapeRegex(`@${m.user.username}`), "g"),
+                new RegExp(escapeRegex(`@${m.user.tag}`), "g"),
                 `<@${m.id}>`
               ))
           );
