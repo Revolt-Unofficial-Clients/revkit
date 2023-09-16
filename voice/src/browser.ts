@@ -1,7 +1,7 @@
 import * as MSC from "mediasoup-client";
-import type { Client } from "revkit";
 import { VoiceClient as BaseVoiceClient, type VoiceClientConsumer } from "./VoiceClient";
-import type { ProduceType } from "./types";
+import type { ProduceType, RevkitClientOptions } from "./types";
+import { Client } from "revkit";
 
 export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) => {
   if (type == "audio") {
@@ -20,10 +20,9 @@ export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) =>
  */
 export default class VoiceClient extends BaseVoiceClient<"browser"> {
   /**
-   * @param client The RevKit client to use.
    * @param trackConsumer A function that is called when there is a new `MediaStreamTrack` to play. The function returned will be called when the track ends.
    */
-  constructor(client: Client, trackConsumer?: VoiceClientConsumer<"browser">) {
+  constructor(client: Client | RevkitClientOptions, trackConsumer?: VoiceClientConsumer<"browser">) {
     super("browser", client, MSC, () => new MSC.Device(), trackConsumer);
   }
 

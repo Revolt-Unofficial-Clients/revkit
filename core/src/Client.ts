@@ -194,7 +194,6 @@ export class Client extends EventEmitter<ClientEvents> {
     connect = true,
     details?: Partial<Omit<Omit<ClientSession, "token">, "type">>
   ) {
-    await this.fetchConfiguration();
     this.session = { token, type, id: details?.id || ulid(), name: details?.name || "" };
     this.api = new API({
       baseURL: this.options.apiURL,
@@ -202,6 +201,7 @@ export class Client extends EventEmitter<ClientEvents> {
         revolt: type == "user" ? { token } : token,
       },
     });
+    await this.fetchConfiguration();
     if (connect) await this.ws.connect();
   }
   /**

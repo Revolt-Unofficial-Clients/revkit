@@ -1,10 +1,11 @@
 import EventEmitter from "eventemitter3";
 import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
-import { Client, MiniMapEmitter, VoiceChannel } from "revkit";
+import { Client, MiniMapEmitter } from "revkit";
 import Signaling from "./Signaling";
 import type { MSCPlatform, MediaSoup } from "./msc";
 import {
+  RevkitClientOptions,
   VoiceStatus,
   WSEvents,
   type ProduceType,
@@ -61,6 +62,9 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
+  public token: string;
+  public type: "user" | "bot";
+  public client = new Client();
   public channelID: string | null = null;
   public get channel() {
     return this.client.channels.get(this.channelID);
@@ -68,20 +72,28 @@ export class VoiceClient<
 
   /**
    * The base voice client. It's recommended to use the platform-specific clients instead.
-   * @param client The RevKit client to use.
    * @param msc The MediaSoup client to use. (for tree-shaking)
    * @param createDevice A function called to create a new MediaSoup Device for the client.
    * @param consumeTrack A callback that is run to play a new MediaStreamTrack. The function returned will be called when the stream is closed. (leave out to disable consuming media)
    */
   constructor(
     public readonly platform: Platform,
-    public client: Client,
+    client: Client | RevkitClientOptions,
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
   ) {
     super();
     this.supported = this.msc.detectDevice() !== undefined;
+    if (client instanceof Client) {
+      this.client = client;
+      this.token = this.client.session.token;
+      this.type = this.client.session.type;
+    } else {
+      this.client = new Client(client.baseURL ? { apiURL: client.baseURL } : undefined);
+      this.token = client.token;
+      this.type = client.type;
+    }
 
     this.signaling.on(
       "data",
@@ -378,7 +390,15 @@ export class VoiceClient<
     this.emit("status", status);
   }
 
-  public async connect(channel: VoiceChannel) {
+  public async connect(channelID?: string) {
+    if (!this.client.session) {
+      await this.client.login(this.token, this.type, false);
+      await this.client.users.fetch("@me");
+    }
+
+    const channel =
+      channelID == undefined ? this.channel : await this.client.channels.fetch(channelID);
+
     if (this.status > VoiceStatus.READY) return;
     if (!this.supported) throw new Error("RTC is unavailable.");
     if (!channel.isVoice()) throw new Error("Not a voice channel.");
