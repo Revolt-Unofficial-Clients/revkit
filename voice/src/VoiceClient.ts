@@ -1,11 +1,11 @@
 import EventEmitter from "eventemitter3";
 import type * as MSCBrowser from "mediasoup-client";
 import type * as MSCNode from "msc-node";
-import { Client, MiniMapEmitter } from "revkit";
+import { Client, DMChannel, GroupDMChannel, MiniMapEmitter, VoiceChannel } from "revkit";
 import Signaling from "./Signaling";
 import type { MSCPlatform, MediaSoup } from "./msc";
 import {
-  RevkitClientOptions,
+  VoiceClientOptions,
   VoiceStatus,
   WSEvents,
   type ProduceType,
@@ -62,8 +62,7 @@ export class VoiceClient<
     return this.status == VoiceStatus.CONNECTED && !!this.channelID;
   }
 
-  public token: string;
-  public type: "user" | "bot";
+  private sessionDetails: { token: string; type: "user" | "bot" } | null = null;
   public client = new Client();
   public channelID: string | null = null;
   public get channel() {
@@ -78,7 +77,7 @@ export class VoiceClient<
    */
   constructor(
     public readonly platform: Platform,
-    client: Client | RevkitClientOptions,
+    client: Client | VoiceClientOptions,
     private msc: Platform extends "node" ? typeof MSCNode : typeof MSCBrowser,
     private createDevice: () => MSC["Device"],
     private consumeTrack?: VoiceClientConsumer<Platform>
@@ -87,12 +86,10 @@ export class VoiceClient<
     this.supported = this.msc.detectDevice() !== undefined;
     if (client instanceof Client) {
       this.client = client;
-      this.token = this.client.session.token;
-      this.type = this.client.session.type;
+      this.sessionDetails = { token: this.client.session.token, type: this.client.session.type };
     } else {
-      this.client = new Client(client.baseURL ? { apiURL: client.baseURL } : undefined);
-      this.token = client.token;
-      this.type = client.type;
+      this.client = new Client(client.apiURL ? { apiURL: client.apiURL } : undefined);
+      this.sessionDetails = { token: client.token, type: client.type };
     }
 
     this.signaling.on(
@@ -202,7 +199,7 @@ export class VoiceClient<
   }
 
   public disconnectTransport(error?: VoiceError, forceDisconnect = false) {
-    if (!this.signaling.connected() && !forceDisconnect) return;
+    if (!this.signaling.connected && !forceDisconnect) return;
     this.signaling.disconnect();
     this.participants.clear();
     this.participants.fireUpdate([]);
@@ -390,18 +387,28 @@ export class VoiceClient<
     this.emit("status", status);
   }
 
-  public async connect(channelID?: string) {
+  /**
+   * Connect to a channel.
+   * @param channel Voice channel, DM/GDM, or channel ID.
+   * @returns Itself.
+   */
+  public async connect(channelResolvable: VoiceChannel | DMChannel | GroupDMChannel | string) {
     if (!this.client.session) {
-      await this.client.login(this.token, this.type, false);
-      await this.client.users.fetch("@me");
+      if (this.sessionDetails) {
+        await this.client.login(this.sessionDetails.token, this.sessionDetails.type, false);
+        await this.client.users.fetch("@me");
+      }
     }
 
     const channel =
-      channelID == undefined ? this.channel : await this.client.channels.fetch(channelID);
+      typeof channelResolvable == "string"
+        ? await this.client.channels.fetch(channelResolvable)
+        : channelResolvable;
 
     if (this.status > VoiceStatus.READY) return;
     if (!this.supported) throw new Error("RTC is unavailable.");
-    if (!channel.isVoice()) throw new Error("Not a voice channel.");
+    if (!channel.isVoice() && !channel.isDMBased())
+      throw new Error("Not a voice or (Group) DM channel.");
     await this.client.fetchConfiguration();
     const vortexURL = this.client.config?.features.voso?.enabled
       ? this.client.config.features.voso.ws

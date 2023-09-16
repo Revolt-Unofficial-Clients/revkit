@@ -7,14 +7,15 @@ import { FFmpeg, VolumeTransformer } from "prism-media";
 import { Client } from "revkit";
 import { Readable } from "stream";
 import { VoiceClient as BaseVoiceClient } from "./VoiceClient";
-import type { ProduceType, RevkitClientOptions, VoiceParticipant } from "./types";
+import type { ProduceType, VoiceClientOptions, VoiceParticipant } from "./types";
 
 const AUDIO_ENCODING = "s16le",
   RTP_PAYLOAD_TYPE = 100,
   PORT_MIN = 5030,
   PORT_MAX = 65535;
 
-export interface VoiceClientOptions {
+/** Options for the node voice client. (most of these don't need changed) */
+export interface NodeVoiceClientOptions {
   /** Additional FFmpeg args to use. */
   args: string[];
   /** Number of channels for the audio played. (default 2) */
@@ -34,14 +35,16 @@ export interface VoiceClientOptions {
  * A VoiceClient implementation for use with node.js.
  */
 export default class VoiceClient extends BaseVoiceClient<"node"> {
-  public options: VoiceClientOptions;
+  /** Node-specific client options. */
+  public options: NodeVoiceClientOptions;
+  /** The port used for ffmpeg. */
   public port: number = 5002;
 
   /**
    * @param options Additional options for the player. Some of them also apply to incoming tracks. (you shouldn't need to mess with these)
    */
-  constructor(client: Client | RevkitClientOptions, options: Partial<VoiceClientOptions> = {}) {
-    const opts: VoiceClientOptions = {
+  constructor(client: Client | VoiceClientOptions, options: Partial<NodeVoiceClientOptions> = {}) {
+    const opts: NodeVoiceClientOptions = {
       args: [],
       audioChannels: 2,
       frameSize: 960,

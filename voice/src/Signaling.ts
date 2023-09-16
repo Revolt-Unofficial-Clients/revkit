@@ -17,6 +17,7 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
   error: (event: WebSocket.Event) => void;
   data: (data: any) => void;
 }> {
+  /** Vortex WebSocket */
   public ws: WebSocket | null = null;
   /** Index for pending packets. */
   private index: number = 0;
@@ -27,7 +28,8 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
     super();
   }
 
-  connected(): boolean {
+  /** If the vortex socket is connected. */
+  get connected(): boolean {
     return (
       !!this.ws &&
       this.ws.readyState !== WebSocket.CLOSING &&
@@ -35,6 +37,10 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
     );
   }
 
+  /**
+   * Connects to vortex.
+   * @param address The socket address to use.
+   */
   connect(address: string): Promise<void> {
     this.disconnect();
     this.ws = new WebSocket(address);
@@ -59,13 +65,9 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
     });
   }
 
+  /** Disconnects the websocket. */
   disconnect() {
-    if (
-      this.ws &&
-      this.ws.readyState !== WebSocket.CLOSED &&
-      this.ws.readyState !== WebSocket.CLOSING
-    )
-      this.ws.close(1000);
+    if (this.connected) this.ws.close(1000);
   }
 
   private parseData(event: WebSocket.MessageEvent) {
@@ -117,10 +119,15 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
     });
   }
 
+  /** Authenticates with vortex. */
   public authenticate(token: string, roomId: string): Promise<AuthenticationResult<Platform>> {
     return this.sendRequest(WSCommands.Authenticate, { token, roomId });
   }
 
+  /**
+   * Gets information about the currently joined channel.
+   * @returns Room info.
+   */
   public async roomInfo(): Promise<Room> {
     const room = await this.sendRequest(WSCommands.RoomInfo);
     return {

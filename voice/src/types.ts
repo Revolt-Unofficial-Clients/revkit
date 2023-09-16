@@ -115,8 +115,12 @@ export enum VoiceStatus {
   CONNECTED,
 }
 
-export interface RevkitClientOptions {
+/** Options for creating a RevKit client for the voice client. */
+export interface VoiceClientOptions {
+  /** Bot or user session token. */
   token: string;
+  /** Type for the token. */
   type: "user" | "bot";
-  baseURL?: string;
+  /** Optional API url for custom instances. (passed to `ClientOptions.apiURL`) */
+  apiURL?: string;
 }
