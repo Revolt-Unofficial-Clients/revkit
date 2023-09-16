@@ -81,9 +81,9 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
     this.port = await MSC.findPort(PORT_MIN, Math.floor(PORT_MAX / 2), "udp4");
   }
 
-  private transcoder: FFmpeg;
-  private volumeTransformer: VolumeTransformer;
-  private encoder: FFmpeg;
+  private transcoder?: FFmpeg;
+  private volumeTransformer?: VolumeTransformer;
+  private encoder?: FFmpeg;
 
   /** Current volume of the player. */
   public get volume() {
@@ -135,7 +135,7 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         if ((<any>err).code == "EPIPE") return;
         this.emit("error", err);
       });
-      this.transcoder.process.stderr.on("data", () => {});
+      this.transcoder.process.stderr?.on("data", () => {});
     } else delete this.transcoder;
     if (this.volumeTransformer) this.volumeTransformer.destroy();
     if (respawn) {
@@ -173,13 +173,17 @@ export default class VoiceClient extends BaseVoiceClient<"node"> {
         this.emit("error", err);
       });
       // fixes stream stopping after 4min
-      this.encoder.process.stderr.on("data", () => {});
+      this.encoder.process.stderr?.on("data", () => {});
     } else delete this.encoder;
   }
 
   public async play(type: ProduceType, stream: Readable) {
     await this.resetPort();
     this.reset();
+
+    if (!this.transcoder || !this.volumeTransformer || !this.encoder)
+      throw new Error("Transcoders failed to start.");
+
     switch (type) {
       case "audio": {
         // create track sent to vortex
@@ -255,9 +259,9 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
       this.emit("error", err);
     });
 
-    const track = producer[type].consumer.track;
+    const track = producer[type]?.consumer.track;
     if (!track) return null;
-    if (track.onReceiveRtp.ended) return; // if the user unmuted and muted too quickly
+    if (track.onReceiveRtp.ended) return null; // if the user unmuted and muted too quickly
 
     track.onReceiveRtp.subscribe((packet) => {
       // if the decoder is destroyed, stop sending packets to it
@@ -265,7 +269,7 @@ a=rtpmap:${RTP_PAYLOAD_TYPE} opus/${this.options.sampleRate}/${this.options.audi
       try {
         socket.send(packet.serialize(), port, "127.0.0.1");
       } catch (err) {
-        this.emit("error", err);
+        this.emit("error", err instanceof Error ? err : new Error(String(err)));
       }
     });
 

@@ -13,6 +13,7 @@ export const DEFAULT_CONSUMER: VoiceClientConsumer<"browser"> = (type, track) =>
     audio.play();
     return () => audio.pause();
   }
+  return () => {};
 };
 
 /**

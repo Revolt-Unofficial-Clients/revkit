@@ -67,7 +67,7 @@ export default class Signaling<Platform extends MSCPlatform> extends EventEmitte
 
   /** Disconnects the websocket. */
   disconnect() {
-    if (this.connected) this.ws.close(1000);
+    if (this.connected) this.ws?.close(1000);
   }
 
   private parseData(event: WebSocket.MessageEvent) {

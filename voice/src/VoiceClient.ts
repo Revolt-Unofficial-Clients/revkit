@@ -66,7 +66,7 @@ export class VoiceClient<
   public client = new Client();
   public channelID: string | null = null;
   public get channel() {
-    return this.client.channels.get(this.channelID);
+    return this.channelID ? this.client.channels.get(this.channelID) : undefined;
   }
 
   /**
@@ -117,17 +117,8 @@ export class VoiceClient<
           }
           case WSEvents.UserStartProduce: {
             const participant = this.participants.get(data.id);
-            if (!participant || participant.user.id == this.client.user.id) return;
-            if (<any>data.type in participant) {
-              participant[data.type] = true;
-            } else {
-              return this.emit(
-                "error",
-                new Error(
-                  `Invalid produce type ${data.type} for ${participant.user.username} (${participant.user.id})`
-                )
-              );
-            }
+            if (!participant || participant.user.id == this.client.user.id || !data.type) return;
+            if (data.type in participant) participant[data.type] = true;
             this.participants.fireUpdate([participant]);
 
             if (this.recvTransport) await this.startConsume(data.id, data.type);
@@ -136,17 +127,8 @@ export class VoiceClient<
           }
           case WSEvents.UserStopProduce: {
             const participant = this.participants.get(data.id);
-            if (!participant) return;
-            if (<any>data.type in participant) {
-              participant[data.type] = false;
-            } else {
-              return this.emit(
-                "error",
-                new Error(
-                  `Invalid produce type ${data.type} for ${participant.user.username} (${participant.user.id})`
-                )
-              );
-            }
+            if (!participant || !data.type) return;
+            if (data.type in participant) participant[data.type] = false;
             this.participants.fireUpdate([participant]);
 
             if (this.recvTransport) this.stopConsume(data.id, data.type);
@@ -210,8 +192,8 @@ export class VoiceClient<
 
     if (this.sendTransport) this.sendTransport.close();
     if (this.recvTransport) this.recvTransport.close();
-    this.sendTransport = undefined;
-    this.recvTransport = undefined;
+    this.sendTransport = null;
+    this.recvTransport = null;
 
     this.emit("close", error);
   }
@@ -354,7 +336,7 @@ export class VoiceClient<
   }
 
   public async stopProduce(type: ProduceType) {
-    let producer: MSC["Producer"];
+    let producer: MSC["Producer"] | undefined;
     switch (type) {
       case "audio":
         producer = this.audioProducer;
@@ -376,7 +358,7 @@ export class VoiceClient<
 
     try {
       await this.signaling.stopProduce(type);
-    } catch (error) {
+    } catch (error: any) {
       if (error.error === "ProducerNotFound") return;
       this.emit("error", error);
     }
@@ -428,7 +410,7 @@ export class VoiceClient<
       this.setStatus(VoiceStatus.RTC_CONNECTING);
       await this.initializeTransports();
     } catch (err) {
-      this.emit("error", err);
+      this.emit("error", err instanceof Error ? err : new Error(String(err)));
       this.setStatus(VoiceStatus.READY);
       return this;
     }
@@ -452,6 +434,7 @@ export class VoiceClient<
     }
   }
 
+  /** Deafens yourself and stops consuming audio from participants. */
   public async startDeafen() {
     if (this.deafened) return;
     this._deafened = true;
@@ -460,6 +443,7 @@ export class VoiceClient<
     });
     this.emit("selfDeafenUpdate", true);
   }
+  /** Undeafens yourself and restarts consuming audio from participants. */
   public async stopDeafen() {
     if (!this.deafened) return;
     this._deafened = false;

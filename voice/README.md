@@ -4,4 +4,4 @@ Voice clients for browser and node.
 
 [![npm](https://img.shields.io/npm/dt/@revkit/voice?label=Downloads&style=flat-square&color=ff4654)](https://www.npmjs.com/package/@revkit/voice)
 
-Unfinished voice module.
+Almost finished voice module.
