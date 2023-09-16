@@ -86,7 +86,6 @@ export class VoiceClient<
     this.supported = this.msc.detectDevice() !== undefined;
     if (client instanceof Client) {
       this.client = client;
-      this.sessionDetails = { token: this.client.session.token, type: this.client.session.type };
     } else {
       this.client = new Client(client.apiURL ? { apiURL: client.apiURL } : undefined);
       this.sessionDetails = { token: client.token, type: client.type };
