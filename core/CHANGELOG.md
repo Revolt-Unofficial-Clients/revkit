@@ -1,3 +1,7 @@
+v1.1.11
+
+- Fix message payload construction of `embed`.
+
 v1.1.10
 
 - Added tag support for autocomplete.

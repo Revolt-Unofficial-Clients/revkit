@@ -22,14 +22,23 @@ export function constructMessagePayload(data: MessagePayload, channel?: Channel)
     nonce: ulid(),
   };
 
+  // if an Embed is passed, set the `embeds` option to that embed
   if (data instanceof Embed) {
     opts.embeds = [data.toJSON()];
   } else {
+    // if an object is passed
     if (typeof data !== "string") {
-      if (data.embed) data.embeds = [data.embed, ...(data.embeds || [])];
+      // move `embed` into the `embeds` array
+      if (data.embed) {
+        data.embeds = [data.embed, ...(data.embeds || [])];
+        delete data.embed;
+      }
+      // deconstruct any Embeds into JSON
       if (data.embeds) data.embeds = data.embeds.map((e) => (e instanceof Embed ? e.toJSON() : e));
+      // omit the type so ts doesnt yell at us about Embed classes
       opts = { ...opts, ...(<Omit<typeof data, "embeds">>data) };
     }
+    // set content to passed string or object prop
     opts.content = typeof data == "string" ? data : data.content;
     if (channel) {
       if (

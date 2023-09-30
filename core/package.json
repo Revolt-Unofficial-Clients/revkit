@@ -1,6 +1,6 @@
 {
   "name": "revkit",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "An alternative to revolt.js that aims to be familiar to use.",
   "main": "dist/cjs/index.js",
   "module": "dist/es6/index.js",
