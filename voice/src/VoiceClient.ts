@@ -209,8 +209,8 @@ export class VoiceClient<
       }),
     ]);
 
-    // this should really never happen
-    if (result.userId !== this.client.user.id)
+    // this should really never happen (unless client.user is undefined)
+    if (result.userId !== this.client.user?.id)
       this.emit("error", new Error("Authenticated user ID does not match client user ID."));
     await Promise.all(
       Object.entries(room.users).map(async ([id, details]) => {

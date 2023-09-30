@@ -27,8 +27,8 @@ dependencies:
     specifier: github:itzTheMeow/prism-media
     version: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409(ffmpeg-static@5.1.0)
   revkit:
-    specifier: ^1.1.8
-    version: 1.1.8(ws@8.13.0)
+    specifier: ^1.1.12
+    version: 1.1.12(ws@8.13.0)
 
 devDependencies:
   '@types/node':
@@ -943,8 +943,8 @@ packages:
     resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
     dev: false
 
-  /revkit@1.1.8(ws@8.13.0):
-    resolution: {integrity: sha512-BobFrWckabQHMgknJqki/0esjOd33vsKVfD7ag56lLGVN4ywff7+OZ3vGLQ81CgU9RckhvylJWpJIvxuHAme/Q==}
+  /revkit@1.1.12(ws@8.13.0):
+    resolution: {integrity: sha512-/lxEjFMBV5CloHGrLJyK5UJ4UnkhybHpKBxi5b+1SK11u6JfP/n+jDYkEOQOnmWpkF2M5CBzzuBQ6dpXSQmp6Q==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
       '@insertish/isomorphic-ws': 4.0.1(ws@8.13.0)
@@ -953,15 +953,15 @@ packages:
       form-data: 4.0.0
       long: 5.2.1
       luxon: 3.3.0
-      revolt-api: 0.5.17
+      revolt-api: 0.6.7
       ulid: 2.3.0
     transitivePeerDependencies:
       - debug
       - ws
     dev: false
 
-  /revolt-api@0.5.17:
-    resolution: {integrity: sha512-AkceDCK+6c8Ie+psmG8KA1VTx+DJJRk99jsve9SIBCeCxZ7CizdgBdG3fJ4KM/UA4H+IvPa3PdFzgrBeBuTOWQ==}
+  /revolt-api@0.6.7:
+    resolution: {integrity: sha512-CfMs8xCy9VcZIzyaJ9/t6ixcUR+YJ1hahIiunHd2FcoSKKiPgJNZvCXSV2vSWW1b8y2ftFeFygU/+AfdZocOeQ==}
     dependencies:
       '@insertish/oapi': 0.1.18
       axios: 0.26.1
