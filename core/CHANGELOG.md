@@ -1,3 +1,7 @@
+v1.1.12
+
+- Fixed issue with fetching `@me` as a user.
+
 v1.1.11
 
 - Fix message payload construction of `embed`.

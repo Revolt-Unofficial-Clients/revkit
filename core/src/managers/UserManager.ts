@@ -27,6 +27,8 @@ export class UserManager extends BaseManager<User> {
   }
   public async fetch(id: string, fetchNew = false) {
     if (this.has(id) && !fetchNew) return this.get(id);
-    return this.construct(await this.client.api.get(`/users/${<"">id}`));
+    const res = await this.client.api.get(`/users/${<"">id}`);
+    // if we are fetching @me, add the Self relationship status
+    return this.construct(id == "@me" ? { ...res, relationship: RelationshipStatus.Self } : res);
   }
 }
