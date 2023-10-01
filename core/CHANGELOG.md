@@ -1,3 +1,8 @@
+v1.1.13
+
+- Fixed `channelStartTyping` and `channelStopTyping` events returning incorrect arguments.
+- **SEMI-BREAKING:** Changed `ClientEvents` to an interface and implemented it in the EventEmitter.
+
 v1.1.12
 
 - Fixed issue with fetching `@me` as a user.

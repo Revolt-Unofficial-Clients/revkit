@@ -2,8 +2,8 @@
 import { backOff } from "@insertish/exponential-backoff";
 import WebSocket from "@insertish/isomorphic-ws";
 import type { MessageEvent } from "ws";
-import { DEAD_ID } from "./api";
 import { Client } from "./Client";
+import { DEAD_ID } from "./api";
 import { ClientboundNotification, ServerboundNotification } from "./websocketNotifications";
 
 // Shamelessly copied from revolt.js
@@ -133,7 +133,7 @@ export class WebSocketClient {
                       }
                     }, this.client.options.pingTimeout * 1000);
                   }
-                }, this.client.options.heartbeat * 1e3);
+                }, this.client.options.heartbeat * 1000);
               }
               break;
             }
@@ -466,7 +466,7 @@ export class WebSocketClient {
                 timeouts[channel.id + user.id] = setTimeout(() => {
                   channel.typingIDs.delete(user.id);
                 }, 3000);
-                this.client.emit("channelStartTyping", channel, user);
+                this.client.emit("channelStartTyping", user, channel);
               }
               break;
             }
@@ -476,7 +476,7 @@ export class WebSocketClient {
               if (channel && user) {
                 channel.typingIDs.delete(user.id);
                 clearTimeout(timeouts[channel.id + user.id]);
-                this.client.emit("channelStopTyping", channel, user);
+                this.client.emit("channelStopTyping", user, channel);
               }
               break;
             }

@@ -8,7 +8,6 @@ import {
   DataCreateServer,
   DataEditUser,
   DataLogin,
-  Emoji,
   MFAMethod,
   MFAResponse,
   RevoltConfig,
@@ -19,6 +18,7 @@ import { EmojiManager } from "./managers/EmojiManager";
 import { ServerManager } from "./managers/ServerManager";
 import { UnreadManager } from "./managers/UnreadManager";
 import { UserManager } from "./managers/UserManager";
+import { Emoji } from "./objects";
 import { AttachmentBucket } from "./objects/Attachment";
 import { BaseMessage } from "./objects/BaseMessage";
 import { Channel } from "./objects/Channel";
@@ -33,14 +33,22 @@ import { AutumnConfig, JanuaryConfig, VortexConfig } from "./utils/ServiceConfig
 import { WebSocketClient } from "./websocket";
 import { ClientboundNotification } from "./websocketNotifications";
 
+/** Options for initializing a new client. */
 export interface ClientOptions {
+  /** The API URL to connect to. (default: https://api.revolt.chat) */
   apiURL: string;
+  /** Enable debug mode. (currently does nothing) (default: false) */
   debug: boolean;
+  /** If set to >0, send `Ping` packet every `heartbeat` **seconds**. (default: 30) */
   heartbeat: number;
+  /** Automatically reconnect the bot on disconnect. (default: true) */
   reconnect: boolean;
+  /** Maximum amount of time to wait (in **seconds**) for a `Pong` packet from the websocket after a `Ping` has been sent.  */
   pingTimeout?: number;
+  /** If enabled, will throw an error if a `Pong` packet is not received by `pingTimeout` */
   exitOnTimeout?: boolean;
 }
+/** Default client options. */
 const DefaultOptions: ClientOptions = {
   apiURL: "https://api.revolt.chat",
   debug: false,
@@ -48,43 +56,51 @@ const DefaultOptions: ClientOptions = {
   reconnect: true,
 };
 
+/** Represents a currently logged in session. */
 export interface ClientSession {
+  /** Session ID. */
   id: string;
+  /** Name of this session. */
   name: string;
+  /** Session token. **DO NOT SHARE THIS WITH ANYONE** */
   token: string;
+  /** Whether this session is a user or bot. */
   type: "user" | "bot";
 }
-export type ClientEvents =
-  | "ready"
-  | "connecting"
-  | "connected"
-  | "disconnected"
-  | "destroyed"
-  | "packet"
-  | "channelCreate"
-  | "channelUpdate"
-  | "channelDelete"
-  | "channelStartTyping"
-  | "channelStopTyping"
-  | "emojiCreate"
-  | "emojiDelete"
-  | "groupMemberJoin"
-  | "groupMemberLeave"
-  | "groupExited"
-  | "message"
-  | "messageUpdate"
-  | "messageDelete"
-  | "serverCreate"
-  | "serverUpdate"
-  | "serverExited"
-  | "serverMemberJoin"
-  | "serverMemberLeave"
-  | "serverMemberUpdate"
-  | "serverRoleCreate"
-  | "serverRoleUpdate"
-  | "serverRoleDelete"
-  | "userRelationshipUpdate"
-  | "userUpdate";
+/** The various events a client can emit. */
+export interface ClientEvents {
+  ready: () => any;
+  connecting: () => any;
+  connected: () => any;
+  disconnected: () => any;
+  destroyed: () => any;
+  packet: (packet: ClientboundNotification) => any;
+
+  channelCreate: (channel: Channel) => any;
+  channelDelete: (id: string, channel?: Channel) => any;
+  channelStartTyping: (user: User, channel: Channel) => any;
+  channelStopTyping: (user: User, channel: Channel) => any;
+  channelUpdate: (channel: Channel) => any;
+  emojiCreate: (emoji: Emoji) => void;
+  emojiDelete: (id: string, emoji?: Emoji) => void;
+  groupExited: (group: GroupDMChannel) => any;
+  groupMemberJoin: (group: GroupDMChannel, user: User) => any;
+  groupMemberLeave: (group: GroupDMChannel, user: User) => any;
+  message: (message: BaseMessage) => any;
+  messageDelete: (id: string, message?: BaseMessage) => any;
+  messageUpdate: (message: BaseMessage) => any;
+  serverCreate: (server: Server) => any;
+  serverExited: (id: string, server?: Server) => any;
+  serverMemberJoin: (member: Member) => any;
+  serverMemberLeave: (server: Server, user: User) => any;
+  serverMemberUpdate: (member: Member) => any;
+  serverRoleCreate: (role: Role) => any;
+  serverRoleDelete: (role: Role) => any;
+  serverRoleUpdate: (role: Role) => any;
+  serverUpdate: (server: Server) => any;
+  userRelationshipUpdate: (user: User) => any;
+  userUpdate: (user: User) => any;
+}
 
 export class Client extends EventEmitter<ClientEvents> {
   public api: API;
@@ -364,77 +380,5 @@ export class Client extends EventEmitter<ClientEvents> {
     this.ws.disconnect();
     delete this.session;
     this.setup();
-  }
-
-  public on(event: "ready", listener: () => any): this;
-  public on(event: "connecting", listener: () => any): this;
-  public on(event: "connected", listener: () => any): this;
-  public on(event: "disconnected", listener: () => any): this;
-  public on(event: "destroyed", listener: () => any): this;
-  public on(event: "packet", listener: (packet: ClientboundNotification) => any): this;
-  public on(event: "channelCreate", listener: (channel: Channel) => any): this;
-  public on(event: "channelUpdate", listener: (channel: Channel) => any): this;
-  public on(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
-  public on(event: "channelStartTyping", listener: (user: User, channel: Channel) => any): this;
-  public on(event: "channelStopTyping", listener: (user: User, channel: Channel) => any): this;
-  public on(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
-  public on(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
-  public on(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
-  public on(event: "groupMemberLeave", listener: (group: GroupDMChannel, user: User) => any): this;
-  public on(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
-  public on(event: "message", listener: (message: BaseMessage) => any): this;
-  public on(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
-  public on(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
-  public on(event: "serverCreate", listener: (server: Server) => any): this;
-  public on(event: "serverUpdate", listener: (server: Server) => any): this;
-  public on(event: "serverExited", listener: (id: string, server?: Server) => any): this;
-  public on(event: "serverMemberJoin", listener: (member: Member) => any): this;
-  public on(event: "serverMemberLeave", listener: (server: Server, user: User) => any): this;
-  public on(event: "serverMemberUpdate", listener: (member: Member) => any): this;
-  public on(event: "serverRoleCreate", listener: (role: Role) => any): this;
-  public on(event: "serverRoleUpdate", listener: (role: Role) => any): this;
-  public on(event: "serverRoleDelete", listener: (role: Role) => any): this;
-  public on(event: "userRelationshipUpdate", listener: (user: User) => any): this;
-  public on(event: "userUpdate", listener: (user: User) => any): this;
-  public on(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
-    return super.on(event, listener, context);
-  }
-
-  //TODO: find a better way
-  public once(event: "ready", listener: () => any): this;
-  public once(event: "connecting", listener: () => any): this;
-  public once(event: "connected", listener: () => any): this;
-  public once(event: "disconnected", listener: () => any): this;
-  public once(event: "destroyed", listener: () => any): this;
-  public once(event: "packet", listener: (packet: ClientboundNotification) => any): this;
-  public once(event: "channelCreate", listener: (channel: Channel) => any): this;
-  public once(event: "channelUpdate", listener: (channel: Channel) => any): this;
-  public once(event: "channelDelete", listener: (id: string, channel?: Channel) => any): this;
-  public once(event: "channelStartTyping", listener: (user: User, channel: Channel) => any): this;
-  public once(event: "channelStopTyping", listener: (user: User, channel: Channel) => any): this;
-  public once(event: "emojiCreate", listener: (emoji: Emoji) => void): this;
-  public once(event: "emojiDelete", listener: (id: string, emoji?: Emoji) => void): this;
-  public once(event: "groupMemberJoin", listener: (group: GroupDMChannel, user: User) => any): this;
-  public once(
-    event: "groupMemberLeave",
-    listener: (group: GroupDMChannel, user: User) => any
-  ): this;
-  public once(event: "groupExited", listener: (group: GroupDMChannel) => any): this;
-  public once(event: "message", listener: (message: BaseMessage) => any): this;
-  public once(event: "messageUpdate", listener: (message: BaseMessage) => any): this;
-  public once(event: "messageDelete", listener: (id: string, message?: BaseMessage) => any): this;
-  public once(event: "serverCreate", listener: (server: Server) => any): this;
-  public once(event: "serverUpdate", listener: (server: Server) => any): this;
-  public once(event: "serverExited", listener: (id: string, server?: Server) => any): this;
-  public once(event: "serverMemberJoin", listener: (member: Member) => any): this;
-  public once(event: "serverMemberLeave", listener: (server: Server, user: User) => any): this;
-  public once(event: "serverMemberUpdate", listener: (member: Member) => any): this;
-  public once(event: "serverRoleCreate", listener: (role: Role) => any): this;
-  public once(event: "serverRoleUpdate", listener: (role: Role) => any): this;
-  public once(event: "serverRoleDelete", listener: (role: Role) => any): this;
-  public once(event: "userRelationshipUpdate", listener: (user: User) => any): this;
-  public once(event: "userUpdate", listener: (user: User) => any): this;
-  public once(event: ClientEvents, listener: (...args: any[]) => void, context?: any) {
-    return super.once(event, listener, context);
   }
 }
