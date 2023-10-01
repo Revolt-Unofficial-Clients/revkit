@@ -1,3 +1,7 @@
+v1.1.14
+
+- Added `SystemMessageDetail` type.
+
 v1.1.13
 
 - Fixed `channelStartTyping` and `channelStopTyping` events returning incorrect arguments.

@@ -3,23 +3,25 @@ import { Client } from "../Client";
 import { BaseMessage } from "./BaseMessage";
 import { User } from "./User";
 
+export type SystemMessageDetail =
+  | { type: SystemMessageType.Text; content: string }
+  | { type: SystemMessageType.GroupDescriptionChange; by: User }
+  | { type: SystemMessageType.GroupIconChange; by: User }
+  | { type: SystemMessageType.GroupOwnershipChange; from: User; to: User }
+  | { type: SystemMessageType.GroupRenamed; name: string; by: User }
+  | { type: SystemMessageType.UserAdded; user: User; by: User }
+  | { type: SystemMessageType.UserBanned; user: User }
+  | { type: SystemMessageType.UserJoined; user: User }
+  | { type: SystemMessageType.UserKicked; user: User }
+  | { type: SystemMessageType.UserLeft; user: User }
+  | { type: SystemMessageType.UserRemoved; user: User; by: User };
+
 export class SystemMessage extends BaseMessage {
   constructor(client: Client, data: APIMessage) {
     super(client, data);
   }
 
-  public get detail():
-    | { type: SystemMessageType.Text; content: string }
-    | { type: SystemMessageType.UserAdded; user: User; by: User }
-    | { type: SystemMessageType.UserRemoved; user: User; by: User }
-    | { type: SystemMessageType.UserJoined; user: User }
-    | { type: SystemMessageType.UserLeft; user: User }
-    | { type: SystemMessageType.UserKicked; user: User }
-    | { type: SystemMessageType.UserBanned; user: User }
-    | { type: SystemMessageType.GroupRenamed; name: string; by: User }
-    | { type: SystemMessageType.GroupDescriptionChange; by: User }
-    | { type: SystemMessageType.GroupIconChange; by: User }
-    | { type: SystemMessageType.GroupOwnershipChange; from: User; to: User } {
+  public get detail(): SystemMessageDetail {
     const sys = this.source.system,
       get = (id: string) => this.client.users.get(id);
 
