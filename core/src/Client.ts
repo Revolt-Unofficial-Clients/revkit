@@ -37,7 +37,7 @@ import { ClientboundNotification } from "./websocketNotifications";
 export interface ClientOptions {
   /** The API URL to connect to. (default: https://api.revolt.chat) */
   apiURL: string;
-  /** Enable debug mode. (currently does nothing) (default: false) */
+  /** Enable debug mode (currently does nothing). (default: false) */
   debug: boolean;
   /** If set to >0, send `Ping` packet every `heartbeat` **seconds**. (default: 30) */
   heartbeat: number;
@@ -62,7 +62,7 @@ export interface ClientSession {
   id: string;
   /** Name of this session. */
   name: string;
-  /** Session token. **DO NOT SHARE THIS WITH ANYONE** */
+  /** Session token. **DO NOT SHARE THIS WITH ANYONE.** */
   token: string;
   /** Whether this session is a user or bot. */
   type: "user" | "bot";
