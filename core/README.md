@@ -1,8 +1,10 @@
-The main module.
+![RevKit logo](https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png)
 
-![RevKit](https://raw.githubusercontent.com/Revolt-Unofficial-Clients/revkit/master/revkit-header.png)
+# revkit
 
 [![npm](https://img.shields.io/npm/dt/revkit?label=Downloads&style=flat-square&color=ff4654)](https://www.npmjs.com/package/revkit)
+
+The main module.
 
 #### Quick Example
 
