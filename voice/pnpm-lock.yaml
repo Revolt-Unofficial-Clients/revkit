@@ -16,7 +16,7 @@ dependencies:
     version: 5.0.0
   ffmpeg-static:
     specifier: ^5.1.0
-    version: 5.1.0
+    version: 5.2.0
   mediasoup-client:
     specifier: ^3.6.84
     version: 3.6.84
@@ -25,7 +25,7 @@ dependencies:
     version: 0.0.10
   prism-media:
     specifier: github:itzTheMeow/prism-media
-    version: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409(ffmpeg-static@5.1.0)
+    version: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409(ffmpeg-static@5.2.0)
   revkit:
     specifier: ^1.1.12
     version: 1.1.12(ws@8.13.0)
@@ -568,8 +568,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /ffmpeg-static@5.1.0:
-    resolution: {integrity: sha512-eEWOiGdbf7HKPeJI5PoJ0oCwkL0hckL2JdS4JOuB/gUETppwkEpq8nF0+e6VEQnDCo/iuoipbTUsn9QJmtpNkg==}
+  /ffmpeg-static@5.2.0:
+    resolution: {integrity: sha512-WrM7kLW+do9HLr+H6tk7LzQ7kPqbAgLjdzNE32+u3Ff11gXt9Kkkd2nusGFrlWMIe+XaA97t+I8JS7sZIrvRgA==}
     engines: {node: '>=16'}
     requiresBuild: true
     dependencies:
@@ -1220,7 +1220,7 @@ packages:
     dev: false
     optional: true
 
-  github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409(ffmpeg-static@5.1.0):
+  github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409(ffmpeg-static@5.2.0):
     resolution: {tarball: https://codeload.github.com/itzTheMeow/prism-media/tar.gz/f3e33538bbd00cd9f2a2184a75a832f961ba5409}
     id: github.com/itzTheMeow/prism-media/f3e33538bbd00cd9f2a2184a75a832f961ba5409
     name: prism-media
@@ -1240,5 +1240,5 @@ packages:
       opusscript:
         optional: true
     dependencies:
-      ffmpeg-static: 5.1.0
+      ffmpeg-static: 5.2.0
     dev: false
