@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   revkit:
-    specifier: ^1.1.3
-    version: 1.1.3(ws@8.13.0)
+    specifier: ^1.1.14
+    version: 1.1.14(ws@8.13.0)
 
 devDependencies:
   '@types/node':
@@ -357,8 +357,8 @@ packages:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
-  /revkit@1.1.3(ws@8.13.0):
-    resolution: {integrity: sha512-q8WA5fAP/9sSHQQt2VR0ZLlevDTVUr8oeFNYVFCT1FJLcSjnkhgjwGRuEXRfIU/aMm0qoh5eeHAd1NEavQ4Fbw==}
+  /revkit@1.1.14(ws@8.13.0):
+    resolution: {integrity: sha512-znsPfr+lSmZvItl+/1TfnMRJBX4HmQGgWcnYQKtUrBTib1D/xAMAR/tW7Q/jt5BWtUwksDiGJZHgvuJYjK4JTw==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
       '@insertish/isomorphic-ws': 4.0.1(ws@8.13.0)
@@ -367,15 +367,15 @@ packages:
       form-data: 4.0.0
       long: 5.2.1
       luxon: 3.3.0
-      revolt-api: 0.5.17
+      revolt-api: 0.6.9
       ulid: 2.3.0
     transitivePeerDependencies:
       - debug
       - ws
     dev: false
 
-  /revolt-api@0.5.17:
-    resolution: {integrity: sha512-AkceDCK+6c8Ie+psmG8KA1VTx+DJJRk99jsve9SIBCeCxZ7CizdgBdG3fJ4KM/UA4H+IvPa3PdFzgrBeBuTOWQ==}
+  /revolt-api@0.6.9:
+    resolution: {integrity: sha512-Z9YcsVh91bl+JVcVqzeL1tKWn1IExXDTwI0HMbEQ8X+eiuLhWG31HQSa6ESf12jI8eSv1c3jj99v5LbgGODYLA==}
     dependencies:
       '@insertish/oapi': 0.1.18
       axios: 0.26.1
