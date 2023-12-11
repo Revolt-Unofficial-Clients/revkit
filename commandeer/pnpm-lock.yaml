@@ -7,7 +7,7 @@ settings:
 dependencies:
   revkit:
     specifier: ^1.1.3
-    version: 1.1.3(ws@8.13.0)
+    version: 1.1.3(ws@8.15.0)
 
 devDependencies:
   '@types/node':
@@ -20,8 +20,8 @@ devDependencies:
     specifier: ^5.0.4
     version: 5.0.4
   ws:
-    specifier: ^8.13.0
-    version: 8.13.0
+    specifier: ^8.15.0
+    version: 8.15.0
 
 packages:
 
@@ -29,12 +29,12 @@ packages:
     resolution: {integrity: sha512-0lsMVexkZ7dHpQlPrTZDRsm42hZ4/CzKxP1hbAEJH8IaEwrIEhhTKJuFxPuLOi2TwPImuocncjYHpGpwVNOemQ==}
     dev: false
 
-  /@insertish/isomorphic-ws@4.0.1(ws@8.13.0):
+  /@insertish/isomorphic-ws@4.0.1(ws@8.15.0):
     resolution: {integrity: sha512-kFD/p8T4Hkqr992QrdkbW/cQ/W/q2d9MPCobwzBv2PwTKLkCD9RaYDy6m17qRnSLQQ5PU0kHCG8kaOwAqzj1vQ==}
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.13.0
+      ws: 8.15.0
     dev: false
 
   /@insertish/oapi@0.1.18:
@@ -357,11 +357,11 @@ packages:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
-  /revkit@1.1.3(ws@8.13.0):
+  /revkit@1.1.3(ws@8.15.0):
     resolution: {integrity: sha512-q8WA5fAP/9sSHQQt2VR0ZLlevDTVUr8oeFNYVFCT1FJLcSjnkhgjwGRuEXRfIU/aMm0qoh5eeHAd1NEavQ4Fbw==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
-      '@insertish/isomorphic-ws': 4.0.1(ws@8.13.0)
+      '@insertish/isomorphic-ws': 4.0.1(ws@8.15.0)
       axios: 1.3.5
       eventemitter3: 5.0.0
       form-data: 4.0.0
@@ -509,8 +509,8 @@ packages:
       strip-ansi: 7.0.1
     dev: true
 
-  /ws@8.13.0:
-    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
+  /ws@8.15.0:
+    resolution: {integrity: sha512-H/Z3H55mrcrgjFwI+5jKavgXvwQLtfPCUEp6pi35VhoB0pfcHnSoyuTzkBEZpzq49g1193CUEwIvmsjcotenYw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
